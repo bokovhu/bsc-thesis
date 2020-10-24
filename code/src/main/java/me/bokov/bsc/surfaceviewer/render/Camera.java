@@ -40,7 +40,7 @@ public class Camera {
         this.forward.set(this.target).sub(this.eye);
         this.forward.normalize();
 
-        this.right.set(up).cross(this.forward).normalize();
+        this.right.set(forward).cross(this.up).normalize();
 
         return this;
 

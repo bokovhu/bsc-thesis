@@ -30,6 +30,7 @@ public class CameraController {
     private Vector3f orbitUp = new Vector3f(0f, 1f, 0f);
     private Vector3f origin = new Vector3f(0f, 0f, 0f);
     private Vector3f rotationStartPoint = new Vector3f();
+    private Vector3f rotationStartUp = new Vector3f();
     private float rotationYaw = 0.0f;
     private float rotationPitch = 0.0f;
     private Vector3f zoomStartPoint = new Vector3f();
@@ -77,6 +78,7 @@ public class CameraController {
                             this.rotationStartPoint.set(camera.eye());
                             this.rotationPitch = 0.0f;
                             this.rotationYaw = 0.0f;
+                            this.rotationStartUp.set(camera.up());
                         }
                 )
                 .mouseDown(
@@ -99,16 +101,15 @@ public class CameraController {
                 .drag(
                         SHORTCUT_ROTATE,
                         d -> {
-                            this.rotationPitch -= d.y * MOUSE_SENTITIVITY;
-                            this.rotationYaw -= d.x * MOUSE_SENTITIVITY;
+                            this.rotationPitch += -d.y * MOUSE_SENTITIVITY;
+                            this.rotationYaw += -d.x * MOUSE_SENTITIVITY;
                         }
                 )
                 .drag(
                         SHORTCUT_PAN,
                         d -> {
                             this.panDistance.add(
-                                    d.x * MOUSE_SENTITIVITY,
-                                    -d.y * MOUSE_SENTITIVITY
+                                    -d.x * MOUSE_SENTITIVITY, d.y * MOUSE_SENTITIVITY
                             );
                         }
                 ).drag(
@@ -149,7 +150,8 @@ public class CameraController {
         } else if (state == State.Rotating) {
 
             Quaternionf rotation = new Quaternionf()
-                    .rotationYXZ(rotationYaw, rotationPitch, 0f);
+                    .rotateY(rotationYaw)
+                    .rotateX(rotationPitch);
             Vector3f newEye = new Vector3f(rotationStartPoint)
                     .rotate(rotation);
             camera.lookAt(

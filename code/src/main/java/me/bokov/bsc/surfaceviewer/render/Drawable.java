@@ -84,7 +84,7 @@ public class Drawable {
 
         long offset = 0;
 
-        for(int i = 0; i < attributesInLocationOrder.size(); i++) {
+        for (int i = 0; i < attributesInLocationOrder.size(); i++) {
 
             final Attribute attr = attributesInLocationOrder.get(i);
 

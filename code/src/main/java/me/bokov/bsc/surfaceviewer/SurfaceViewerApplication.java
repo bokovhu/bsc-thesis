@@ -2,7 +2,6 @@ package me.bokov.bsc.surfaceviewer;
 
 public class SurfaceViewerApplication implements Runnable {
 
-
     private final SurfaceViewerPlatform platform;
 
     public SurfaceViewerApplication(AppConfig config) {

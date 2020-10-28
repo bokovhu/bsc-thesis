@@ -6,7 +6,8 @@ import org.lwjgl.opengl.GL46;
 
 public final class FullScreenQuad {
 
-    private FullScreenQuad() {}
+    private FullScreenQuad() {
+    }
 
     public static Drawable create() {
 

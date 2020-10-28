@@ -58,43 +58,51 @@ public final class PointCloud {
             Vector3f c111 = new Vector3f(v.getP1()).add(w, h, d);
 
             if (usedPoints.add(c000)) {
-                resultPoints.add(new Vector4f(c000,
+                resultPoints.add(new Vector4f(
+                        c000,
                         threshold(v.getC000().getValue(), threshold, 1.0f, 0.0f)
                 ));
             }
             if (usedPoints.add(c001)) {
-                resultPoints.add(new Vector4f(c001,
+                resultPoints.add(new Vector4f(
+                        c001,
                         threshold(v.getC001().getValue(), threshold, 1.0f, 0.0f)
                 ));
             }
             if (usedPoints.add(c010)) {
-                resultPoints.add(new Vector4f(c010,
+                resultPoints.add(new Vector4f(
+                        c010,
                         threshold(v.getC010().getValue(), threshold, 1.0f, 0.0f)
                 ));
             }
             if (usedPoints.add(c011)) {
-                resultPoints.add(new Vector4f(c011,
+                resultPoints.add(new Vector4f(
+                        c011,
                         threshold(v.getC011().getValue(), threshold, 1.0f, 0.0f)
                 ));
             }
 
             if (usedPoints.add(c100)) {
-                resultPoints.add(new Vector4f(c100,
+                resultPoints.add(new Vector4f(
+                        c100,
                         threshold(v.getC100().getValue(), threshold, 1.0f, 0.0f)
                 ));
             }
             if (usedPoints.add(c101)) {
-                resultPoints.add(new Vector4f(c101,
+                resultPoints.add(new Vector4f(
+                        c101,
                         threshold(v.getC101().getValue(), threshold, 1.0f, 0.0f)
                 ));
             }
             if (usedPoints.add(c110)) {
-                resultPoints.add(new Vector4f(c110,
+                resultPoints.add(new Vector4f(
+                        c110,
                         threshold(v.getC110().getValue(), threshold, 1.0f, 0.0f)
                 ));
             }
             if (usedPoints.add(c111)) {
-                resultPoints.add(new Vector4f(c111,
+                resultPoints.add(new Vector4f(
+                        c111,
                         threshold(v.getC111().getValue(), threshold, 1.0f, 0.0f)
                 ));
             }

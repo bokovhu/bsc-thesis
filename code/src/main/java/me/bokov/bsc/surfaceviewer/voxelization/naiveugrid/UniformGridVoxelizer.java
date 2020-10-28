@@ -3,7 +3,9 @@ package me.bokov.bsc.surfaceviewer.voxelization.naiveugrid;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
-import me.bokov.bsc.surfaceviewer.sdf.SDFGenerator;
+import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
+import me.bokov.bsc.surfaceviewer.sdf.SDFGenerator3D;
+import me.bokov.bsc.surfaceviewer.sdf.threed.ExpressionEvaluationContext;
 import me.bokov.bsc.surfaceviewer.voxelization.Corner;
 import me.bokov.bsc.surfaceviewer.voxelization.SDFVoxelizer;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
@@ -44,7 +46,7 @@ public class UniformGridVoxelizer implements SDFVoxelizer<UniformGrid> {
         tmpNormalQueryOut = BufferUtils.createFloatBuffer(width * height * 6);
     }
 
-    private Vector3f normal(SDFGenerator generator, UniformGrid grid, Vector3f p) {
+    private Vector3f normal(SDFGenerator3D generator, UniformGrid grid, Vector3f p) {
         return new Vector3f(
                 generator.query(dxPlus.set(p).add(EPSILON, 0f, 0f)) - generator
                         .query(dxMinus.set(p).add(-EPSILON, 0f, 0f)),
@@ -55,7 +57,7 @@ public class UniformGridVoxelizer implements SDFVoxelizer<UniformGrid> {
         ).normalize();
     }
 
-    private void makeSheetCorners(SDFGenerator generator, UniformGrid grid, int z, Corner[] out) {
+    private void makeSheetCorners(SDFGenerator3D generator, UniformGrid grid, int z, Corner[] out) {
 
         final Vector3f tmp = new Vector3f();
 
@@ -100,7 +102,9 @@ public class UniformGridVoxelizer implements SDFVoxelizer<UniformGrid> {
     }
 
     @Override
-    public UniformGrid voxelize(SDFGenerator generator, MeshTransform transform) {
+    public UniformGrid voxelize(Evaluatable<Float, Vector3f, ExpressionEvaluationContext> generator,
+            MeshTransform transform
+    ) {
 
         long start = System.currentTimeMillis();
 
@@ -110,11 +114,11 @@ public class UniformGridVoxelizer implements SDFVoxelizer<UniformGrid> {
         Corner[] lastSheet = new Corner[width * height];
         Corner[] currSheet = new Corner[width * height];
 
-        makeSheetCorners(generator, result, 0, lastSheet);
+        makeSheetCorners((SDFGenerator3D) generator.cpu(), result, 0, lastSheet);
 
         for (int z = 0; z < depth - 1; z++) {
 
-            makeSheetCorners(generator, result, z + 1, currSheet);
+            makeSheetCorners((SDFGenerator3D) generator.cpu(), result, z + 1, currSheet);
 
             for (int y = 0; y < height - 1; y++) {
                 for (int x = 0; x < width - 1; x++) {

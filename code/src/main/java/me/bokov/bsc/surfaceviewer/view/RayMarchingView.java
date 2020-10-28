@@ -6,7 +6,6 @@ import me.bokov.bsc.surfaceviewer.render.Drawable;
 import me.bokov.bsc.surfaceviewer.render.FullScreenQuad;
 import me.bokov.bsc.surfaceviewer.render.ShaderProgram;
 import me.bokov.bsc.surfaceviewer.render.raymarcher.RaymarcherShaderGenerator;
-import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression;
 import me.bokov.bsc.surfaceviewer.util.ResourceUtil;
 
 public class RayMarchingView extends AppView {
@@ -23,12 +22,10 @@ public class RayMarchingView extends AppView {
 
         this.fullScreenQuad = FullScreenQuad.create();
 
-        GLSLDistanceExpression rootDistanceExpr = (GLSLDistanceExpression) this.appScene.sdf();
-
         final String vertexShaderSource = ResourceUtil
                 .readResource("glsl/fullScreenQuad.raymarcher.vertex.glsl");
 
-        final String fragmentShaderSource = new RaymarcherShaderGenerator(rootDistanceExpr)
+        final String fragmentShaderSource = new RaymarcherShaderGenerator(this.appScene.sdf())
                 .generateRaymarcherFragmentSource();
 
         System.out.println(

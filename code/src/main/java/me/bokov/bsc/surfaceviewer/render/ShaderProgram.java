@@ -85,7 +85,7 @@ public class ShaderProgram {
         GL46.glUseProgram(0);
         GL46.glDeleteProgram(programHandle);
 
-        for(int shaderId : shaderHandles) {
+        for (int shaderId : shaderHandles) {
             GL46.glDeleteShader(shaderId);
         }
 
@@ -165,6 +165,12 @@ public class ShaderProgram {
         public CachedUniform(boolean valid, int location) {
             this.valid = valid;
             this.location = location;
+        }
+
+        public void i1(int i) {
+            if (valid) {
+                GL46.glUniform1i(location, i);
+            }
         }
 
         public void f1(float v) {

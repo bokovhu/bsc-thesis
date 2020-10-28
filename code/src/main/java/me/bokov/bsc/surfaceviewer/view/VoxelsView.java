@@ -1,17 +1,15 @@
 package me.bokov.bsc.surfaceviewer.view;
 
 import me.bokov.bsc.surfaceviewer.AppScene;
-import me.bokov.bsc.surfaceviewer.render.Drawable;
-import me.bokov.bsc.surfaceviewer.render.ShaderProgram;
 import me.bokov.bsc.surfaceviewer.SurfaceViewerPlatform;
-import me.bokov.bsc.surfaceviewer.render.PointCloud;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
+import me.bokov.bsc.surfaceviewer.render.Drawable;
+import me.bokov.bsc.surfaceviewer.render.PointCloud;
+import me.bokov.bsc.surfaceviewer.render.ShaderProgram;
 import me.bokov.bsc.surfaceviewer.util.Resources;
 import me.bokov.bsc.surfaceviewer.voxelization.SDFVoxelizer;
-import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
 import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGrid;
 import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGridVoxelizer;
-import me.bokov.bsc.surfaceviewer.util.ResourceUtil;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
@@ -55,9 +53,9 @@ public class VoxelsView extends AppView {
         this.pointCloud = PointCloud.voxelCloud(this.grid, floatOpt("threshold", 0.0f));
 
         this.shaderProgram = shaderManager.load("default")
-            .vertexFromResource(Resources.GLSL_VERTEX_DIRECT_TRANSFORMED)
-            .fragmentFromResource(Resources.GLSL_FRAGMENT_VOXEL_POINT_CLOUD)
-            .end();
+                .vertexFromResource(Resources.GLSL_VERTEX_DIRECT_TRANSFORMED)
+                .fragmentFromResource(Resources.GLSL_FRAGMENT_VOXEL_POINT_CLOUD)
+                .end();
 
         GL46.glEnable(GL46.GL_BLEND);
         GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_DST_ALPHA);

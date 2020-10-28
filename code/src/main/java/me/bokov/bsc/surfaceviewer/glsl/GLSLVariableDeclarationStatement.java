@@ -28,6 +28,18 @@ public class GLSLVariableDeclarationStatement extends GLSLStatement {
         return "GLSLVariableDeclaration";
     }
 
+    public String type() {
+        return type;
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public GLSLStatement defaultValue() {
+        return defaultValue;
+    }
+
     @Override
     public String render() {
         if (defaultValue != null) {

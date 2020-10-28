@@ -9,7 +9,8 @@ import org.lwjgl.opengl.GL46;
 
 public class TriangleMesh {
 
-    private TriangleMesh() {}
+    private TriangleMesh() {
+    }
 
     public static Drawable create(List<Face> triangles) {
 
@@ -17,9 +18,9 @@ public class TriangleMesh {
                 3 * triangles.size() * (3 + 3 + 4)
         );
 
-        for(Face f : triangles) {
+        for (Face f : triangles) {
             fb.put(
-                    new float[] {
+                    new float[]{
                             f.pos1.x, f.pos1.y, f.pos1.z,
                             f.normal1.x, f.normal1.y, f.normal1.z,
                             f.color1.x, f.color1.y, f.color1.z, f.color1.w,
@@ -45,6 +46,7 @@ public class TriangleMesh {
     }
 
     public static class Face {
+
         private final Vector3f pos1, pos2, pos3;
         private final Vector3f normal1, normal2, normal3;
         private final Vector4f color1, color2, color3;

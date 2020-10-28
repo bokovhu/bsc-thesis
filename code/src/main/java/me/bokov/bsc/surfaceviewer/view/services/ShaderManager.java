@@ -98,7 +98,7 @@ public class ShaderManager {
 
     public ShaderManager reloadAll() {
         final Set<String> namesOfProgramsToReload = new HashSet<>(this.programsByName.keySet());
-        for(String programName : namesOfProgramsToReload) {
+        for (String programName : namesOfProgramsToReload) {
             this.reload(programName);
         }
         return this;

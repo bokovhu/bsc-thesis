@@ -11,15 +11,17 @@ import me.bokov.bsc.surfaceviewer.glsl.GLSLReturnStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLUniformStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLVaryingStatement;
-import me.bokov.bsc.surfaceviewer.sdf.ExpressionEvaluationContext;
-import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression;
+import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
+import me.bokov.bsc.surfaceviewer.sdf.threed.ExpressionEvaluationContext;
+import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
+import org.joml.Vector3f;
 
 public class RaymarcherShaderGenerator {
 
-    private final GLSLDistanceExpression distanceExpression;
+    private final Evaluatable<Float, Vector3f, ExpressionEvaluationContext> distanceExpression;
 
     public RaymarcherShaderGenerator(
-            GLSLDistanceExpression distanceExpression
+            Evaluatable<Float, Vector3f, ExpressionEvaluationContext> distanceExpression
     ) {
         this.distanceExpression = distanceExpression;
     }
@@ -66,7 +68,8 @@ public class RaymarcherShaderGenerator {
 
         prog.include("glsl/rm_Ray.glsl")
                 .include("glsl/rm_Hit.glsl")
-                .include("glsl/rm_sdfOp.glsl");
+                .include("glsl/rm_sdfOp.glsl")
+                .include("glsl/rm_noise.glsl");
 
         final GLSLFunctionStatement csgExecuteFunction = new GLSLFunctionStatement(
                 "float",
@@ -76,15 +79,14 @@ public class RaymarcherShaderGenerator {
         );
         final ExpressionEvaluationContext expressionEvaluationContext = new ExpressionEvaluationContext()
                 .setPointVariable("CSG_InputPoint")
-                .setContextId("CSG_Root")
-                .setParentStatement(csgExecuteFunction);
+                .setContextId("CSG_Root");
         csgExecuteFunction.body(
-                distanceExpression.evaluate(expressionEvaluationContext)
+                distanceExpression.gpu().evaluate(expressionEvaluationContext)
                         .toArray(new GLSLStatement[0])
         );
         csgExecuteFunction.body(
                 new GLSLReturnStatement(
-                        new GLSLRawStatement(expressionEvaluationContext.resultVariable()))
+                        new GLSLRawStatement(expressionEvaluationContext.getResult()))
         );
 
         prog.add(csgExecuteFunction);

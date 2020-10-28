@@ -1,17 +1,24 @@
 package me.bokov.bsc.surfaceviewer;
 
+import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.box;
+import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.cone;
+import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.cylinder;
+import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.gate;
+import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.infiniteRepeat;
+import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.rotate;
+import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.scale;
+import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.sphere;
+import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.subtract;
+import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.torus;
+import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.translate;
+import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.union;
+
 import java.util.Map;
 import java.util.function.BiFunction;
 import me.bokov.bsc.surfaceviewer.render.Lighting;
-import me.bokov.bsc.surfaceviewer.sdf.SDFAxisAlignedBox;
-import me.bokov.bsc.surfaceviewer.sdf.SDFCappedCylinder;
-import me.bokov.bsc.surfaceviewer.sdf.SDFCone;
-import me.bokov.bsc.surfaceviewer.sdf.SDFInifiniteRepetition;
-import me.bokov.bsc.surfaceviewer.sdf.SDFOpSubtract;
-import me.bokov.bsc.surfaceviewer.sdf.SDFOpUnion;
-import me.bokov.bsc.surfaceviewer.sdf.SDFRotate;
-import me.bokov.bsc.surfaceviewer.sdf.SDFSphere;
-import me.bokov.bsc.surfaceviewer.sdf.SDFTorus;
+import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
+import me.bokov.bsc.surfaceviewer.sdf.threed.OpSmoothSubtract;
+import me.bokov.bsc.surfaceviewer.sdf.threed.SimpleNoise;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -21,85 +28,110 @@ final class SceneManager {
 
     private static final Lighting DEFAULT_LIGHTING = new Lighting(
             new Vector3f(-1.8f, 2.0f, 1.4f).normalize(),
-            new Vector3f(0.75f, 1.1f, 1.4f),
+            new Vector3f(2.4f, 2.0f, 1.1f),
             new Vector3f(0.14f, 0.22f, 0.27f)
     );
 
     private static final Map<String, BiFunction<AppConfig, SurfaceViewerPlatform, AppScene>> SCENE_FACTORIES = Map
             .of(
                     "cube-minus-sphere", (c, p) -> new AppScene(
-                            new SDFOpSubtract(
-                                    new SDFSphere(0.9f),
-                                    new SDFAxisAlignedBox(
-                                            new Vector3f(0.8f, 0.8f, 0.8f)
-                                    )
-                            ),
+                            subtract(sphere(0.9f), box(new Vector3f(0.8f))),
                             DEFAULT_LIGHTING
                     ),
                     "rotated-cube", (c, p) -> new AppScene(
-                            new SDFRotate(
+                            rotate(
                                     new Quaternionf()
                                             .fromAxisAngleDeg(
                                                     new Vector3f(1f, 1f, 1f).normalize(),
                                                     45f
                                             ),
-                                    new SDFAxisAlignedBox(
-                                            new Vector3f(1f, 1f, 1f)
-                                    )
+                                    box(new Vector3f(1f))
                             ),
                             DEFAULT_LIGHTING
                     ),
                     "torus", (c, p) -> new AppScene(
-                            new SDFTorus(new Vector2f(1.5f, 0.3f)),
+                            torus(new Vector2f(1.5f, 0.3f)),
                             DEFAULT_LIGHTING
                     ),
                     "complicated", (c, p) -> new AppScene(
-                            new SDFInifiniteRepetition(
+                            infiniteRepeat(
                                     new Vector3f(16f, 1.5f, 16f),
-                                    new SDFOpSubtract(
-                                            new SDFOpUnion(
-                                                    new SDFAxisAlignedBox(
-                                                            new Vector3f(4f, 0.8f, 0.25f)),
-                                                    new SDFOpUnion(
-                                                            new SDFAxisAlignedBox(
-                                                                    new Vector3f(0.25f, 0.8f, 4f)),
-                                                            new SDFOpUnion(
-                                                                    new SDFRotate(
-                                                                            new Quaternionf()
-                                                                                    .fromAxisAngleDeg(
-                                                                                            new Vector3f(
-                                                                                                    1f,
-                                                                                                    0f,
-                                                                                                    1f
-                                                                                            ).normalize(),
-                                                                                            90f
-                                                                                    ),
-                                                                            new SDFCappedCylinder(
-                                                                                    8f, 0.2f)
+                                    subtract(
+                                            union(
+                                                    box(new Vector3f(4f, 0.8f, 0.25f)),
+                                                    box(new Vector3f(0.25f, 0.8f, 4f)),
+                                                    rotate(
+                                                            new Quaternionf()
+                                                                    .fromAxisAngleDeg(
+                                                                            new Vector3f(
+                                                                                    1f,
+                                                                                    0f,
+                                                                                    1f
+                                                                            ).normalize(),
+                                                                            90f
                                                                     ),
-                                                                    new SDFRotate(
-                                                                            new Quaternionf()
-                                                                                    .fromAxisAngleDeg(
-                                                                                            new Vector3f(
-                                                                                                    -1f,
-                                                                                                    0f,
-                                                                                                    1f
-                                                                                            ).normalize(),
-                                                                                            90f
-                                                                                    ),
-                                                                            new SDFCappedCylinder(
-                                                                                    8f, 0.2f)
-                                                                    )
-                                                            )
+                                                            cylinder(8f, 0.2f)
+                                                    ),
+                                                    rotate(
+                                                            new Quaternionf()
+                                                                    .fromAxisAngleDeg(
+                                                                            new Vector3f(
+                                                                                    -1f,
+                                                                                    0f,
+                                                                                    1f
+                                                                            ).normalize(),
+                                                                            90f
+                                                                    ),
+                                                            cylinder(8f, 0.2f)
                                                     )
                                             ),
-                                            new SDFTorus(new Vector2f(1.5f, 0.4f))
+                                            torus(new Vector2f(1.5f, 0.4f))
                                     )
                             ),
                             DEFAULT_LIGHTING
                     ),
                     "cone", (c, p) -> new AppScene(
-                            new SDFCone((float) Math.toRadians(20.0), 2.0f),
+                            cone((float) Math.toRadians(20.0), 2.0f),
+                            DEFAULT_LIGHTING
+                    ),
+                    "noise", (c, p) -> new AppScene(
+                            gate(
+                                    sphere(25.0f),
+                                    Evaluatable.of(new SimpleNoise(-0.1f, 1.0f, -0.2f, 1f))
+                            ),
+                            DEFAULT_LIGHTING
+                    ),
+                    "noise-op", (c, p) -> new AppScene(
+                            union(
+                                    translate(
+                                            new Vector3f(4.0f, 0.0f, 0.0f),
+                                            Evaluatable.of(
+                                                    new OpSmoothSubtract(
+                                                            scale(
+                                                                    0.3f,
+                                                                    Evaluatable.of(new SimpleNoise(
+                                                                            -0.4f, 1.0f, -0.2f, 1f))
+                                                            ),
+                                                            sphere(4.0f),
+                                                            0.45f
+                                                    )
+                                            )
+                                    ),
+                                    translate(
+                                            new Vector3f(-4.0f, 0.0f, 0.0f),
+                                            Evaluatable.of(
+                                                    new OpSmoothSubtract(
+                                                            scale(
+                                                                    0.3f,
+                                                                    Evaluatable.of(new SimpleNoise(
+                                                                            -0.4f, 1.0f, -0.2f, 1f))
+                                                            ),
+                                                            box(new Vector3f(2.0f, 1.0f, 4.0f)),
+                                                            0.45f
+                                                    )
+                                            )
+                                    )
+                            ),
                             DEFAULT_LIGHTING
                     )
             );

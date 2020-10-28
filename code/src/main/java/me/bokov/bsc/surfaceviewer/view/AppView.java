@@ -3,18 +3,23 @@ package me.bokov.bsc.surfaceviewer.view;
 import me.bokov.bsc.surfaceviewer.AppScene;
 import me.bokov.bsc.surfaceviewer.SurfaceViewerPlatform;
 import me.bokov.bsc.surfaceviewer.render.Camera;
+import me.bokov.bsc.surfaceviewer.render.UI;
 import me.bokov.bsc.surfaceviewer.view.services.CameraController;
+import me.bokov.bsc.surfaceviewer.view.services.FontManager;
 import me.bokov.bsc.surfaceviewer.view.services.InputManager;
 import me.bokov.bsc.surfaceviewer.view.services.ShaderManager;
+import org.joml.Vector2f;
 import org.lwjgl.opengl.GL46;
 
 public abstract class AppView {
 
     protected final Camera camera = new Camera();
+    protected final UI ui = new UI();
     protected final SurfaceViewerPlatform platform;
     protected final CameraController cameraController;
     protected final ShaderManager shaderManager;
     protected final InputManager inputManager;
+    protected final FontManager fontManager;
     protected AppScene appScene;
 
     AppView(AppScene appScene, SurfaceViewerPlatform platform) {
@@ -23,6 +28,8 @@ public abstract class AppView {
         this.inputManager = new InputManager();
         this.cameraController = new CameraController(this, this.camera, this.platform);
         this.shaderManager = new ShaderManager(this);
+        this.fontManager = new FontManager(this);
+        ui.update(new Vector2f(platform.config().getWidth(), platform.config().getHeight()));
     }
 
     public InputManager inputManager() {
@@ -55,6 +62,8 @@ public abstract class AppView {
         );
 
         GL46.glViewport(0, 0, width, height);
+
+        ui.update(new Vector2f(width, height));
     }
 
     public final boolean onKeyDown(int key, int mods) {

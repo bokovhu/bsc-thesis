@@ -1,14 +1,14 @@
 package me.bokov.bsc.surfaceviewer.view;
 
 import java.util.Iterator;
-import java.util.Spliterators;
-import java.util.stream.StreamSupport;
 import me.bokov.bsc.surfaceviewer.AppScene;
 import me.bokov.bsc.surfaceviewer.SurfaceViewerPlatform;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
 import me.bokov.bsc.surfaceviewer.mesh.SDFMesh;
 import me.bokov.bsc.surfaceviewer.mesh.mccpu.MarchingCubes;
 import me.bokov.bsc.surfaceviewer.render.ShaderProgram;
+import me.bokov.bsc.surfaceviewer.render.text.Text;
+import me.bokov.bsc.surfaceviewer.render.text.TextureFont;
 import me.bokov.bsc.surfaceviewer.util.Resources;
 import me.bokov.bsc.surfaceviewer.voxelization.SDFVoxelizer;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
@@ -17,6 +17,7 @@ import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGridVoxelizer;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.lwjgl.opengl.GL46;
 
 public class MarchingCubesView extends AppView {
 
@@ -25,6 +26,9 @@ public class MarchingCubesView extends AppView {
     private MarchingCubes marchingCubes;
     private SDFMesh mesh;
     private ShaderProgram shaderProgram;
+    private ShaderProgram fontProgram;
+    private Text testText;
+    private TextureFont emojis;
 
     public MarchingCubesView(AppScene appScene,
             SurfaceViewerPlatform platform
@@ -34,6 +38,21 @@ public class MarchingCubesView extends AppView {
 
     @Override
     public void init() {
+
+        emojis = this.fontManager.load(
+                "emoji",
+                "fonts/emoji_16px.fnt",
+                "fonts/emoji_32px.fnt",
+                "fonts/emoji_64px.fnt"
+        );
+
+        this.fontProgram = shaderManager.load("font")
+                .vertexFromResource(Resources.GLSL_VERTEX_STANDARD_2D_TRANSFORMED)
+                .fragmentFromResource(Resources.GLSL_FRAGMENT_TEXT)
+                .end();
+
+        testText = new Text()
+                .ofText("✔✔✔✔", emojis.getDefault());
 
         this.shaderProgram = shaderManager.load("default")
                 .vertexFromResource(Resources.GLSL_VERTEX_STANDARD_3D_TRANSFORMED)
@@ -62,9 +81,11 @@ public class MarchingCubesView extends AppView {
 
         int nullVoxelCnt = 0;
         Iterator<Voxel> voxelIterator = voxelStorage.voxelIterator();
-        while(voxelIterator.hasNext()) {
+        while (voxelIterator.hasNext()) {
             final Voxel v = voxelIterator.next();
-            if (v == null) nullVoxelCnt++;
+            if (v == null) {
+                nullVoxelCnt++;
+            }
         }
 
         System.out.println("There are " + nullVoxelCnt + " null voxels.");
@@ -87,6 +108,8 @@ public class MarchingCubesView extends AppView {
     @Override
     public void render(float delta) {
 
+        GL46.glEnable(GL46.GL_DEPTH_TEST);
+
         this.shaderProgram.use();
 
         this.shaderProgram.uniform("u_Le").vec3(appScene.lighting().Le());
@@ -97,6 +120,14 @@ public class MarchingCubesView extends AppView {
         this.shaderProgram.uniform("u_MVP").mat4(camera.VP());
 
         this.mesh.draw();
+
+        GL46.glDisable(GL46.GL_DEPTH_TEST);
+
+        this.fontProgram.use();
+        this.fontProgram.uniform("u_MVP")
+                .mat4(ui.VP());
+
+        this.testText.draw(emojis.getDefault(), fontProgram.uniform("u_fontTexture"));
 
     }
 

@@ -128,7 +128,9 @@ public class GPUUniformGrid implements SDFVoxelStorage {
 
     public void prepareTexture() {
 
-        if (preparedTextures) return;
+        if (preparedTextures) {
+            return;
+        }
 
         this.positionAndValueTextureId = GL46.glGenTextures();
         this.normalTextureId = GL46.glGenTextures();

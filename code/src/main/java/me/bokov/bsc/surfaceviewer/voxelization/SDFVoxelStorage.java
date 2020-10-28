@@ -17,6 +17,7 @@ public interface SDFVoxelStorage {
         return new Vector3f(local);
     }
 
-    default void tearDown() {}
+    default void tearDown() {
+    }
 
 }

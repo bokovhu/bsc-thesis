@@ -8,38 +8,40 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
+import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
+import me.bokov.bsc.surfaceviewer.sdf.GPUEvaluator;
 import org.joml.Vector3f;
 
-public class OpIntersect implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D,
+public class OpIntersect implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUContext>,
         Serializable {
 
-    protected final Evaluatable<Float, Vector3f, ExpressionEvaluationContext> a;
-    protected final Evaluatable<Float, Vector3f, ExpressionEvaluationContext> b;
+    protected final Evaluatable<Float, CPUContext, GPUContext> a;
+    protected final Evaluatable<Float, CPUContext, GPUContext> b;
 
     public OpIntersect(
-            Evaluatable<Float, Vector3f, ExpressionEvaluationContext> a,
-            Evaluatable<Float, Vector3f, ExpressionEvaluationContext> b
+            Evaluatable<Float, CPUContext, GPUContext> a,
+            Evaluatable<Float, CPUContext, GPUContext> b
     ) {
         this.a = a;
         this.b = b;
     }
 
     @Override
-    public Float evaluate(Vector3f p) {
+    public Float evaluate(CPUContext c) {
         return Math.max(
-                a.cpu().evaluate(p),
-                b.cpu().evaluate(p)
+                a.cpu().evaluate(c),
+                b.cpu().evaluate(c)
         );
     }
 
     @Override
-    public List<GLSLStatement> evaluate(ExpressionEvaluationContext context
-    ) {
-        final ExpressionEvaluationContext generatorAContext = context.branch("A");
-        final ExpressionEvaluationContext generatorBContext = context.branch("B");
+    public List<GLSLStatement> evaluate(GPUContext context) {
+        final GPUContext generatorAContext = context.branch("A");
+        final GPUContext generatorBContext = context.branch("B");
 
         final List<GLSLStatement> generatedA = a.gpu()
                 .evaluate(generatorAContext);

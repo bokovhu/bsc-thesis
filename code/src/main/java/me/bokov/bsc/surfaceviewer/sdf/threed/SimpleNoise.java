@@ -12,11 +12,14 @@ import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.resultVar;
 import java.io.Serializable;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
+import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
+import me.bokov.bsc.surfaceviewer.sdf.GPUEvaluator;
 import org.joml.Vector3f;
 
-public class SimpleNoise implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D,
+public class SimpleNoise implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUContext>,
         Serializable {
 
     private static final String GLSL_FN_NAME = "CSG_Noise_Simple3";
@@ -34,8 +37,7 @@ public class SimpleNoise implements CPUEvaluator<Float, Vector3f>, GLSLDistanceE
     }
 
     @Override
-    public List<GLSLStatement> evaluate(ExpressionEvaluationContext context
-    ) {
+    public List<GLSLStatement> evaluate(GPUContext context) {
         return List.of(
                 resultVar(
                         context,
@@ -60,7 +62,7 @@ public class SimpleNoise implements CPUEvaluator<Float, Vector3f>, GLSLDistanceE
     }
 
     @Override
-    public Float evaluate(Vector3f p) {
+    public Float evaluate(CPUContext c) {
         return 0.0f;
     }
 

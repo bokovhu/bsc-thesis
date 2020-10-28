@@ -33,8 +33,8 @@ public final class Voxel implements Serializable {
         this.c101 = c101;
         this.c110 = c110;
         this.c111 = c111;
-        this.p1 = p1;
-        this.p2 = p2;
+        this.p1 = new Vector3f(p1);
+        this.p2 = new Vector3f(p2);
     }
 
     public Corner getC000() {

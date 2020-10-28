@@ -1,10 +1,14 @@
 package me.bokov.bsc.surfaceviewer.voxelization.naiveugrid;
 
+import static me.bokov.bsc.surfaceviewer.sdf.threed.CPUEvaluationContext.of;
+
 import java.util.Arrays;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
+import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
-import me.bokov.bsc.surfaceviewer.sdf.threed.ExpressionEvaluationContext;
+import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
+import me.bokov.bsc.surfaceviewer.sdf.threed.GPUEvaluationContext;
 import me.bokov.bsc.surfaceviewer.voxelization.Corner;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxelizer3D;
@@ -27,28 +31,30 @@ public class UniformGridVoxelizer implements Voxelizer3D<UniformGrid> {
         this.depth = depth;
     }
 
-    private Vector3f normal(CPUEvaluator<Float, Vector3f> generator, UniformGrid grid, Vector3f p) {
+    private Vector3f normal(CPUEvaluator<Float, CPUContext> generator, UniformGrid grid, Vector3f p) {
         return new Vector3f(
-                generator.evaluate(dxPlus.set(p).add(EPSILON, 0f, 0f)) - generator
-                        .evaluate(dxMinus.set(p).add(-EPSILON, 0f, 0f)),
-                generator.evaluate(dyPlus.set(p).add(0f, EPSILON, 0f)) - generator
-                        .evaluate(dyMinus.set(p).add(0f, -EPSILON, 0f)),
-                generator.evaluate(dzPlus.set(p).add(0f, 0f, EPSILON)) - generator
-                        .evaluate(dzMinus.set(p).add(0f, 0f, -EPSILON))
+                generator.evaluate(of(dxPlus.set(p).add(EPSILON, 0f, 0f))) - generator
+                        .evaluate(of(dxMinus.set(p).add(-EPSILON, 0f, 0f))),
+                generator.evaluate(of(dyPlus.set(p).add(0f, EPSILON, 0f))) - generator
+                        .evaluate(of(dyMinus.set(p).add(0f, -EPSILON, 0f))),
+                generator.evaluate(of(dzPlus.set(p).add(0f, 0f, EPSILON))) - generator
+                        .evaluate(of(dzMinus.set(p).add(0f, 0f, -EPSILON)))
         ).normalize();
     }
 
-    private void makeSheetCorners(CPUEvaluator<Float, Vector3f> generator, UniformGrid grid, int z, Corner[] out) {
+    private void makeSheetCorners(CPUEvaluator<Float, CPUContext> generator, UniformGrid grid, int z, Corner[] out) {
 
         final Vector3f tmpP = new Vector3f();
+        final Vector3f tmpGlobal = new Vector3f();
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 final int idx = y * width + x;
-                grid.localToGlobal(tmpP.set(x, y, z));
+                grid.localToGlobal(tmpP.set(x, y, z), tmpGlobal);
                 out[y * width + x] = new Corner(
-                        new Vector3f(tmpP), generator.evaluate(tmpP),
-                        normal(generator, grid, tmpP)
+                        tmpGlobal,
+                        generator.evaluate(of(tmpGlobal)),
+                        normal(generator, grid, tmpGlobal)
                 );
             }
         }
@@ -56,7 +62,7 @@ public class UniformGridVoxelizer implements Voxelizer3D<UniformGrid> {
     }
 
     @Override
-    public UniformGrid voxelize(Evaluatable<Float, Vector3f, ExpressionEvaluationContext> generator,
+    public UniformGrid voxelize(Evaluatable<Float, CPUContext, GPUContext> generator,
             MeshTransform transform
     ) {
 

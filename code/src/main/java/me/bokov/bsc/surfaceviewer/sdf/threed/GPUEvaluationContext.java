@@ -7,7 +7,7 @@ import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
 
 @Data
 @Accessors(chain = true)
-public class ExpressionEvaluationContext implements GPUContext, Serializable {
+public class GPUEvaluationContext implements GPUContext, Serializable {
 
     private String contextId;
     private String pointVariable;
@@ -16,14 +16,14 @@ public class ExpressionEvaluationContext implements GPUContext, Serializable {
         return contextId + "_Result";
     }
 
-    public ExpressionEvaluationContext branch(String suffix) {
-        return new ExpressionEvaluationContext()
+    public GPUEvaluationContext branch(String suffix) {
+        return new GPUEvaluationContext()
                 .setPointVariable(pointVariable)
                 .setContextId(contextId + "_" + suffix);
     }
 
-    public ExpressionEvaluationContext transform(String suffix) {
-        return new ExpressionEvaluationContext()
+    public GPUEvaluationContext transform(String suffix) {
+        return new GPUEvaluationContext()
                 .setPointVariable(contextId + "_P_" + suffix)
                 .setContextId(contextId);
     }

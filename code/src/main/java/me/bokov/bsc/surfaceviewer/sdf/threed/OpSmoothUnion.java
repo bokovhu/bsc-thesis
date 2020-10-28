@@ -17,21 +17,24 @@ import java.util.ArrayList;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLVariableDeclarationStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
+import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
+import me.bokov.bsc.surfaceviewer.sdf.GPUEvaluator;
 import org.joml.Vector3f;
 
-public class OpSmoothUnion implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D,
+public class OpSmoothUnion implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUContext>,
         Serializable {
 
-    protected final Evaluatable<Float, Vector3f, ExpressionEvaluationContext> a;
-    protected final Evaluatable<Float, Vector3f, ExpressionEvaluationContext> b;
+    protected final Evaluatable<Float, CPUContext, GPUContext> a;
+    protected final Evaluatable<Float, CPUContext, GPUContext> b;
     private final float k;
 
     public OpSmoothUnion(
-            Evaluatable<Float, Vector3f, ExpressionEvaluationContext> a,
-            Evaluatable<Float, Vector3f, ExpressionEvaluationContext> b,
+            Evaluatable<Float, CPUContext, GPUContext> a,
+            Evaluatable<Float, CPUContext, GPUContext> b,
             float k
     ) {
         this.a = a;
@@ -40,10 +43,9 @@ public class OpSmoothUnion implements CPUEvaluator<Float, Vector3f>, GLSLDistanc
     }
 
     @Override
-    public List<GLSLStatement> evaluate(ExpressionEvaluationContext context
-    ) {
-        final ExpressionEvaluationContext generatorAContext = context.branch("A");
-        final ExpressionEvaluationContext generatorBContext = context.branch("B");
+    public List<GLSLStatement> evaluate(GPUContext context) {
+        final GPUContext generatorAContext = context.branch("A");
+        final GPUContext generatorBContext = context.branch("B");
 
         final List<GLSLStatement> generatedA = a.gpu()
                 .evaluate(generatorAContext);
@@ -115,9 +117,9 @@ public class OpSmoothUnion implements CPUEvaluator<Float, Vector3f>, GLSLDistanc
     }
 
     @Override
-    public Float evaluate(Vector3f p) {
-        final float v1 = a.cpu().evaluate(p);
-        final float v2 = b.cpu().evaluate(p);
+    public Float evaluate(CPUContext c) {
+        final float v1 = a.cpu().evaluate(c);
+        final float v2 = b.cpu().evaluate(c);
 
         float h = _clamp(
                 0.5f + 0.5f * (v2 - v1) / k,

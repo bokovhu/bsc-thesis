@@ -1,6 +1,9 @@
 package me.bokov.bsc.surfaceviewer.view;
 
-import java.util.Iterator;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.file.Files;
 import me.bokov.bsc.surfaceviewer.AppScene;
 import me.bokov.bsc.surfaceviewer.SurfaceViewerPlatform;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
@@ -10,9 +13,12 @@ import me.bokov.bsc.surfaceviewer.render.ShaderProgram;
 import me.bokov.bsc.surfaceviewer.render.text.Text;
 import me.bokov.bsc.surfaceviewer.render.text.TextureFont;
 import me.bokov.bsc.surfaceviewer.util.Resources;
-import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
+import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorageLoader;
+import me.bokov.bsc.surfaceviewer.voxelization.VoxelStoragePersister;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxelizer3D;
 import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGrid;
+import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGridLoader;
+import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGridPersister;
 import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGridVoxelizer;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -23,6 +29,9 @@ public class MarchingCubesView extends AppView {
 
     private static final Matrix4f IDENTITY = new Matrix4f().identity();
     private Voxelizer3D<UniformGrid> voxelizer;
+    private UniformGrid voxelStorage;
+    private VoxelStoragePersister<UniformGrid> voxelStoragePersister;
+    private VoxelStorageLoader<UniformGrid> voxelStorageLoader;
     private MarchingCubes marchingCubes;
     private SDFMesh mesh;
     private ShaderProgram shaderProgram;
@@ -34,6 +43,55 @@ public class MarchingCubesView extends AppView {
             SurfaceViewerPlatform platform
     ) {
         super(appScene, platform);
+    }
+
+    private void voxelizeScene() {
+        this.voxelizer = new UniformGridVoxelizer(
+                intOpt("grid-width", 64),
+                intOpt("grid-height", 64),
+                intOpt("grid-depth", 64)
+        );
+        this.voxelStorage = this.voxelizer.voxelize(this.appScene.sdf(), new MeshTransform(
+                new Vector3f(
+                        floatOpt("grid-offset-x", 0f),
+                        floatOpt("grid-offset-y", 0f),
+                        floatOpt("grid-offset-z", 0f)
+                ),
+                new Quaternionf(),
+                new Vector3f(
+                        floatOpt("grid-scale-x", 1f),
+                        floatOpt("grid-scale-y", 1f),
+                        floatOpt("grid-scale-z", 1f)
+                )
+        ));
+    }
+
+    private boolean loadScene() {
+        String dataFilename = stringOpt("data", null);
+        if (dataFilename != null) {
+            if (Files.exists(new File(dataFilename).toPath())) {
+                this.voxelStorageLoader = new UniformGridLoader();
+                try (FileInputStream f = new FileInputStream(new File(dataFilename))) {
+                    this.voxelStorage = this.voxelStorageLoader.load(f);
+                } catch (Exception exc) {
+                    exc.printStackTrace();
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void persistScene() {
+
+        String dataFilename = stringOpt("data", null);
+        if (dataFilename != null) {
+            try (FileOutputStream f = new FileOutputStream(new File(dataFilename))) {
+                this.voxelStoragePersister.persist(this.voxelStorage, f);
+            } catch (Exception exc) {
+                exc.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -55,41 +113,21 @@ public class MarchingCubesView extends AppView {
                 .ofText("✔✔✔✔", emojis.getDefault());
 
         this.shaderProgram = shaderManager.load("default")
-                .vertexFromResource(Resources.GLSL_VERTEX_STANDARD_3D_TRANSFORMED)
-                .fragmentFromResource(Resources.GLSL_FRAGMENT_BLINN_PHONG)
+                .vertexFromResource(
+                        stringOpt("vs-resource", Resources.GLSL_VERTEX_STANDARD_3D_TRANSFORMED))
+                .fragmentFromResource(stringOpt("fs-resource", Resources.GLSL_FRAGMENT_BLINN_PHONG))
                 .end();
 
-        this.voxelizer = new UniformGridVoxelizer(
-                intOpt("grid-width", 64),
-                intOpt("grid-height", 64),
-                intOpt("grid-depth", 64)
-        );
-        this.marchingCubes = new MarchingCubes(floatOpt("iso-level", 0.0f));
-        final var voxelStorage = this.voxelizer.voxelize(this.appScene.sdf(), new MeshTransform(
-                new Vector3f(
-                        floatOpt("grid-offset-x", 0f),
-                        floatOpt("grid-offset-y", 0f),
-                        floatOpt("grid-offset-z", 0f)
-                ),
-                new Quaternionf(),
-                new Vector3f(
-                        floatOpt("grid-scale-x", 1f),
-                        floatOpt("grid-scale-y", 1f),
-                        floatOpt("grid-scale-z", 1f)
-                )
-        ));
+        this.voxelStorageLoader = new UniformGridLoader();
+        this.voxelStoragePersister = new UniformGridPersister();
 
-        int nullVoxelCnt = 0;
-        Iterator<Voxel> voxelIterator = voxelStorage.voxelIterator();
-        while (voxelIterator.hasNext()) {
-            final Voxel v = voxelIterator.next();
-            if (v == null) {
-                nullVoxelCnt++;
-            }
+        if (!loadScene()) {
+            voxelizeScene();
         }
 
-        System.out.println("There are " + nullVoxelCnt + " null voxels.");
+        persistScene();
 
+        this.marchingCubes = new MarchingCubes(floatOpt("iso-level", 0.0f));
         this.mesh = this.marchingCubes
                 .generate(voxelStorage);
 

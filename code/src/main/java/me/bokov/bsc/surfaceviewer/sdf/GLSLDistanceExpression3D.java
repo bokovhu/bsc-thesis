@@ -1,7 +1,7 @@
 package me.bokov.bsc.surfaceviewer.sdf;
 
-import me.bokov.bsc.surfaceviewer.sdf.threed.ExpressionEvaluationContext;
+import me.bokov.bsc.surfaceviewer.sdf.threed.GPUEvaluationContext;
 
-public interface GLSLDistanceExpression3D extends GPUEvaluator<ExpressionEvaluationContext> {
+public interface GLSLDistanceExpression3D extends GPUEvaluator<GPUEvaluationContext> {
 
 }

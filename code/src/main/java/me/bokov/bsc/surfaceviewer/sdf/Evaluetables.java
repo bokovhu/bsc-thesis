@@ -3,7 +3,6 @@ package me.bokov.bsc.surfaceviewer.sdf;
 import me.bokov.bsc.surfaceviewer.sdf.threed.Box;
 import me.bokov.bsc.surfaceviewer.sdf.threed.CappedCylinder;
 import me.bokov.bsc.surfaceviewer.sdf.threed.Cone;
-import me.bokov.bsc.surfaceviewer.sdf.threed.ExpressionEvaluationContext;
 import me.bokov.bsc.surfaceviewer.sdf.threed.OpGate;
 import me.bokov.bsc.surfaceviewer.sdf.threed.OpInifiniteRepetition;
 import me.bokov.bsc.surfaceviewer.sdf.threed.OpIntersect;
@@ -23,63 +22,63 @@ public final class Evaluetables {
     private Evaluetables() {
     }
 
-    public static Evaluatable<Float, Vector3f, ExpressionEvaluationContext> box(Vector3f bounds) {
+    public static Evaluatable<Float, CPUContext, GPUContext> box(Vector3f bounds) {
         return Evaluatable.of(new Box(bounds));
     }
 
-    public static Evaluatable<Float, Vector3f, ExpressionEvaluationContext> box(Vector3f pos,
+    public static Evaluatable<Float, CPUContext, GPUContext> box(Vector3f pos,
             Vector3f bounds
     ) {
         return Evaluatable.of(new OpTranslateTo(pos, box(bounds)));
     }
 
-    public static Evaluatable<Float, Vector3f, ExpressionEvaluationContext> sphere(float radius) {
+    public static Evaluatable<Float, CPUContext, GPUContext> sphere(float radius) {
         return Evaluatable.of(new Sphere(radius));
     }
 
-    public static Evaluatable<Float, Vector3f, ExpressionEvaluationContext> sphere(Vector3f pos,
+    public static Evaluatable<Float, CPUContext, GPUContext> sphere(Vector3f pos,
             float radius
     ) {
         return Evaluatable.of(new OpTranslateTo(pos, sphere(radius)));
     }
 
-    public static Evaluatable<Float, Vector3f, ExpressionEvaluationContext> cylinder(float height,
+    public static Evaluatable<Float, CPUContext, GPUContext> cylinder(float height,
             float radius
     ) {
         return Evaluatable.of(new CappedCylinder(height, radius));
     }
 
-    public static Evaluatable<Float, Vector3f, ExpressionEvaluationContext> cylinder(Vector3f pos,
+    public static Evaluatable<Float, CPUContext, GPUContext> cylinder(Vector3f pos,
             float height, float radius
     ) {
         return Evaluatable.of(new OpTranslateTo(pos, cylinder(height, radius)));
     }
 
-    public static Evaluatable<Float, Vector3f, ExpressionEvaluationContext> torus(Vector2f radius) {
+    public static Evaluatable<Float, CPUContext, GPUContext> torus(Vector2f radius) {
         return Evaluatable.of(new Torus(radius));
     }
 
-    public static Evaluatable<Float, Vector3f, ExpressionEvaluationContext> torus(Vector3f pos,
+    public static Evaluatable<Float, CPUContext, GPUContext> torus(Vector3f pos,
             Vector2f radius
     ) {
         return Evaluatable.of(new OpTranslateTo(pos, torus(radius)));
     }
 
-    public static Evaluatable<Float, Vector3f, ExpressionEvaluationContext> cone(float angle,
+    public static Evaluatable<Float, CPUContext, GPUContext> cone(float angle,
             float height
     ) {
         return Evaluatable.of(new Cone(angle, height));
     }
 
-    public static Evaluatable<Float, Vector3f, ExpressionEvaluationContext> cone(Vector3f pos,
+    public static Evaluatable<Float, CPUContext, GPUContext> cone(Vector3f pos,
             float angle, float height
     ) {
         return Evaluatable.of(new OpTranslateTo(pos, cone(angle, height)));
     }
 
-    public static Evaluatable<Float, Vector3f, ExpressionEvaluationContext> union(
-            Evaluatable<Float, Vector3f, ExpressionEvaluationContext> first,
-            Evaluatable<Float, Vector3f, ExpressionEvaluationContext>... rest
+    public static Evaluatable<Float, CPUContext, GPUContext> union(
+            Evaluatable<Float, CPUContext, GPUContext> first,
+            Evaluatable<Float, CPUContext, GPUContext>... rest
     ) {
 
         if (rest.length == 0) {
@@ -96,18 +95,18 @@ public final class Evaluetables {
 
     }
 
-    public static Evaluatable<Float, Vector3f, ExpressionEvaluationContext> subtract(
-            Evaluatable<Float, Vector3f, ExpressionEvaluationContext> first,
-            Evaluatable<Float, Vector3f, ExpressionEvaluationContext> second
+    public static Evaluatable<Float, CPUContext, GPUContext> subtract(
+            Evaluatable<Float, CPUContext, GPUContext> first,
+            Evaluatable<Float, CPUContext, GPUContext> second
     ) {
         return Evaluatable.of(
                 new OpSubtract(first, second)
         );
     }
 
-    public static Evaluatable<Float, Vector3f, ExpressionEvaluationContext> intersect(
-            Evaluatable<Float, Vector3f, ExpressionEvaluationContext> first,
-            Evaluatable<Float, Vector3f, ExpressionEvaluationContext>... rest
+    public static Evaluatable<Float, CPUContext, GPUContext> intersect(
+            Evaluatable<Float, CPUContext, GPUContext> first,
+            Evaluatable<Float, CPUContext, GPUContext>... rest
     ) {
         if (rest.length == 0) {
             return first;
@@ -122,34 +121,34 @@ public final class Evaluetables {
         );
     }
 
-    public static Evaluatable<Float, Vector3f, ExpressionEvaluationContext> rotate(
-            Quaternionf q, Evaluatable<Float, Vector3f, ExpressionEvaluationContext> e
+    public static Evaluatable<Float, CPUContext, GPUContext> rotate(
+            Quaternionf q, Evaluatable<Float, CPUContext, GPUContext> e
     ) {
         return Evaluatable.of(new OpRotate(q, e));
     }
 
-    public static Evaluatable<Float, Vector3f, ExpressionEvaluationContext> translate(Vector3f pos,
-            Evaluatable<Float, Vector3f, ExpressionEvaluationContext> generator
+    public static Evaluatable<Float, CPUContext, GPUContext> translate(Vector3f pos,
+            Evaluatable<Float, CPUContext, GPUContext> generator
     ) {
         return Evaluatable.of(new OpTranslateTo(pos, generator));
     }
 
-    public static Evaluatable<Float, Vector3f, ExpressionEvaluationContext> scale(float scale,
-            Evaluatable<Float, Vector3f, ExpressionEvaluationContext> generator
+    public static Evaluatable<Float, CPUContext, GPUContext> scale(float scale,
+            Evaluatable<Float, CPUContext, GPUContext> generator
     ) {
         return Evaluatable.of(new OpScale(scale, generator));
     }
 
-    public static Evaluatable<Float, Vector3f, ExpressionEvaluationContext> infiniteRepeat(
+    public static Evaluatable<Float, CPUContext, GPUContext> infiniteRepeat(
             Vector3f period,
-            Evaluatable<Float, Vector3f, ExpressionEvaluationContext> e
+            Evaluatable<Float, CPUContext, GPUContext> e
     ) {
         return Evaluatable.of(new OpInifiniteRepetition(period, e));
     }
 
-    public static Evaluatable<Float, Vector3f, ExpressionEvaluationContext> gate(
-            Evaluatable<Float, Vector3f, ExpressionEvaluationContext> boundary,
-            Evaluatable<Float, Vector3f, ExpressionEvaluationContext> generator
+    public static Evaluatable<Float, CPUContext, GPUContext> gate(
+            Evaluatable<Float, CPUContext, GPUContext> boundary,
+            Evaluatable<Float, CPUContext, GPUContext> generator
     ) {
         return Evaluatable.of(
                 new OpGate(boundary, generator)

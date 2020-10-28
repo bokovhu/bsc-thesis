@@ -22,8 +22,8 @@ public class Corner<TData> implements Serializable {
     private TData data = null;
 
     public Corner(Vector3f point, float value, Vector3f normal) {
-        this.point = point;
+        this.point = new Vector3f(point);
         this.value = value;
-        this.normal = normal;
+        this.normal = new Vector3f(normal);
     }
 }

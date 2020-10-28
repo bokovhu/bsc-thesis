@@ -14,38 +14,40 @@ import java.util.ArrayList;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLVariableDeclarationStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
+import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
+import me.bokov.bsc.surfaceviewer.sdf.GPUEvaluator;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-public class OpRotate implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D,
+public class OpRotate implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUContext>,
         Serializable {
 
     private final Quaternionf orientation;
-    private final Evaluatable<Float, Vector3f, ExpressionEvaluationContext> generator;
+    private final Evaluatable<Float, CPUContext, GPUContext> generator;
     private final Vector3f tmp = new Vector3f();
 
 
     public OpRotate(
             Quaternionf orientation,
-            Evaluatable<Float, Vector3f, ExpressionEvaluationContext> generator
+            Evaluatable<Float, CPUContext, GPUContext> generator
     ) {
         this.orientation = orientation;
         this.generator = generator;
     }
 
     @Override
-    public Float evaluate(Vector3f p) {
-        orientation.transform(p, tmp);
-        return generator.cpu().evaluate(tmp);
+    public Float evaluate(CPUContext c) {
+        orientation.transform(c.getPoint(), tmp);
+        return generator.cpu().evaluate(c.transform(tmp));
     }
 
     @Override
-    public List<GLSLStatement> evaluate(ExpressionEvaluationContext context
-    ) {
-        final ExpressionEvaluationContext generatorContext = context.branch("0")
+    public List<GLSLStatement> evaluate(GPUContext context) {
+        final GPUContext generatorContext = context.branch("0")
                 .transform("Rotated");
         final List<GLSLStatement> generated = generator.gpu()
                 .evaluate(generatorContext);

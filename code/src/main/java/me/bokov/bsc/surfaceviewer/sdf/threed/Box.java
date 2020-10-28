@@ -16,11 +16,14 @@ import java.io.Serializable;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLVariableDeclarationStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
+import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
+import me.bokov.bsc.surfaceviewer.sdf.GPUEvaluator;
 import org.joml.Vector3f;
 
-public class Box implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D, Serializable {
+public class Box implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUContext>, Serializable {
 
     private final Vector3f dimensions;
 
@@ -34,7 +37,7 @@ public class Box implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpressio
 
     @Override
     public List<GLSLStatement> evaluate(
-            ExpressionEvaluationContext context
+            GPUContext context
     ) {
         final GLSLVariableDeclarationStatement q = var(
                 "vec3", context.getContextId() + "_q",
@@ -54,8 +57,8 @@ public class Box implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpressio
     }
 
     @Override
-    public Float evaluate(Vector3f p) {
-        tempQ.set(p).absolute()
+    public Float evaluate(CPUContext p) {
+        tempQ.set(p.getPoint()).absolute()
                 .sub(dimensions);
 
         float part1 = tempLen.set(tempQ).max(v3Zero).length();

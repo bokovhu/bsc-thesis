@@ -16,12 +16,15 @@ import java.io.Serializable;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLVariableDeclarationStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
+import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
+import me.bokov.bsc.surfaceviewer.sdf.GPUEvaluator;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-public class CappedCylinder implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D,
+public class CappedCylinder implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUContext>,
         Serializable {
 
     private final float height, radius;
@@ -32,8 +35,7 @@ public class CappedCylinder implements CPUEvaluator<Float, Vector3f>, GLSLDistan
     }
 
     @Override
-    public List<GLSLStatement> evaluate(ExpressionEvaluationContext context
-    ) {
+    public List<GLSLStatement> evaluate(GPUContext context) {
         final GLSLVariableDeclarationStatement d = var(
                 "vec2", context.getContextId() + "_D", opMinus(
                         abs(vec2(
@@ -55,7 +57,8 @@ public class CappedCylinder implements CPUEvaluator<Float, Vector3f>, GLSLDistan
     }
 
     @Override
-    public Float evaluate(Vector3f p) {
+    public Float evaluate(CPUContext c) {
+        final Vector3f p = c.getPoint();
         Vector2f d = new Vector2f(
                 Vector2f.length(p.x, p.y),
                 p.y

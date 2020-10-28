@@ -14,6 +14,10 @@ import org.lwjgl.opengl.GL46;
 
 public class GPUUniformGrid implements VoxelStorage {
 
+    // Very important TODO FIXME FIXME TODO FIXME
+    // positionAndValueBuffer and normalBuffer should be (W+1)*(H+1)*(D+1) dimensional, so that
+    // GPU calculations are done per-corner
+
     private final int width, height, depth;
     private final FloatBuffer positionAndValueBuffer, normalBuffer;
     private int positionAndValueTextureId;
@@ -77,9 +81,9 @@ public class GPUUniformGrid implements VoxelStorage {
                 positionAndValueBuffer.get(4 * idx(x, y, z) + 2)
         );
         c.getNormal().set(
-                positionAndValueBuffer.get(3 * idx(x, y, z)),
-                positionAndValueBuffer.get(3 * idx(x, y, z) + 1),
-                positionAndValueBuffer.get(3 * idx(x, y, z) + 2)
+                normalBuffer.get(3 * idx(x, y, z)),
+                normalBuffer.get(3 * idx(x, y, z) + 1),
+                normalBuffer.get(3 * idx(x, y, z) + 2)
         );
         c.setValue(positionAndValueBuffer.get(4 * idx(x + 1, y, z) + 3));
     }
@@ -120,6 +124,18 @@ public class GPUUniformGrid implements VoxelStorage {
 
                     v.getP1().set(v.getC000().getPoint());
                     v.getP2().set(v.getC111().getPoint());
+                }
+            }
+        }
+
+    }
+
+    public void uploadFromGPUGrid() {
+
+        for (int z = 0; z < depth; z++) {
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    final Voxel v = cpuGrid.at(idx(x, y, z));
                 }
             }
         }

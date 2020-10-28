@@ -10,12 +10,15 @@ import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.vec2;
 import java.io.Serializable;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
+import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
+import me.bokov.bsc.surfaceviewer.sdf.GPUEvaluator;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-public class InfiniteCylinder implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D,
+public class InfiniteCylinder implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUContext>,
         Serializable {
 
     private final Vector2f xzOffset;
@@ -27,8 +30,7 @@ public class InfiniteCylinder implements CPUEvaluator<Float, Vector3f>, GLSLDist
     }
 
     @Override
-    public List<GLSLStatement> evaluate(ExpressionEvaluationContext context
-    ) {
+    public List<GLSLStatement> evaluate(GPUContext context) {
         return List.of(
                 resultVar(
                         context, opMinus(
@@ -40,7 +42,8 @@ public class InfiniteCylinder implements CPUEvaluator<Float, Vector3f>, GLSLDist
     }
 
     @Override
-    public Float evaluate(Vector3f p) {
+    public Float evaluate(CPUContext c) {
+        final Vector3f p = c.getPoint();
         return Vector2f.length(p.x - xzOffset.x, p.z - xzOffset.y) - radius;
     }
 

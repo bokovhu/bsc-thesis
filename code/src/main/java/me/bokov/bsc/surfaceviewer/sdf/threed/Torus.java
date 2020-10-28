@@ -12,12 +12,14 @@ import java.io.Serializable;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLVariableDeclarationStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
-import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
+import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
+import me.bokov.bsc.surfaceviewer.sdf.GPUEvaluator;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-public class Torus implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D,
+public class Torus implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUContext>,
         Serializable {
 
     private final Vector2f radius;
@@ -29,8 +31,7 @@ public class Torus implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpress
     }
 
     @Override
-    public List<GLSLStatement> evaluate(ExpressionEvaluationContext context
-    ) {
+    public List<GLSLStatement> evaluate(GPUContext context) {
         final GLSLVariableDeclarationStatement q = var(
                 "vec2", context.getContextId() + "_Q",
                 vec2(
@@ -48,7 +49,8 @@ public class Torus implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpress
     }
 
     @Override
-    public Float evaluate(Vector3f p) {
+    public Float evaluate(CPUContext ctx) {
+        final Vector3f p = ctx.getPoint();
         tmpQ.set(
                 Vector2f.length(p.x, p.z) - radius.x,
                 p.y

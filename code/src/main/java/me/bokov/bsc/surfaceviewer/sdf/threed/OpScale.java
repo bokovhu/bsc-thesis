@@ -11,29 +11,30 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
-import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
+import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
+import me.bokov.bsc.surfaceviewer.sdf.GPUEvaluator;
 import org.joml.Vector3f;
 
-public class OpScale implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D,
+public class OpScale implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUContext>,
         Serializable {
 
     private final float scale;
-    private final Evaluatable<Float, Vector3f, ExpressionEvaluationContext> generator;
+    private final Evaluatable<Float, CPUContext, GPUContext> generator;
 
     private final Vector3f tmpP = new Vector3f();
 
-    public OpScale(float scale, Evaluatable<Float, Vector3f, ExpressionEvaluationContext> generator
+    public OpScale(float scale, Evaluatable<Float, CPUContext, GPUContext> generator
     ) {
         this.scale = scale;
         this.generator = generator;
     }
 
     @Override
-    public List<GLSLStatement> evaluate(ExpressionEvaluationContext context
-    ) {
-        final ExpressionEvaluationContext generatorContext = context.branch("0")
+    public List<GLSLStatement> evaluate(GPUContext context) {
+        final GPUContext generatorContext = context.branch("0")
                 .transform("Scaled");
         final List<GLSLStatement> generated = generator.gpu()
                 .evaluate(generatorContext);
@@ -54,8 +55,8 @@ public class OpScale implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpre
     }
 
     @Override
-    public Float evaluate(Vector3f p) {
-        return generator.cpu().evaluate(tmpP.set(p).div(scale)) * scale;
+    public Float evaluate(CPUContext c) {
+        return generator.cpu().evaluate(c.transform(tmpP.set(c.getPoint()).div(scale))) * scale;
     }
 
 }

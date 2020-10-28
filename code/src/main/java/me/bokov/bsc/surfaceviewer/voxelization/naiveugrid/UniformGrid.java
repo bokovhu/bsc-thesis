@@ -15,7 +15,7 @@ public class UniformGrid implements VoxelStorage, Serializable {
     private MeshTransform transform;
     private final Voxel[] voxels;
 
-    private final Vector3f tmpTransf = new Vector3f();
+    private final transient Vector3f tmpTransf = new Vector3f();
 
     public UniformGrid(int width, int height, int depth) {
         this.width = width;
@@ -44,6 +44,18 @@ public class UniformGrid implements VoxelStorage, Serializable {
         voxels[iz * width * height + iy * width + ix] = v;
 
         return this;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getDepth() {
+        return depth;
     }
 
     @Override

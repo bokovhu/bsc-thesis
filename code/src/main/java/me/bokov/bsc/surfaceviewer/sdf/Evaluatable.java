@@ -1,8 +1,8 @@
 package me.bokov.bsc.surfaceviewer.sdf;
 
-public interface Evaluatable<TOut, TContextCPU, TContextGPU extends GPUContext> {
+public interface Evaluatable<TOut, TContextCPU extends CPUContext, TContextGPU extends GPUContext> {
 
-    static <EOut, ECPU, EGPU extends GPUContext> Evaluatable<EOut, ECPU, EGPU> of(
+    static <EOut, ECPU extends CPUContext, EGPU extends GPUContext> Evaluatable<EOut, ECPU, EGPU> of(
             CPUEvaluator<EOut, ECPU> cpuEvaluator,
             GPUEvaluator<EGPU> gpuEvaluator
     ) {
@@ -19,7 +19,7 @@ public interface Evaluatable<TOut, TContextCPU, TContextGPU extends GPUContext> 
         };
     }
 
-    static <EOut, ECPU, EGPU extends GPUContext> Evaluatable<EOut, ECPU, EGPU> of(
+    static <EOut, ECPU extends CPUContext, EGPU extends GPUContext> Evaluatable<EOut, ECPU, EGPU> of(
             Object object
     ) {
         return new Evaluatable<EOut, ECPU, EGPU>() {

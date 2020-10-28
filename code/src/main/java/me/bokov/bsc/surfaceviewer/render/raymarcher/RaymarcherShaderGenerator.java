@@ -11,16 +11,18 @@ import me.bokov.bsc.surfaceviewer.glsl.GLSLReturnStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLUniformStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLVaryingStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
-import me.bokov.bsc.surfaceviewer.sdf.threed.ExpressionEvaluationContext;
+import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
+import me.bokov.bsc.surfaceviewer.sdf.threed.GPUEvaluationContext;
 import org.joml.Vector3f;
 
 public class RaymarcherShaderGenerator {
 
-    private final Evaluatable<Float, Vector3f, ExpressionEvaluationContext> distanceExpression;
+    private final Evaluatable<Float, CPUContext, GPUContext> distanceExpression;
 
     public RaymarcherShaderGenerator(
-            Evaluatable<Float, Vector3f, ExpressionEvaluationContext> distanceExpression
+            Evaluatable<Float, CPUContext, GPUContext> distanceExpression
     ) {
         this.distanceExpression = distanceExpression;
     }
@@ -76,7 +78,7 @@ public class RaymarcherShaderGenerator {
                 List.of(new GLSLFunctionParameterStatement("", "vec3", "CSG_InputPoint")),
                 Collections.emptyList()
         );
-        final ExpressionEvaluationContext expressionEvaluationContext = new ExpressionEvaluationContext()
+        final GPUEvaluationContext expressionEvaluationContext = new GPUEvaluationContext()
                 .setPointVariable("CSG_InputPoint")
                 .setContextId("CSG_Root");
         csgExecuteFunction.body(

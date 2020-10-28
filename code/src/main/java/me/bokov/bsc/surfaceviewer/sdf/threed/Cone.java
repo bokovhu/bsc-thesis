@@ -7,12 +7,15 @@ import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.ref;
 import java.io.Serializable;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
+import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
+import me.bokov.bsc.surfaceviewer.sdf.GPUEvaluator;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-public class Cone implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D, Serializable {
+public class Cone implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUContext>, Serializable {
 
     private static final String GLSL_FN_NAME = "CSG_DistanceToCone";
 
@@ -32,8 +35,7 @@ public class Cone implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpressi
     }
 
     @Override
-    public List<GLSLStatement> evaluate(ExpressionEvaluationContext context
-    ) {
+    public List<GLSLStatement> evaluate(GPUContext context) {
         return List.of(
                 fn(GLSL_FN_NAME, ref(context.getPointVariable()), literal(angle), literal(height))
         );
@@ -44,7 +46,8 @@ public class Cone implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpressi
     }
 
     @Override
-    public Float evaluate(Vector3f p) {
+    public Float evaluate(CPUContext c) {
+        final Vector3f p = c.getPoint();
         Vector2f w = new Vector2f(
                 Vector2f.length(p.x, p.z),
                 p.y

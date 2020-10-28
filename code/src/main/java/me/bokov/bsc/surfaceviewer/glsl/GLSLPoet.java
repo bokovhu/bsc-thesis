@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import me.bokov.bsc.surfaceviewer.sdf.threed.ExpressionEvaluationContext;
+import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -242,7 +242,7 @@ public class GLSLPoet {
         return vec4(q.x, q.y, q.z, q.w);
     }
 
-    public static GLSLVariableDeclarationStatement resultVar(ExpressionEvaluationContext context,
+    public static GLSLVariableDeclarationStatement resultVar(GPUContext context,
             GLSLStatement value
     ) {
         return new GLSLVariableDeclarationStatement(

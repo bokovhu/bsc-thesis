@@ -10,21 +10,24 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
+import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
+import me.bokov.bsc.surfaceviewer.sdf.GPUEvaluator;
 import org.joml.Vector3f;
 
-public class OpTranslateTo implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D,
+public class OpTranslateTo implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUContext>,
         Serializable {
 
     private final Vector3f position;
-    private final Evaluatable<Float, Vector3f, ExpressionEvaluationContext> generator;
+    private final Evaluatable<Float, CPUContext, GPUContext> generator;
 
     private final Vector3f tmpP = new Vector3f();
 
     public OpTranslateTo(Vector3f position,
-            Evaluatable<Float, Vector3f, ExpressionEvaluationContext> generator
+            Evaluatable<Float, CPUContext, GPUContext> generator
     ) {
         this.position = position;
         this.generator = generator;
@@ -32,16 +35,18 @@ public class OpTranslateTo implements CPUEvaluator<Float, Vector3f>, GLSLDistanc
 
 
     @Override
-    public Float evaluate(Vector3f p) {
+    public Float evaluate(CPUContext c) {
         return generator.cpu().evaluate(
-                tmpP.set(p).sub(position)
+                c.transform(
+                    tmpP.set(c.getPoint()).sub(position)
+                )
         );
     }
 
     @Override
-    public List<GLSLStatement> evaluate(ExpressionEvaluationContext context) {
+    public List<GLSLStatement> evaluate(GPUContext context) {
 
-        final ExpressionEvaluationContext generatorContext = context.branch("0")
+        final GPUContext generatorContext = context.branch("0")
                 .transform("Translated");
         final List<GLSLStatement> generated = generator.gpu()
                 .evaluate(generatorContext);

@@ -58,15 +58,15 @@ public class TriangleMesh {
                 Vector4f color2,
                 Vector4f color3
         ) {
-            this.pos1 = pos1;
-            this.pos2 = pos2;
-            this.pos3 = pos3;
-            this.normal1 = normal1;
-            this.normal2 = normal2;
-            this.normal3 = normal3;
-            this.color1 = color1;
-            this.color2 = color2;
-            this.color3 = color3;
+            this.pos1 = new Vector3f(pos1);
+            this.pos2 = new Vector3f(pos2);
+            this.pos3 = new Vector3f(pos3);
+            this.normal1 = new Vector3f(normal1);
+            this.normal2 = new Vector3f(normal2);
+            this.normal3 = new Vector3f(normal3);
+            this.color1 = new Vector4f(color1);
+            this.color2 = new Vector4f(color2);
+            this.color3 = new Vector4f(color3);
         }
     }
 

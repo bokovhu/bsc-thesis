@@ -5,11 +5,11 @@ import org.joml.Vector2f;
 
 public class UI {
 
-    private Matrix4f projection = new Matrix4f();
-    private Matrix4f view = new Matrix4f();
-    private Matrix4f viewProjection = new Matrix4f();
+    private final Matrix4f projection = new Matrix4f();
+    private final Matrix4f view = new Matrix4f();
+    private final Matrix4f viewProjection = new Matrix4f();
 
-    private Vector2f dimensions = new Vector2f();
+    private final Vector2f dimensions = new Vector2f();
 
     public UI update(Vector2f dims) {
 

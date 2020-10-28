@@ -1,13 +1,13 @@
 package me.bokov.bsc.surfaceviewer.sdf.threed;
 
+import java.io.Serializable;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
 
 @Data
 @Accessors(chain = true)
-public class ExpressionEvaluationContext implements GPUContext {
+public class ExpressionEvaluationContext implements GPUContext, Serializable {
 
     private String contextId;
     private String pointVariable;

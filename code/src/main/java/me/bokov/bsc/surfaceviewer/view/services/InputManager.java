@@ -12,17 +12,17 @@ import org.lwjgl.glfw.GLFW;
 
 public class InputManager {
 
-    private Map<KeyboardShortcut, List<Runnable>> keyboardShortcuts = new HashMap<>();
-    private Map<MouseShortcut, List<Runnable>> downShortcuts = new HashMap<>();
-    private Map<MouseShortcut, List<Runnable>> upShortcuts = new HashMap<>();
-    private Map<MouseShortcut, List<Consumer<Vector2f>>> dragShortcuts = new HashMap<>();
-    private Map<Integer, Boolean> keyStates = new HashMap<>();
-    private Map<Integer, Boolean> buttonStates = new HashMap<>();
-    private Vector2f mouseCoords = new Vector2f();
-    private Vector2f lastMouseCoords = new Vector2f();
-    private Vector2f mouseMovement = new Vector2f();
+    private final Map<KeyboardShortcut, List<Runnable>> keyboardShortcuts = new HashMap<>();
+    private final Map<MouseShortcut, List<Runnable>> downShortcuts = new HashMap<>();
+    private final Map<MouseShortcut, List<Runnable>> upShortcuts = new HashMap<>();
+    private final Map<MouseShortcut, List<Consumer<Vector2f>>> dragShortcuts = new HashMap<>();
+    private final Map<Integer, Boolean> keyStates = new HashMap<>();
+    private final Map<Integer, Boolean> buttonStates = new HashMap<>();
+    private final Vector2f mouseCoords = new Vector2f();
+    private final Vector2f lastMouseCoords = new Vector2f();
+    private final Vector2f mouseMovement = new Vector2f();
     private MouseShortcut lastDownMouseState = new MouseShortcut();
-    private Vector2f downMouseCoords = new Vector2f();
+    private final Vector2f downMouseCoords = new Vector2f();
 
     public static KeyboardShortcut kbShiftPlus(int key) {
         return new KeyboardShortcut()

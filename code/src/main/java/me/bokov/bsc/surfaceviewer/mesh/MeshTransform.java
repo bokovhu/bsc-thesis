@@ -1,10 +1,11 @@
 package me.bokov.bsc.surfaceviewer.mesh;
 
+import java.io.Serializable;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-public class MeshTransform {
+public class MeshTransform implements Serializable {
 
     private final Vector3f position;
     private final Quaternionf orientation;

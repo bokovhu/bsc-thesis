@@ -13,8 +13,8 @@ public class ShaderManager {
 
     private final AppView view;
 
-    private Map<String, ShaderResources> resourcesByName = new HashMap<>();
-    private Map<String, ShaderProgram> programsByName = new HashMap<>();
+    private final Map<String, ShaderResources> resourcesByName = new HashMap<>();
+    private final Map<String, ShaderProgram> programsByName = new HashMap<>();
 
     public ShaderManager(AppView view) {
         this.view = view;

@@ -5,10 +5,10 @@ import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
 import me.bokov.bsc.surfaceviewer.sdf.GPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.threed.ExpressionEvaluationContext;
-import me.bokov.bsc.surfaceviewer.voxelization.SDFVoxelizer;
+import me.bokov.bsc.surfaceviewer.voxelization.Voxelizer3D;
 import org.joml.Vector3f;
 
-public class GPUUniformGridVoxelizer implements SDFVoxelizer<GPUUniformGrid> {
+public class GPUUniformGridVoxelizer implements Voxelizer3D<GPUUniformGrid> {
 
     private final int width, height, depth;
 

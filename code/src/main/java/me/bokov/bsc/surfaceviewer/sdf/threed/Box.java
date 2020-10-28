@@ -12,14 +12,15 @@ import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.resultVar;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.var;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.vec3;
 
+import java.io.Serializable;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLVariableDeclarationStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
-import me.bokov.bsc.surfaceviewer.sdf.PerPointSDFGenerator3D;
 import org.joml.Vector3f;
 
-public class Box implements PerPointSDFGenerator3D, GLSLDistanceExpression3D {
+public class Box implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D, Serializable {
 
     private final Vector3f dimensions;
 
@@ -53,18 +54,14 @@ public class Box implements PerPointSDFGenerator3D, GLSLDistanceExpression3D {
     }
 
     @Override
-    public float getAt(float x, float y, float z) {
-        tempQ.set(x, y, z).absolute()
+    public Float evaluate(Vector3f p) {
+        tempQ.set(p).absolute()
                 .sub(dimensions);
 
         float part1 = tempLen.set(tempQ).max(v3Zero).length();
-        float part2 = (float) Math.min(Math.max(tempQ.x, Math.max(tempQ.y, tempQ.z)), 0.0f);
+        float part2 = Math.min(Math.max(tempQ.x, Math.max(tempQ.y, tempQ.z)), 0.0f);
 
         return part1 + part2;
     }
 
-    @Override
-    public String getKind() {
-        return null;
-    }
 }

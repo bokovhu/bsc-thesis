@@ -1,18 +1,21 @@
 package me.bokov.bsc.surfaceviewer.voxelization.naiveugrid;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
-import me.bokov.bsc.surfaceviewer.voxelization.SDFVoxelStorage;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
+import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorage;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-public class UniformGrid implements SDFVoxelStorage {
+public class UniformGrid implements VoxelStorage, Serializable {
 
     private final int width, height, depth;
     private MeshTransform transform;
     private final Voxel[] voxels;
+
+    private final Vector3f tmpTransf = new Vector3f();
 
     public UniformGrid(int width, int height, int depth) {
         this.width = width;
@@ -43,16 +46,37 @@ public class UniformGrid implements SDFVoxelStorage {
         return this;
     }
 
+    @Override
     public Vector3f localToGlobal(Vector3f local) {
         return this.transform.M().transformPosition(
-                new Vector3f(local).mul(1f / (float) width)
+                tmpTransf.set(local).mul(1f / (float) width)
         );
     }
 
+    @Override
     public Vector3f globalToLocal(Vector3f global) {
         return this.transform.Minv().transformPosition(
-                new Vector3f(global).mul((float) width)
+                tmpTransf.set(global).mul((float) width)
         );
+    }
+
+
+    @Override
+    public Vector3f globalToLocal(Vector3f in, Vector3f out) {
+        this.transform.Minv().transformPosition(
+                tmpTransf.set(in).mul((float) width),
+                out
+        );
+        return out;
+    }
+
+    @Override
+    public Vector3f localToGlobal(Vector3f in, Vector3f out) {
+        this.transform.M().transformPosition(
+                tmpTransf.set(in).mul(1f / (float) width),
+                out
+        );
+        return out;
     }
 
     public Voxel at(int idx) {

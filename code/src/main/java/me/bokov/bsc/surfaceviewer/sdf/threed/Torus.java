@@ -8,16 +8,21 @@ import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.resultVar;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.var;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.vec2;
 
+import java.io.Serializable;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLVariableDeclarationStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
-import me.bokov.bsc.surfaceviewer.sdf.PerPointSDFGenerator3D;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 
-public class Torus implements PerPointSDFGenerator3D, GLSLDistanceExpression3D {
+public class Torus implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D,
+        Serializable {
 
     private final Vector2f radius;
+
+    private final Vector2f tmpQ = new Vector2f();
 
     public Torus(Vector2f radius) {
         this.radius = radius;
@@ -43,16 +48,12 @@ public class Torus implements PerPointSDFGenerator3D, GLSLDistanceExpression3D {
     }
 
     @Override
-    public float getAt(float x, float y, float z) {
-        Vector2f q = new Vector2f(
-                Vector2f.length(x, z) - radius.x,
-                y
+    public Float evaluate(Vector3f p) {
+        tmpQ.set(
+                Vector2f.length(p.x, p.z) - radius.x,
+                p.y
         );
-        return q.length() - radius.y;
+        return tmpQ.length() - radius.y;
     }
 
-    @Override
-    public String getKind() {
-        return "SDFTorus";
-    }
 }

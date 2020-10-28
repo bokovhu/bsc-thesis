@@ -19,7 +19,7 @@ public class Camera {
 
     private float aspect = 1.0f;
 
-    private float fovTan = 0.5f * (float) Math.tan(Math.toRadians(75.0f));
+    private final float fovTan = 0.5f * (float) Math.tan(Math.toRadians(75.0f));
 
     public Camera update(float aspect) {
         this.aspect = aspect;

@@ -8,8 +8,8 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import me.bokov.bsc.surfaceviewer.voxelization.SDFVoxelStorage;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
+import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorage;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
@@ -24,7 +24,7 @@ public final class PointCloud {
         return v <= th ? out1 : out2;
     }
 
-    public static Drawable voxelCloud(SDFVoxelStorage voxelStorage, float threshold) {
+    public static Drawable voxelCloud(VoxelStorage voxelStorage, float threshold) {
 
         System.out.println("Collecting voxels for voxel cloud ...");
 

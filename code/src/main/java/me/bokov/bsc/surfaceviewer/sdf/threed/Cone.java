@@ -4,20 +4,22 @@ import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.fn;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.literal;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.ref;
 
+import java.io.Serializable;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
-import me.bokov.bsc.surfaceviewer.sdf.PerPointSDFGenerator3D;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 
-public class Cone implements PerPointSDFGenerator3D, GLSLDistanceExpression3D {
+public class Cone implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D, Serializable {
 
     private static final String GLSL_FN_NAME = "CSG_DistanceToCone";
 
     private final float angle;
     private final float height;
-    private Vector2f C;
-    private Vector2f Q;
+    private final Vector2f C;
+    private final Vector2f Q;
 
     public Cone(float angle, float height) {
         this.angle = angle;
@@ -42,10 +44,10 @@ public class Cone implements PerPointSDFGenerator3D, GLSLDistanceExpression3D {
     }
 
     @Override
-    public float getAt(float x, float y, float z) {
+    public Float evaluate(Vector3f p) {
         Vector2f w = new Vector2f(
-                Vector2f.length(x, z),
-                y
+                Vector2f.length(p.x, p.z),
+                p.y
         );
         Vector2f a = new Vector2f(w)
                 .sub(
@@ -74,8 +76,4 @@ public class Cone implements PerPointSDFGenerator3D, GLSLDistanceExpression3D {
         return (float) Math.sqrt(d) * Math.signum(s);
     }
 
-    @Override
-    public String getKind() {
-        return "SDFCone";
-    }
 }

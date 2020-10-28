@@ -7,7 +7,7 @@ import me.bokov.bsc.surfaceviewer.render.Drawable;
 import me.bokov.bsc.surfaceviewer.render.PointCloud;
 import me.bokov.bsc.surfaceviewer.render.ShaderProgram;
 import me.bokov.bsc.surfaceviewer.util.Resources;
-import me.bokov.bsc.surfaceviewer.voxelization.SDFVoxelizer;
+import me.bokov.bsc.surfaceviewer.voxelization.Voxelizer3D;
 import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGrid;
 import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGridVoxelizer;
 import org.joml.Quaternionf;
@@ -16,7 +16,7 @@ import org.lwjgl.opengl.GL46;
 
 public class VoxelsView extends AppView {
 
-    private SDFVoxelizer<UniformGrid> voxelizer;
+    private Voxelizer3D<UniformGrid> voxelizer;
     private UniformGrid grid;
     private ShaderProgram shaderProgram;
     private Drawable pointCloud;

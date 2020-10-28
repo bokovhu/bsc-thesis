@@ -13,7 +13,7 @@ public class Drawable {
     private int vaoHandle;
     private int primitiveType = GL46.GL_TRIANGLES;
     private int vertexCount = 0;
-    private List<Attribute> vertexAttributes = new ArrayList<>();
+    private final List<Attribute> vertexAttributes = new ArrayList<>();
 
     public Drawable() {
     }

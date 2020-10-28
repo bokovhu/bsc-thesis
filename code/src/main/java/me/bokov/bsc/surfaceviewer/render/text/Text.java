@@ -15,10 +15,10 @@ import org.lwjgl.opengl.GL46;
 
 public class Text {
 
-    private Map<Integer, Drawable> pageDrawables = new HashMap<>();
+    private final Map<Integer, Drawable> pageDrawables = new HashMap<>();
     private String text;
     private List<Glyph> glyphs = new ArrayList<>();
-    private Vector4f color = new Vector4f(1f);
+    private final Vector4f color = new Vector4f(1f);
 
     private void makePageDrawables(FontInstance font) {
         for (var d : pageDrawables.values()) {

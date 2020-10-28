@@ -4,15 +4,17 @@ import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.max;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.ref;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.resultVar;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
-import me.bokov.bsc.surfaceviewer.sdf.PerPointSDFGenerator3D;
 import org.joml.Vector3f;
 
-public class OpIntersect implements PerPointSDFGenerator3D, GLSLDistanceExpression3D {
+public class OpIntersect implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D,
+        Serializable {
 
     protected final Evaluatable<Float, Vector3f, ExpressionEvaluationContext> a;
     protected final Evaluatable<Float, Vector3f, ExpressionEvaluationContext> b;
@@ -26,16 +28,11 @@ public class OpIntersect implements PerPointSDFGenerator3D, GLSLDistanceExpressi
     }
 
     @Override
-    public float getAt(float x, float y, float z) {
+    public Float evaluate(Vector3f p) {
         return Math.max(
-                a.cpu().evaluate(new Vector3f(x, y, z)),
-                b.cpu().evaluate(new Vector3f(x, y, z))
+                a.cpu().evaluate(p),
+                b.cpu().evaluate(p)
         );
-    }
-
-    @Override
-    public String getKind() {
-        return "SDFOpIntersection";
     }
 
     @Override

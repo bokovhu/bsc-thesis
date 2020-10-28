@@ -4,15 +4,15 @@ import java.nio.FloatBuffer;
 import java.util.Iterator;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
 import me.bokov.bsc.surfaceviewer.voxelization.Corner;
-import me.bokov.bsc.surfaceviewer.voxelization.SDFVoxelStorage;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
+import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorage;
 import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGrid;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL46;
 
-public class GPUUniformGrid implements SDFVoxelStorage {
+public class GPUUniformGrid implements VoxelStorage {
 
     private final int width, height, depth;
     private final FloatBuffer positionAndValueBuffer, normalBuffer;
@@ -43,8 +43,8 @@ public class GPUUniformGrid implements SDFVoxelStorage {
         return this;
     }
 
-    private Corner newCorner() {
-        return new Corner(new Vector3f(), 0.0f, new Vector3f());
+    private Corner<Object> newCorner() {
+        return new Corner<Object>(new Vector3f(), 0.0f, new Vector3f());
     }
 
     private void prepareCPUVoxels() {

@@ -12,14 +12,17 @@ import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.resultVar;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.var;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.vec2;
 
+import java.io.Serializable;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLVariableDeclarationStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
-import me.bokov.bsc.surfaceviewer.sdf.PerPointSDFGenerator3D;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 
-public class CappedCylinder implements PerPointSDFGenerator3D, GLSLDistanceExpression3D {
+public class CappedCylinder implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D,
+        Serializable {
 
     private final float height, radius;
 
@@ -52,17 +55,13 @@ public class CappedCylinder implements PerPointSDFGenerator3D, GLSLDistanceExpre
     }
 
     @Override
-    public float getAt(float x, float y, float z) {
+    public Float evaluate(Vector3f p) {
         Vector2f d = new Vector2f(
-                Vector2f.length(x, z),
-                y
+                Vector2f.length(p.x, p.y),
+                p.y
         ).absolute().sub(radius, height);
-        return (float) Math.min(0.0f, (float) Math.max(d.x, d.y)) + d.max(new Vector2f(0f, 0f))
+        return Math.min(0.0f, Math.max(d.x, d.y)) + d.max(new Vector2f(0f, 0f))
                 .length();
     }
 
-    @Override
-    public String getKind() {
-        return "SDFCappedCylinder";
-    }
 }

@@ -11,7 +11,7 @@ public class SceneObjectProperty<T> {
     private final String name;
     private T value;
     private Supplier<T> valueSupplier = null;
-    private List<Consumer<T>> changeListeners = new ArrayList<>();
+    private final List<Consumer<T>> changeListeners = new ArrayList<>();
 
     public SceneObjectProperty(
             PropertyType type,

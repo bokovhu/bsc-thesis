@@ -6,13 +6,15 @@ import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.opMinus;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.ref;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.resultVar;
 
+import java.io.Serializable;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
-import me.bokov.bsc.surfaceviewer.sdf.PerPointSDFGenerator3D;
 import org.joml.Vector3f;
 
-public class Sphere implements PerPointSDFGenerator3D, GLSLDistanceExpression3D {
+public class Sphere implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D,
+        Serializable {
 
     private final float radius;
 
@@ -21,13 +23,8 @@ public class Sphere implements PerPointSDFGenerator3D, GLSLDistanceExpression3D 
     }
 
     @Override
-    public float getAt(float x, float y, float z) {
-        return Vector3f.length(x, y, z) - radius;
-    }
-
-    @Override
-    public String getKind() {
-        return "SDFSphere";
+    public Float evaluate(Vector3f p) {
+        return p.length() - radius;
     }
 
     @Override

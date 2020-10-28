@@ -22,25 +22,30 @@ public class CameraController {
     private final Camera camera;
     private final SurfaceViewerPlatform platform;
     private State state = State.Identity;
-    private Vector3f orbitPosition = new Vector3f();
-    private Vector3f orbitTarget = new Vector3f();
-    private float orbitRadius = 6.0f;
-    private float orbitTimescale = 0.4f;
+    private final Vector3f orbitPosition = new Vector3f();
+    private final Vector3f orbitTarget = new Vector3f();
+    private final float orbitRadius = 6.0f;
+    private final float orbitTimescale = 0.4f;
     private float orbitTimer = 0.0f;
-    private Vector3f orbitUp = new Vector3f(0f, 1f, 0f);
-    private Vector3f origin = new Vector3f(0f, 0f, 0f);
-    private Vector3f rotationStartPoint = new Vector3f();
-    private Vector3f rotationStartUp = new Vector3f();
+    private final Vector3f orbitUp = new Vector3f(0f, 1f, 0f);
+    private final Vector3f origin = new Vector3f(0f, 0f, 0f);
+    private final Vector3f rotationStartPoint = new Vector3f();
+    private final Vector3f rotationStartUp = new Vector3f();
     private float rotationYaw = 0.0f;
     private float rotationPitch = 0.0f;
-    private Vector3f zoomStartPoint = new Vector3f();
+    private final Vector3f zoomStartPoint = new Vector3f();
     private float zoomDistance = 0.0f;
-    private Vector3f panStartPoint = new Vector3f();
-    private Vector2f panDistance = new Vector2f();
-    private Vector3f panStartOrigin = new Vector3f();
-    private float lastMouseX = 0.0f;
-    private float lastMouseY = 0.0f;
-
+    private final Vector3f panStartPoint = new Vector3f();
+    private final Vector2f panDistance = new Vector2f();
+    private final Vector3f panStartOrigin = new Vector3f();
+    private final float lastMouseX = 0.0f;
+    private final float lastMouseY = 0.0f;
+    private final Vector3f tmpNewEye = new Vector3f();
+    private final Vector3f tmpDir = new Vector3f();
+    private final Vector3f tmpNewTarget = new Vector3f();
+    private final Vector3f tmpPanMovement = new Vector3f();
+    private final Vector3f tmpNewOrigin = new Vector3f();
+    private final Quaternionf tmpRotation = new Quaternionf();
 
     public CameraController(AppView view, Camera camera,
             SurfaceViewerPlatform platform
@@ -138,39 +143,39 @@ public class CameraController {
 
         } else if (state == State.Zooming) {
 
-            Vector3f newEye = new Vector3f(zoomStartPoint).add(
-                    new Vector3f(camera.forward()).mul(zoomDistance)
+            tmpNewEye.set(zoomStartPoint).add(
+                    tmpDir.set(camera.forward()).mul(zoomDistance)
             );
             camera.lookAt(
-                    newEye,
-                    new Vector3f(newEye).add(camera.forward()),
+                    tmpNewEye,
+                    tmpNewTarget.set(tmpNewEye).add(camera.forward()),
                     camera.up()
             );
 
         } else if (state == State.Rotating) {
 
-            Quaternionf rotation = new Quaternionf()
+            tmpRotation.identity()
                     .rotateY(rotationYaw)
                     .rotateX(rotationPitch);
-            Vector3f newEye = new Vector3f(rotationStartPoint)
-                    .rotate(rotation);
+            tmpNewEye.set(rotationStartPoint)
+                    .rotate(tmpRotation);
             camera.lookAt(
-                    newEye,
+                    tmpNewEye,
                     origin,
                     camera.up()
             );
 
         } else if (state == State.Panning) {
 
-            Vector3f panMovement = new Vector3f()
-                    .add(new Vector3f(camera.right()).mul(panDistance.x))
-                    .add(new Vector3f(camera.right()).cross(camera.forward()).mul(panDistance.y));
-            Vector3f newEye = new Vector3f(panStartPoint).add(panMovement);
-            origin.set(new Vector3f(panStartOrigin).add(panMovement));
+            tmpPanMovement.set(0f)
+                    .add(tmpDir.set(camera.right()).mul(panDistance.x))
+                    .add(tmpDir.set(camera.right()).cross(camera.forward()).mul(panDistance.y));
+            tmpNewEye.set(panStartPoint).add(tmpPanMovement);
+            origin.set(tmpNewOrigin.set(panStartOrigin).add(tmpPanMovement));
 
             camera.lookAt(
-                    newEye,
-                    new Vector3f(newEye).add(camera.forward()),
+                    tmpNewEye,
+                    tmpNewTarget.set(tmpNewEye).add(camera.forward()),
                     camera.up()
             );
 

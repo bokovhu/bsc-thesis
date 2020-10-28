@@ -9,12 +9,15 @@ import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.pow;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.ref;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.resultVar;
 
+import java.io.Serializable;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
-import me.bokov.bsc.surfaceviewer.sdf.PerPointSDFGenerator3D;
+import org.joml.Vector3f;
 
-public class SimpleNoise implements GLSLDistanceExpression3D, PerPointSDFGenerator3D {
+public class SimpleNoise implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D,
+        Serializable {
 
     private static final String GLSL_FN_NAME = "CSG_Noise_Simple3";
 
@@ -57,12 +60,8 @@ public class SimpleNoise implements GLSLDistanceExpression3D, PerPointSDFGenerat
     }
 
     @Override
-    public float getAt(float x, float y, float z) {
+    public Float evaluate(Vector3f p) {
         return 0.0f;
     }
 
-    @Override
-    public String getKind() {
-        return "SDFPerlinNoise";
-    }
 }

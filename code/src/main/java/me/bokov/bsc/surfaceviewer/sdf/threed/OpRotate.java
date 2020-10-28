@@ -9,17 +9,19 @@ import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.resultVar;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.var;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.vec4;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLVariableDeclarationStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
-import me.bokov.bsc.surfaceviewer.sdf.PerPointSDFGenerator3D;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-public class OpRotate implements PerPointSDFGenerator3D, GLSLDistanceExpression3D {
+public class OpRotate implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D,
+        Serializable {
 
     private final Quaternionf orientation;
     private final Evaluatable<Float, Vector3f, ExpressionEvaluationContext> generator;
@@ -35,14 +37,9 @@ public class OpRotate implements PerPointSDFGenerator3D, GLSLDistanceExpression3
     }
 
     @Override
-    public float getAt(float x, float y, float z) {
-        orientation.transform(x, y, z, tmp);
+    public Float evaluate(Vector3f p) {
+        orientation.transform(p, tmp);
         return generator.cpu().evaluate(tmp);
-    }
-
-    @Override
-    public String getKind() {
-        return "SDFRotate";
     }
 
     @Override

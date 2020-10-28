@@ -15,7 +15,7 @@ import me.bokov.bsc.surfaceviewer.render.Texture;
 public class TextureFont {
 
     private FontInstance defaultInstance = null;
-    private List<FontInstance> instances = new ArrayList<>();
+    private final List<FontInstance> instances = new ArrayList<>();
 
     private Map<String, String> lineToMap(String fntLine) {
         return Arrays.stream(fntLine.split(" ")).map(s -> s.split("="))

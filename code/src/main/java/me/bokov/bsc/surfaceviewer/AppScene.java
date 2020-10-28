@@ -2,7 +2,6 @@ package me.bokov.bsc.surfaceviewer;
 
 import me.bokov.bsc.surfaceviewer.render.Lighting;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
-import me.bokov.bsc.surfaceviewer.sdf.SDFGenerator3D;
 import me.bokov.bsc.surfaceviewer.sdf.threed.ExpressionEvaluationContext;
 import org.joml.Vector3f;
 
@@ -12,7 +11,7 @@ public final class AppScene {
     private final Lighting lighting;
 
     public AppScene(
-            Evaluatable<Float, Vector3f, ExpressionEvaluationContext>sdfGenerator,
+            Evaluatable<Float, Vector3f, ExpressionEvaluationContext> sdfGenerator,
             Lighting lighting
     ) {
         this.sdfGenerator = sdfGenerator;

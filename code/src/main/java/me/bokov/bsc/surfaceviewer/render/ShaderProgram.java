@@ -19,8 +19,8 @@ import org.lwjgl.system.MemoryStack;
 public class ShaderProgram {
 
     private int programHandle;
-    private List<Integer> shaderHandles = new ArrayList<>();
-    private Map<String, CachedUniform> uniformCache = new HashMap<>();
+    private final List<Integer> shaderHandles = new ArrayList<>();
+    private final Map<String, CachedUniform> uniformCache = new HashMap<>();
 
     private String vertexShaderSourceCode = null;
     private String fragmentShaderSourceCode = null;

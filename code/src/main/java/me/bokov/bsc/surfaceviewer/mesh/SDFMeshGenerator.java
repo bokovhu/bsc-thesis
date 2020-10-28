@@ -1,10 +1,10 @@
 package me.bokov.bsc.surfaceviewer.mesh;
 
-import me.bokov.bsc.surfaceviewer.voxelization.SDFVoxelStorage;
+import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorage;
 
 public interface SDFMeshGenerator {
 
-    SDFMesh generate(SDFVoxelStorage voxelStorage);
+    SDFMesh generate(VoxelStorage voxelStorage);
 
     default void tearDown() {
     }

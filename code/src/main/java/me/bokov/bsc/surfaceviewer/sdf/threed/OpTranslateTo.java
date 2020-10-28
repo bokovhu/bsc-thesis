@@ -6,35 +6,36 @@ import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.resultVar;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.var;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.vec3;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
-import me.bokov.bsc.surfaceviewer.sdf.PerPointSDFGenerator3D;
 import org.joml.Vector3f;
 
-public class OpTranslateTo implements PerPointSDFGenerator3D, GLSLDistanceExpression3D {
+public class OpTranslateTo implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D,
+        Serializable {
 
     private final Vector3f position;
     private final Evaluatable<Float, Vector3f, ExpressionEvaluationContext> generator;
 
-    public OpTranslateTo(Vector3f position, Evaluatable<Float, Vector3f, ExpressionEvaluationContext> generator) {
+    private final Vector3f tmpP = new Vector3f();
+
+    public OpTranslateTo(Vector3f position,
+            Evaluatable<Float, Vector3f, ExpressionEvaluationContext> generator
+    ) {
         this.position = position;
         this.generator = generator;
     }
 
 
     @Override
-    public float getAt(float x, float y, float z) {
+    public Float evaluate(Vector3f p) {
         return generator.cpu().evaluate(
-                new Vector3f(x - position.x, y - position.y, z - position.z)
+                tmpP.set(p).sub(position)
         );
-    }
-
-    @Override
-    public String getKind() {
-        return "SDFTranslateTo";
     }
 
     @Override

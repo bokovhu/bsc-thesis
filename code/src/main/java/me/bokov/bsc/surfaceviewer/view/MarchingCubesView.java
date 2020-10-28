@@ -10,8 +10,8 @@ import me.bokov.bsc.surfaceviewer.render.ShaderProgram;
 import me.bokov.bsc.surfaceviewer.render.text.Text;
 import me.bokov.bsc.surfaceviewer.render.text.TextureFont;
 import me.bokov.bsc.surfaceviewer.util.Resources;
-import me.bokov.bsc.surfaceviewer.voxelization.SDFVoxelizer;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
+import me.bokov.bsc.surfaceviewer.voxelization.Voxelizer3D;
 import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGrid;
 import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGridVoxelizer;
 import org.joml.Matrix4f;
@@ -22,7 +22,7 @@ import org.lwjgl.opengl.GL46;
 public class MarchingCubesView extends AppView {
 
     private static final Matrix4f IDENTITY = new Matrix4f().identity();
-    private SDFVoxelizer<UniformGrid> voxelizer;
+    private Voxelizer3D<UniformGrid> voxelizer;
     private MarchingCubes marchingCubes;
     private SDFMesh mesh;
     private ShaderProgram shaderProgram;

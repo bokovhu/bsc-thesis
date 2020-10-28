@@ -10,18 +10,23 @@ import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.resultVar;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.var;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.vec3;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
-import me.bokov.bsc.surfaceviewer.sdf.PerPointSDFGenerator3D;
 import org.joml.Vector3f;
 
-public class OpInifiniteRepetition implements PerPointSDFGenerator3D, GLSLDistanceExpression3D {
+public class OpInifiniteRepetition implements CPUEvaluator<Float, Vector3f>,
+        GLSLDistanceExpression3D,
+        Serializable {
 
     private final Vector3f period;
     private final Evaluatable<Float, Vector3f, ExpressionEvaluationContext> generator;
+
+    private final Vector3f tmpP = new Vector3f();
 
     public OpInifiniteRepetition(
             Vector3f period,
@@ -32,19 +37,14 @@ public class OpInifiniteRepetition implements PerPointSDFGenerator3D, GLSLDistan
     }
 
     @Override
-    public float getAt(float x, float y, float z) {
+    public Float evaluate(Vector3f p) {
         return this.generator.cpu().evaluate(
-                new Vector3f(
-                        ((x + 0.5f * period.x) % period.x) - 0.5f * period.x,
-                        ((y + 0.5f * period.y) % period.y) - 0.5f * period.y,
-                        ((z + 0.5f * period.z) % period.z) - 0.5f * period.z
+                tmpP.set(
+                        ((p.x + 0.5f * period.x) % period.x) - 0.5f * period.x,
+                        ((p.y + 0.5f * period.y) % period.y) - 0.5f * period.y,
+                        ((p.z + 0.5f * period.z) % period.z) - 0.5f * period.z
                 )
         );
-    }
-
-    @Override
-    public String getKind() {
-        return "SDFInfiniteRepetition";
     }
 
     @Override

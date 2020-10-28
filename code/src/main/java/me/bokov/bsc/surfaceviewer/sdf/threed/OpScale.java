@@ -7,18 +7,22 @@ import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.ref;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.resultVar;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.var;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
-import me.bokov.bsc.surfaceviewer.sdf.PerPointSDFGenerator3D;
 import org.joml.Vector3f;
 
-public class OpScale implements PerPointSDFGenerator3D, GLSLDistanceExpression3D {
+public class OpScale implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D,
+        Serializable {
 
     private final float scale;
     private final Evaluatable<Float, Vector3f, ExpressionEvaluationContext> generator;
+
+    private final Vector3f tmpP = new Vector3f();
 
     public OpScale(float scale, Evaluatable<Float, Vector3f, ExpressionEvaluationContext> generator
     ) {
@@ -50,12 +54,8 @@ public class OpScale implements PerPointSDFGenerator3D, GLSLDistanceExpression3D
     }
 
     @Override
-    public float getAt(float x, float y, float z) {
-        return generator.cpu().evaluate(new Vector3f(x, y, z).div(scale)) * scale;
+    public Float evaluate(Vector3f p) {
+        return generator.cpu().evaluate(tmpP.set(p).div(scale)) * scale;
     }
 
-    @Override
-    public String getKind() {
-        return "SDFScale";
-    }
 }

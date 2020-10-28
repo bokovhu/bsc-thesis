@@ -7,13 +7,16 @@ import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.ref;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.resultVar;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.vec2;
 
+import java.io.Serializable;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
-import me.bokov.bsc.surfaceviewer.sdf.PerPointSDFGenerator3D;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 
-public class InfiniteCylinder implements PerPointSDFGenerator3D, GLSLDistanceExpression3D {
+public class InfiniteCylinder implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D,
+        Serializable {
 
     private final Vector2f xzOffset;
     private final float radius;
@@ -37,12 +40,8 @@ public class InfiniteCylinder implements PerPointSDFGenerator3D, GLSLDistanceExp
     }
 
     @Override
-    public float getAt(float x, float y, float z) {
-        return Vector2f.length(x - xzOffset.x, z - xzOffset.y) - radius;
+    public Float evaluate(Vector3f p) {
+        return Vector2f.length(p.x - xzOffset.x, p.z - xzOffset.y) - radius;
     }
 
-    @Override
-    public String getKind() {
-        return "SDFInfiniteCylinder";
-    }
 }

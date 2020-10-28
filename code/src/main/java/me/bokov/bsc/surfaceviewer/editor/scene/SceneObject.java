@@ -16,7 +16,7 @@ public abstract class SceneObject {
     private final Transform globalTransform = new Transform();
     private final Map<String, SceneObjectProperty<?>> propertyMap = new HashMap<>();
     private SceneObject parent = null;
-    private List<SceneObject> children = new ArrayList<>();
+    private final List<SceneObject> children = new ArrayList<>();
 
     public SceneObject() {
         init();
@@ -62,6 +62,7 @@ public abstract class SceneObject {
     public Transform local() {
         return localTransform;
     }
+
     public Transform global() {
         return globalTransform;
     }

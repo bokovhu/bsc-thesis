@@ -12,16 +12,18 @@ import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.ref;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.resultVar;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.var;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLVariableDeclarationStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
-import me.bokov.bsc.surfaceviewer.sdf.PerPointSDFGenerator3D;
 import org.joml.Vector3f;
 
-public class OpSmoothUnion implements PerPointSDFGenerator3D, GLSLDistanceExpression3D {
+public class OpSmoothUnion implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D,
+        Serializable {
 
     protected final Evaluatable<Float, Vector3f, ExpressionEvaluationContext> a;
     protected final Evaluatable<Float, Vector3f, ExpressionEvaluationContext> b;
@@ -113,9 +115,9 @@ public class OpSmoothUnion implements PerPointSDFGenerator3D, GLSLDistanceExpres
     }
 
     @Override
-    public float getAt(float x, float y, float z) {
-        final float v1 = a.cpu().evaluate(new Vector3f(x, y, z));
-        final float v2 = b.cpu().evaluate(new Vector3f(x, y, z));
+    public Float evaluate(Vector3f p) {
+        final float v1 = a.cpu().evaluate(p);
+        final float v2 = b.cpu().evaluate(p);
 
         float h = _clamp(
                 0.5f + 0.5f * (v2 - v1) / k,
@@ -124,8 +126,4 @@ public class OpSmoothUnion implements PerPointSDFGenerator3D, GLSLDistanceExpres
         return _mix(v2, v1, h);
     }
 
-    @Override
-    public String getKind() {
-        return "SDFSmoothUnion";
-    }
 }

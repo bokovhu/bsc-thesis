@@ -1,8 +1,9 @@
 package me.bokov.bsc.surfaceviewer.voxelization;
 
+import java.io.Serializable;
 import org.joml.Vector3f;
 
-public final class Voxel {
+public final class Voxel implements Serializable {
 
     private final Corner c000;
     private final Corner c001;

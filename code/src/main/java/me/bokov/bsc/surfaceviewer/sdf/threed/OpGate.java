@@ -8,17 +8,19 @@ import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.ref;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.resultVar;
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.var;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLBinaryExpressionStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLIfStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
+import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
 import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
-import me.bokov.bsc.surfaceviewer.sdf.PerPointSDFGenerator3D;
 import org.joml.Vector3f;
 
-public class OpGate implements GLSLDistanceExpression3D, PerPointSDFGenerator3D {
+public class OpGate implements CPUEvaluator<Float, Vector3f>, GLSLDistanceExpression3D,
+        Serializable {
 
     private final Evaluatable<Float, Vector3f, ExpressionEvaluationContext> boundary;
     private final Evaluatable<Float, Vector3f, ExpressionEvaluationContext> generator;
@@ -79,18 +81,14 @@ public class OpGate implements GLSLDistanceExpression3D, PerPointSDFGenerator3D 
     }
 
     @Override
-    public float getAt(float x, float y, float z) {
+    public Float evaluate(Vector3f p) {
 
-        float boundaryValue = boundary.cpu().evaluate(new Vector3f(x, y, z));
+        float boundaryValue = boundary.cpu().evaluate(p);
         if (boundaryValue > 0.0f) {
             return boundaryValue;
         }
 
-        return generator.cpu().evaluate(new Vector3f(x, y, z));
+        return generator.cpu().evaluate(p);
     }
 
-    @Override
-    public String getKind() {
-        return "SDFGate";
-    }
 }

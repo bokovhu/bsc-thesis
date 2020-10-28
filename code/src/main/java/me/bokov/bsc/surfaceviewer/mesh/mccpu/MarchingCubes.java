@@ -8,8 +8,8 @@ import me.bokov.bsc.surfaceviewer.mesh.SDFMeshGenerator;
 import me.bokov.bsc.surfaceviewer.render.TriangleMesh;
 import me.bokov.bsc.surfaceviewer.render.TriangleMesh.Face;
 import me.bokov.bsc.surfaceviewer.voxelization.Corner;
-import me.bokov.bsc.surfaceviewer.voxelization.SDFVoxelStorage;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
+import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorage;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -23,32 +23,39 @@ public class MarchingCubes implements SDFMeshGenerator {
         this.isoLevel = isoLevel;
     }
 
-    private Vertex interpolate(Corner a, Corner b, float reference) {
+    private Vertex interpolate(Vertex out, Corner a, Corner b, float reference) {
         if (Math.abs(reference - a.getValue()) < EPSILON) {
-            return new Vertex(a.getPoint(), a.getNormal(), COLOR);
+            out.set(a.getPoint(), a.getNormal(), COLOR);
+            return out;
         }
         if (Math.abs(reference - b.getValue()) < EPSILON) {
-            return new Vertex(b.getPoint(), b.getNormal(), COLOR);
+            out.set(b.getPoint(), b.getNormal(), COLOR);
+            return out;
         }
         if (Math.abs(a.getValue() - b.getValue()) < EPSILON) {
-            return new Vertex(a.getPoint(), a.getNormal(), COLOR);
+            out.set(a.getPoint(), a.getNormal(), COLOR);
+            return out;
         }
 
         float alpha = Math.abs((reference - a.getValue()) / (b.getValue() - a.getValue()));
-        return new Vertex(
+        out.set(
                 new Vector3f(a.getPoint()).lerp(b.getPoint(), alpha),
                 new Vector3f(a.getNormal()).lerp(b.getNormal(), alpha),
                 COLOR
         );
+        return out;
     }
 
     @Override
-    public SDFMesh generate(SDFVoxelStorage voxelStorage) {
+    public SDFMesh generate(VoxelStorage voxelStorage) {
 
         List<Face> generatedTriangles = new ArrayList<>();
 
         Iterator<Voxel> voxelIterator = voxelStorage.voxelIterator();
         final Vertex[] vertices = new Vertex[12];
+        for (int i = 0; i < vertices.length; i++) {
+            vertices[i] = new Vertex();
+        }
 
         while (voxelIterator.hasNext()) {
 
@@ -86,20 +93,20 @@ public class MarchingCubes implements SDFMeshGenerator {
                 continue;
             }
 
-            vertices[0] = interpolate(voxel.getC000(), voxel.getC100(), isoLevel);
-            vertices[1] = interpolate(voxel.getC100(), voxel.getC101(), isoLevel);
-            vertices[2] = interpolate(voxel.getC101(), voxel.getC001(), isoLevel);
-            vertices[3] = interpolate(voxel.getC001(), voxel.getC000(), isoLevel);
+            interpolate(vertices[0], voxel.getC000(), voxel.getC100(), isoLevel);
+            interpolate(vertices[1], voxel.getC100(), voxel.getC101(), isoLevel);
+            interpolate(vertices[2], voxel.getC101(), voxel.getC001(), isoLevel);
+            interpolate(vertices[3], voxel.getC001(), voxel.getC000(), isoLevel);
 
-            vertices[4] = interpolate(voxel.getC010(), voxel.getC110(), isoLevel);
-            vertices[5] = interpolate(voxel.getC110(), voxel.getC111(), isoLevel);
-            vertices[6] = interpolate(voxel.getC111(), voxel.getC011(), isoLevel);
-            vertices[7] = interpolate(voxel.getC011(), voxel.getC010(), isoLevel);
+            interpolate(vertices[4], voxel.getC010(), voxel.getC110(), isoLevel);
+            interpolate(vertices[5], voxel.getC110(), voxel.getC111(), isoLevel);
+            interpolate(vertices[6], voxel.getC111(), voxel.getC011(), isoLevel);
+            interpolate(vertices[7], voxel.getC011(), voxel.getC010(), isoLevel);
 
-            vertices[8] = interpolate(voxel.getC000(), voxel.getC010(), isoLevel);
-            vertices[9] = interpolate(voxel.getC100(), voxel.getC110(), isoLevel);
-            vertices[10] = interpolate(voxel.getC101(), voxel.getC111(), isoLevel);
-            vertices[11] = interpolate(voxel.getC001(), voxel.getC011(), isoLevel);
+            interpolate(vertices[8], voxel.getC000(), voxel.getC010(), isoLevel);
+            interpolate(vertices[9], voxel.getC100(), voxel.getC110(), isoLevel);
+            interpolate(vertices[10], voxel.getC101(), voxel.getC111(), isoLevel);
+            interpolate(vertices[11], voxel.getC001(), voxel.getC011(), isoLevel);
 
             for (int i = 0; TriangleTable.TRIANGLE_TABLE[cubeIndex][i] != -1; i += 3) {
 
@@ -126,14 +133,16 @@ public class MarchingCubes implements SDFMeshGenerator {
 
     private final class Vertex {
 
-        private final Vector3f pos;
-        private final Vector3f norm;
-        private final Vector4f col;
+        private final Vector3f pos = new Vector3f();
+        private final Vector3f norm = new Vector3f();
+        private final Vector4f col = new Vector4f();
 
-        private Vertex(Vector3f pos, Vector3f norm, Vector4f col) {
-            this.pos = pos;
-            this.norm = norm;
-            this.col = col;
+        public Vertex set(Vector3f pos, Vector3f norm, Vector4f col) {
+            this.pos.set(pos);
+            this.norm.set(norm);
+            this.col.set(col);
+            return this;
         }
+
     }
 }

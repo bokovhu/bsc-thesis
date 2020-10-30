@@ -1,18 +1,12 @@
 package me.bokov.bsc.surfaceviewer.render;
 
-import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.*;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryStack;
+
+import java.nio.FloatBuffer;
+import java.util.*;
 
 // TODO: Error handling
 // TODO: Attribute handling

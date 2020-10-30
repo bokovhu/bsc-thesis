@@ -1,7 +1,6 @@
 package me.bokov.bsc.surfaceviewer.glsl;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class GLSLMemberStatement extends GLSLStatement {
 

@@ -1,8 +1,9 @@
 package me.bokov.bsc.surfaceviewer.voxelization.naiveugrid;
 
+import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorageLoader;
+
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorageLoader;
 
 public class UniformGridLoader implements VoxelStorageLoader<UniformGrid> {
 

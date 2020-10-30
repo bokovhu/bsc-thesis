@@ -1,13 +1,13 @@
 package me.bokov.bsc.surfaceviewer.voxelization.naiveugrid;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Iterator;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
 import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorage;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+
+import java.io.Serializable;
+import java.util.*;
 
 public class UniformGrid implements VoxelStorage, Serializable {
 

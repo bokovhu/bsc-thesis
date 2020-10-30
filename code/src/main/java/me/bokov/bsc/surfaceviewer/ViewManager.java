@@ -1,11 +1,9 @@
 package me.bokov.bsc.surfaceviewer;
 
-import java.util.Map;
-import java.util.function.BiFunction;
-import me.bokov.bsc.surfaceviewer.view.AppView;
-import me.bokov.bsc.surfaceviewer.view.MarchingCubesView;
-import me.bokov.bsc.surfaceviewer.view.RayMarchingView;
-import me.bokov.bsc.surfaceviewer.view.VoxelsView;
+import me.bokov.bsc.surfaceviewer.view.*;
+
+import java.util.*;
+import java.util.function.*;
 
 // Intentionally package-private
 final class ViewManager {
@@ -14,7 +12,8 @@ final class ViewManager {
             .of(
                     "marching-cubes", MarchingCubesView::new,
                     "ray-marching", RayMarchingView::new,
-                    "voxel-point-cloud", VoxelsView::new
+                    "voxel-point-cloud", VoxelsView::new,
+                    "octree-marching-cubes", OctreeMarchingCubesView::new
             );
 
     private final SurfaceViewerPlatform platform;

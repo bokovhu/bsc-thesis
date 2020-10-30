@@ -1,9 +1,7 @@
 package me.bokov.bsc.surfaceviewer.editor.scene;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.*;
 
 public class SceneObjectProperty<T> {
 

@@ -1,7 +1,8 @@
 package me.bokov.bsc.surfaceviewer.sdf;
 
-import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
+
+import java.util.*;
 
 public interface GPUEvaluator<TContext extends GPUContext> {
 

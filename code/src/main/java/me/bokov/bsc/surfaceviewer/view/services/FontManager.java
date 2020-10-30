@@ -1,9 +1,9 @@
 package me.bokov.bsc.surfaceviewer.view.services;
 
-import java.util.HashMap;
-import java.util.Map;
 import me.bokov.bsc.surfaceviewer.render.text.TextureFont;
 import me.bokov.bsc.surfaceviewer.view.AppView;
+
+import java.util.*;
 
 public class FontManager {
 

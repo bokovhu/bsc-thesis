@@ -8,6 +8,8 @@ import me.bokov.bsc.surfaceviewer.render.ShaderProgram;
 import me.bokov.bsc.surfaceviewer.render.raymarcher.RaymarcherShaderGenerator;
 import me.bokov.bsc.surfaceviewer.util.ResourceUtil;
 
+import java.util.*;
+
 public class RayMarchingView extends AppView {
 
     private ShaderProgram rayMarchingProgram = null;
@@ -25,8 +27,10 @@ public class RayMarchingView extends AppView {
         final String vertexShaderSource = ResourceUtil
                 .readResource("glsl/fullScreenQuad.raymarcher.vertex.glsl");
 
-        final String fragmentShaderSource = new RaymarcherShaderGenerator(this.appScene.sdf())
-                .generateRaymarcherFragmentSource();
+        final String fragmentShaderSource = new RaymarcherShaderGenerator(
+                this.appScene.sdf(),
+                new HashMap<>()
+        ).generateRaymarcherFragmentSource();
 
         System.out.println(
                 fragmentShaderSource
@@ -51,7 +55,7 @@ public class RayMarchingView extends AppView {
     }
 
     @Override
-    public void render(float delta) {
+    protected void render(float delta) {
 
         this.rayMarchingProgram.use();
 

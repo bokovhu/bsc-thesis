@@ -1,12 +1,13 @@
 package me.bokov.bsc.surfaceviewer.voxelization;
 
-import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.joml.Vector3f;
+
+import java.io.Serializable;
 
 @RequiredArgsConstructor
 @AllArgsConstructor

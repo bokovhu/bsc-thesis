@@ -1,19 +1,15 @@
 package me.bokov.bsc.surfaceviewer.render;
 
-import java.nio.FloatBuffer;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
 import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorage;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL46;
+
+import java.nio.FloatBuffer;
+import java.util.*;
+import java.util.stream.*;
 
 public final class PointCloud {
 

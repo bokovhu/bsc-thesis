@@ -1,18 +1,20 @@
 package me.bokov.bsc.surfaceviewer.voxelization.naiveugrid;
 
-import static me.bokov.bsc.surfaceviewer.sdf.threed.CPUEvaluationContext.of;
-
-import java.util.Arrays;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
-import me.bokov.bsc.surfaceviewer.sdf.threed.GPUEvaluationContext;
+import me.bokov.bsc.surfaceviewer.util.MetricsLogger;
 import me.bokov.bsc.surfaceviewer.voxelization.Corner;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
+import me.bokov.bsc.surfaceviewer.voxelization.VoxelizationContext;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxelizer3D;
 import org.joml.Vector3f;
+
+import java.util.*;
+
+import static me.bokov.bsc.surfaceviewer.sdf.threed.CPUEvaluationContext.*;
 
 public class UniformGridVoxelizer implements Voxelizer3D<UniformGrid> {
 
@@ -62,8 +64,10 @@ public class UniformGridVoxelizer implements Voxelizer3D<UniformGrid> {
     }
 
     @Override
-    public UniformGrid voxelize(Evaluatable<Float, CPUContext, GPUContext> generator,
-            MeshTransform transform
+    public UniformGrid voxelize(
+            Evaluatable<Float, CPUContext, GPUContext> generator,
+            MeshTransform transform,
+            VoxelizationContext context
     ) {
 
         long start = System.currentTimeMillis();
@@ -111,7 +115,14 @@ public class UniformGridVoxelizer implements Voxelizer3D<UniformGrid> {
         }
 
         long end = System.currentTimeMillis();
-        System.out.println("Voxelization took " + (end - start) + "ms");
+
+        MetricsLogger.logMetrics(
+                "Uniform grid voxelization",
+                Map.of(
+                        "Runtime", (end - start) + " ms",
+                        "Number of voxels generated", result.getWidth() * result.getHeight() * result.getDepth()
+                )
+        );
 
         return result;
 

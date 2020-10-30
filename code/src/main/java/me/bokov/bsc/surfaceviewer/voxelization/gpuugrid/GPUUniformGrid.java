@@ -1,7 +1,5 @@
 package me.bokov.bsc.surfaceviewer.voxelization.gpuugrid;
 
-import java.nio.FloatBuffer;
-import java.util.Iterator;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
 import me.bokov.bsc.surfaceviewer.voxelization.Corner;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
@@ -11,6 +9,9 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL46;
+
+import java.nio.FloatBuffer;
+import java.util.*;
 
 public class GPUUniformGrid implements VoxelStorage {
 
@@ -88,12 +89,7 @@ public class GPUUniformGrid implements VoxelStorage {
         c.setValue(positionAndValueBuffer.get(4 * idx(x + 1, y, z) + 3));
     }
 
-    public void downloadToCPUGrid() {
-
-        if (cpuGrid == null) {
-            cpuGrid = new UniformGrid(width, height, depth);
-            prepareCPUVoxels();
-        }
+    public void downloadToRAMImage() {
 
         GL46.glFlush();
         GL46.glFinish();
@@ -106,6 +102,17 @@ public class GPUUniformGrid implements VoxelStorage {
         GL46.glBindTexture(GL46.GL_TEXTURE_3D, normalTextureId);
         normalBuffer.clear();
         GL46.glGetTexImage(GL46.GL_TEXTURE_3D, 0, GL46.GL_RGB, GL46.GL_FLOAT, normalBuffer);
+
+    }
+
+    public void downloadToCPUGrid() {
+
+        if (cpuGrid == null) {
+            cpuGrid = new UniformGrid(width, height, depth);
+            prepareCPUVoxels();
+        }
+
+        downloadToRAMImage();
 
         for (int z = 0; z < depth; z++) {
             for (int y = 0; y < height; y++) {

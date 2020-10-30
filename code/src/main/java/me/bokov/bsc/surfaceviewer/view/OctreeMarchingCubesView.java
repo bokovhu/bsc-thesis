@@ -8,36 +8,25 @@ import me.bokov.bsc.surfaceviewer.mesh.mccpu.MarchingCubes;
 import me.bokov.bsc.surfaceviewer.render.ShaderProgram;
 import me.bokov.bsc.surfaceviewer.util.Resources;
 import me.bokov.bsc.surfaceviewer.voxelization.CPUVoxelizationContext;
-import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorageLoader;
-import me.bokov.bsc.surfaceviewer.voxelization.VoxelStoragePersister;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxelizer3D;
-import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGrid;
-import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGridLoader;
-import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGridPersister;
-import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGridVoxelizer;
+import me.bokov.bsc.surfaceviewer.voxelization.octree.OctreeGrid;
+import me.bokov.bsc.surfaceviewer.voxelization.octree.OctreeGridVoxelizer;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.nio.file.Files;
-
-public class MarchingCubesView extends AppView {
+public class OctreeMarchingCubesView extends AppView {
 
     private static final Matrix4f IDENTITY = new Matrix4f().identity();
-    private Voxelizer3D<UniformGrid> voxelizer;
-    private UniformGrid voxelStorage;
-    private VoxelStoragePersister<UniformGrid> voxelStoragePersister;
-    private VoxelStorageLoader<UniformGrid> voxelStorageLoader;
+    private Voxelizer3D<OctreeGrid> voxelizer;
+    private OctreeGrid voxelStorage;
     private MarchingCubes marchingCubes;
     private SDFMesh mesh;
     private ShaderProgram shaderProgram;
     private ShaderProgram fontProgram;
 
-    public MarchingCubesView(
+    public OctreeMarchingCubesView(
             AppScene appScene,
             SurfaceViewerPlatform platform
     ) {
@@ -45,10 +34,8 @@ public class MarchingCubesView extends AppView {
     }
 
     private void voxelizeScene() {
-        this.voxelizer = new UniformGridVoxelizer(
-                intOpt("grid-width", 64),
-                intOpt("grid-height", 64),
-                intOpt("grid-depth", 64)
+        this.voxelizer = new OctreeGridVoxelizer(
+                intOpt("octree-depth", 8)
         );
         this.voxelStorage = this.voxelizer.voxelize(
                 this.appScene.sdf(),
@@ -76,34 +63,6 @@ public class MarchingCubesView extends AppView {
 
     }
 
-    private boolean loadScene() {
-        String dataFilename = stringOpt("data", null);
-        if (dataFilename != null) {
-            if (Files.exists(new File(dataFilename).toPath())) {
-                this.voxelStorageLoader = new UniformGridLoader();
-                try (FileInputStream f = new FileInputStream(new File(dataFilename))) {
-                    this.voxelStorage = this.voxelStorageLoader.load(f);
-                } catch (Exception exc) {
-                    exc.printStackTrace();
-                    return false;
-                }
-            }
-        }
-        return false;
-    }
-
-    private void persistScene() {
-
-        String dataFilename = stringOpt("data", null);
-        if (dataFilename != null) {
-            try (FileOutputStream f = new FileOutputStream(new File(dataFilename))) {
-                this.voxelStoragePersister.persist(this.voxelStorage, f);
-            } catch (Exception exc) {
-                exc.printStackTrace();
-            }
-        }
-    }
-
     @Override
     public void init() {
 
@@ -118,26 +77,11 @@ public class MarchingCubesView extends AppView {
                 .fragmentFromResource(stringOpt("fs-resource", Resources.GLSL_FRAGMENT_BLINN_PHONG))
                 .end();
 
-        this.voxelStorageLoader = new UniformGridLoader();
-        this.voxelStoragePersister = new UniformGridPersister();
+        voxelizeScene();
 
-        if (!loadScene()) {
-            voxelizeScene();
-        }
-
-        persistScene();
-
-        executeMarchingCubes();
-
-    }
-
-    @Override
-    public void tearDown() {
-
-        super.tearDown();
-        marchingCubes.tearDown();
-        voxelizer.tearDown();
-        mesh.tearDown();
+        this.marchingCubes = new MarchingCubes(floatOpt("iso-level", 0.0f));
+        this.mesh = this.marchingCubes
+                .generate(voxelStorage);
 
     }
 

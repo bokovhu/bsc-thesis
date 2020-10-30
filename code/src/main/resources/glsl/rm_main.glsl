@@ -12,9 +12,9 @@ void main() {
 
     if (primaryHit.c == 1) {
         color = illuminate(primaryHit);
+        out_finalColor = vec4 (toneMap(color), 1.0);
     } else {
-        color = missed(ray);
+        discard;
     }
 
-    out_finalColor = vec4 (toneMap(color), 1.0);
 }

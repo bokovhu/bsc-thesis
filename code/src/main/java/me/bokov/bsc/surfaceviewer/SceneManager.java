@@ -1,20 +1,5 @@
 package me.bokov.bsc.surfaceviewer;
 
-import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.box;
-import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.cone;
-import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.cylinder;
-import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.gate;
-import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.infiniteRepeat;
-import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.rotate;
-import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.scale;
-import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.sphere;
-import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.subtract;
-import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.torus;
-import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.translate;
-import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.union;
-
-import java.util.Map;
-import java.util.function.BiFunction;
 import me.bokov.bsc.surfaceviewer.render.Lighting;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
 import me.bokov.bsc.surfaceviewer.sdf.threed.OpSmoothSubtract;
@@ -22,6 +7,11 @@ import me.bokov.bsc.surfaceviewer.sdf.threed.SimpleNoise;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+
+import java.util.*;
+import java.util.function.*;
+
+import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.*;
 
 // Intentionally package-private
 final class SceneManager {
@@ -132,6 +122,10 @@ final class SceneManager {
                                             )
                                     )
                             ),
+                            DEFAULT_LIGHTING
+                    ),
+                    "capped-cylinder", (c, p) -> new AppScene(
+                            cylinder(8.0f, 1.0f),
                             DEFAULT_LIGHTING
                     )
             );

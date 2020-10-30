@@ -54,7 +54,13 @@ public abstract class AppView {
         this.cameraController.update(delta);
     }
 
-    public abstract void render(float delta);
+    public void draw(float delta) {
+
+        this.render(delta);
+
+    }
+
+    protected abstract void render(float delta);
 
     public void onResized(int width, int height) {
         this.camera.update(

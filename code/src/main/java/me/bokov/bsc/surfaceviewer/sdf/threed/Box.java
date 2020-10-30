@@ -1,27 +1,17 @@
 package me.bokov.bsc.surfaceviewer.sdf.threed;
 
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.abs;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.length;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.literal;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.max;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.min;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.opMinus;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.opPlus;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.ref;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.resultVar;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.var;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.vec3;
-
-import java.io.Serializable;
-import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLVariableDeclarationStatement;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
-import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.GPUEvaluator;
 import org.joml.Vector3f;
+
+import java.io.Serializable;
+import java.util.*;
+
+import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.*;
 
 public class Box implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUContext>, Serializable {
 
@@ -32,7 +22,7 @@ public class Box implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUCon
     private final Vector3f v3Zero = new Vector3f(0f, 0f, 0f);
 
     public Box(Vector3f dims) {
-        this.dimensions = dims;
+        this.dimensions = new Vector3f(dims);
     }
 
     @Override
@@ -49,8 +39,11 @@ public class Box implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUCon
                         length(max(ref(q.name()), literal(0.0f))),
                         min(
                                 max(
-                                        max(ref(q.name(), "x"), ref(q.name(), "y")),
-                                        ref(q.name(), "z")
+                                        ref(q.name(), "x"),
+                                        max(
+                                                ref(q.name(), "y"),
+                                                ref(q.name(), "z")
+                                        )
                                 ), literal(0.0f))
                 ))
         );

@@ -1,14 +1,12 @@
 package me.bokov.bsc.surfaceviewer.glsl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+
+import java.util.*;
 
 public class GLSLPoet {
 
@@ -140,7 +138,8 @@ public class GLSLPoet {
         return new GLSLBinaryExpressionStatement(v1, v2, "!=");
     }
 
-    public static GLSLStatement ternary(GLSLStatement test, GLSLStatement vTrue,
+    public static GLSLStatement ternary(
+            GLSLStatement test, GLSLStatement vTrue,
             GLSLStatement vFalse
     ) {
         return new GLSLBinaryExpressionStatement(
@@ -210,7 +209,7 @@ public class GLSLPoet {
     }
 
     public static GLSLStatement vec3(Vector3f v) {
-        return vec3(v.x, v.y, v.y);
+        return vec3(v.x, v.y, v.z);
     }
 
     public static GLSLStatement vec4(float x, float y, float z, float w) {
@@ -225,7 +224,8 @@ public class GLSLPoet {
         );
     }
 
-    public static GLSLStatement vec4(GLSLStatement x, GLSLStatement y, GLSLStatement z,
+    public static GLSLStatement vec4(
+            GLSLStatement x, GLSLStatement y, GLSLStatement z,
             GLSLStatement w
     ) {
         return new GLSLFunctionCallStatement(
@@ -242,7 +242,8 @@ public class GLSLPoet {
         return vec4(q.x, q.y, q.z, q.w);
     }
 
-    public static GLSLVariableDeclarationStatement resultVar(GPUContext context,
+    public static GLSLVariableDeclarationStatement resultVar(
+            GPUContext context,
             GLSLStatement value
     ) {
         return new GLSLVariableDeclarationStatement(
@@ -252,7 +253,8 @@ public class GLSLPoet {
         );
     }
 
-    public static GLSLVariableDeclarationStatement var(String type, String name,
+    public static GLSLVariableDeclarationStatement var(
+            String type, String name,
             GLSLStatement value
     ) {
         return new GLSLVariableDeclarationStatement(

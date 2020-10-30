@@ -1,17 +1,14 @@
 package me.bokov.bsc.surfaceviewer.render.text;
 
-import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import me.bokov.bsc.surfaceviewer.render.Drawable;
 import me.bokov.bsc.surfaceviewer.render.ShaderProgram.CachedUniform;
 import me.bokov.bsc.surfaceviewer.render.Texture;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL46;
+
+import java.nio.FloatBuffer;
+import java.util.*;
 
 public class Text {
 

@@ -7,6 +7,7 @@ import me.bokov.bsc.surfaceviewer.render.Drawable;
 import me.bokov.bsc.surfaceviewer.render.PointCloud;
 import me.bokov.bsc.surfaceviewer.render.ShaderProgram;
 import me.bokov.bsc.surfaceviewer.util.Resources;
+import me.bokov.bsc.surfaceviewer.voxelization.CPUVoxelizationContext;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxelizer3D;
 import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGrid;
 import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGridVoxelizer;
@@ -48,7 +49,7 @@ public class VoxelsView extends AppView {
                         floatOpt("grid-scale-y", 1f),
                         floatOpt("grid-scale-z", 1f)
                 )
-        ));
+        ), new CPUVoxelizationContext());
 
         this.pointCloud = PointCloud.voxelCloud(this.grid, floatOpt("threshold", 0.0f));
 
@@ -83,7 +84,7 @@ public class VoxelsView extends AppView {
     }
 
     @Override
-    public void render(float delta) {
+    protected void render(float delta) {
 
         this.shaderProgram.use();
         this.shaderProgram.uniform("u_MVP")

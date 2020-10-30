@@ -1,11 +1,12 @@
 package me.bokov.bsc.surfaceviewer.render;
 
-import java.nio.FloatBuffer;
-import java.util.List;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL46;
+
+import java.nio.FloatBuffer;
+import java.util.*;
 
 public class TriangleMesh {
 
@@ -51,7 +52,8 @@ public class TriangleMesh {
         private final Vector3f normal1, normal2, normal3;
         private final Vector4f color1, color2, color3;
 
-        public Face(Vector3f pos1, Vector3f pos2, Vector3f pos3, Vector3f normal1,
+        public Face(
+                Vector3f pos1, Vector3f pos2, Vector3f pos3, Vector3f normal1,
                 Vector3f normal2,
                 Vector3f normal3,
                 Vector4f color1,

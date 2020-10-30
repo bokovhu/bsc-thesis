@@ -1,11 +1,10 @@
 package me.bokov.bsc.surfaceviewer.glsl;
 
-import static java.util.stream.Collectors.joining;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import me.bokov.bsc.surfaceviewer.util.ResourceUtil;
+
+import java.util.*;
+
+import static java.util.stream.Collectors.*;
 
 public class GLSLProgram extends GLSLStatement {
 

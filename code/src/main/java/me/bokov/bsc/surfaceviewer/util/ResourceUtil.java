@@ -22,8 +22,8 @@ public final class ResourceUtil {
         }
 
         try (InputStream resourceStream = resourceURL.openStream();
-                BufferedReader resourceReader = new BufferedReader(
-                        new InputStreamReader(resourceStream))
+             BufferedReader resourceReader = new BufferedReader(
+                     new InputStreamReader(resourceStream))
         ) {
 
             String line = null;

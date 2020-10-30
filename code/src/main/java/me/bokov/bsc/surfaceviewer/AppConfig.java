@@ -1,9 +1,9 @@
 package me.bokov.bsc.surfaceviewer;
 
-import java.util.HashMap;
-import java.util.Map;
 import lombok.Data;
 import lombok.experimental.Accessors;
+
+import java.util.*;
 
 @Data
 @Accessors(chain = true)

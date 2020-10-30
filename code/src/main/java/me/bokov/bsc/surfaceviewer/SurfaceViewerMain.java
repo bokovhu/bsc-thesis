@@ -1,10 +1,10 @@
 package me.bokov.bsc.surfaceviewer;
 
-import java.util.HashMap;
-import java.util.Map;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
+
+import java.util.*;
 
 // Intentionally package-private
 final class SurfaceViewerMain {

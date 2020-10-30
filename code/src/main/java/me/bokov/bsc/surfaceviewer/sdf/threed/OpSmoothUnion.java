@@ -1,29 +1,13 @@
 package me.bokov.bsc.surfaceviewer.sdf.threed;
 
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.clamp;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.literal;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.mix;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.opDiv;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.opMinus;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.opMul;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.opPlus;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.paren;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.ref;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.resultVar;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.var;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLVariableDeclarationStatement;
-import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
-import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
-import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
-import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
-import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
-import me.bokov.bsc.surfaceviewer.sdf.GPUEvaluator;
-import org.joml.Vector3f;
+import me.bokov.bsc.surfaceviewer.sdf.*;
+
+import java.io.Serializable;
+import java.util.*;
+
+import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.*;
 
 public class OpSmoothUnion implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUContext>,
         Serializable {

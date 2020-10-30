@@ -47,7 +47,8 @@ public class CameraController {
     private final Vector3f tmpNewOrigin = new Vector3f();
     private final Quaternionf tmpRotation = new Quaternionf();
 
-    public CameraController(AppView view, Camera camera,
+    public CameraController(
+            AppView view, Camera camera,
             SurfaceViewerPlatform platform
     ) {
         this.view = view;

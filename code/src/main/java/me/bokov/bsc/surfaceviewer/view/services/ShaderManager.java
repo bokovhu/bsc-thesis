@@ -1,13 +1,10 @@
 package me.bokov.bsc.surfaceviewer.view.services;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import me.bokov.bsc.surfaceviewer.render.ShaderProgram;
 import me.bokov.bsc.surfaceviewer.util.ResourceUtil;
 import me.bokov.bsc.surfaceviewer.view.AppView;
+
+import java.util.*;
 
 public class ShaderManager {
 
@@ -239,7 +236,8 @@ public class ShaderManager {
         private final String tessellationControlResource;
         private final String tessellationEvaluationResource;
 
-        private ShaderResources(String vertexResource, String fragmentResource,
+        private ShaderResources(
+                String vertexResource, String fragmentResource,
                 String geometryResource,
                 String tessellationControlResource,
                 String tessellationEvaluationResource

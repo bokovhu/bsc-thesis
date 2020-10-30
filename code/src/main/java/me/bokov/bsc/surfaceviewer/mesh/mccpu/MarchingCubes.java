@@ -1,17 +1,17 @@
 package me.bokov.bsc.surfaceviewer.mesh.mccpu;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import me.bokov.bsc.surfaceviewer.mesh.SDFMesh;
 import me.bokov.bsc.surfaceviewer.mesh.SDFMeshGenerator;
 import me.bokov.bsc.surfaceviewer.render.TriangleMesh;
 import me.bokov.bsc.surfaceviewer.render.TriangleMesh.Face;
+import me.bokov.bsc.surfaceviewer.util.MetricsLogger;
 import me.bokov.bsc.surfaceviewer.voxelization.Corner;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
 import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorage;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+
+import java.util.*;
 
 public class MarchingCubes implements SDFMeshGenerator {
 
@@ -50,6 +50,9 @@ public class MarchingCubes implements SDFMeshGenerator {
     public SDFMesh generate(VoxelStorage voxelStorage) {
 
         List<Face> generatedTriangles = new ArrayList<>();
+        final long startTime = System.currentTimeMillis();
+        int numProcessedVoxels = 0;
+        int numEmptyVoxels = 0;
 
         Iterator<Voxel> voxelIterator = voxelStorage.voxelIterator();
         final Vertex[] vertices = new Vertex[12];
@@ -60,6 +63,7 @@ public class MarchingCubes implements SDFMeshGenerator {
         while (voxelIterator.hasNext()) {
 
             final Voxel voxel = voxelIterator.next();
+            ++numProcessedVoxels;
 
             int cubeIndex = 0;
 
@@ -90,6 +94,7 @@ public class MarchingCubes implements SDFMeshGenerator {
             }
 
             if (cubeIndex == 0 || cubeIndex == 255) {
+                ++numEmptyVoxels;
                 continue;
             }
 
@@ -125,6 +130,17 @@ public class MarchingCubes implements SDFMeshGenerator {
             }
 
         }
+
+        final long endTime = System.currentTimeMillis();
+        MetricsLogger.logMetrics(
+                "Marching cubes",
+                Map.of(
+                        "Runtime", (endTime - startTime) + " ms",
+                        "Number of voxels processed", numProcessedVoxels,
+                        "Number of empty voxels", numEmptyVoxels,
+                        "Number of generated triangles", generatedTriangles.size()
+                )
+        );
 
         return new SDFMesh()
                 .attachVoxelStorage(voxelStorage)

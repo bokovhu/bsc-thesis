@@ -1,9 +1,8 @@
 package me.bokov.bsc.surfaceviewer.glsl;
 
-import static java.util.stream.Collectors.joining;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import static java.util.stream.Collectors.*;
 
 public class GLSLFunctionStatement extends GLSLStatement {
 

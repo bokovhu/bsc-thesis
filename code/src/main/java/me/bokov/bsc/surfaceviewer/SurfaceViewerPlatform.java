@@ -1,11 +1,11 @@
 package me.bokov.bsc.surfaceviewer;
 
-import static org.lwjgl.system.MemoryUtil.NULL;
-
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL46;
+
+import static org.lwjgl.system.MemoryUtil.*;
 
 public class SurfaceViewerPlatform {
 
@@ -98,7 +98,7 @@ public class SurfaceViewerPlatform {
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
 
             this.viewManager.view().update(delta);
-            this.viewManager.view().render(delta);
+            this.viewManager.view().draw(delta);
 
             GLFW.glfwSwapBuffers(this.glfwWindowHandle);
             GLFW.glfwPollEvents();

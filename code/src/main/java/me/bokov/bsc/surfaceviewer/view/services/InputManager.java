@@ -1,14 +1,12 @@
 package me.bokov.bsc.surfaceviewer.view.services;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.*;
+import java.util.function.*;
 
 public class InputManager {
 

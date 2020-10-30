@@ -1,22 +1,13 @@
 package me.bokov.bsc.surfaceviewer.sdf.threed;
 
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.opMinus;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.ref;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.resultVar;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.var;
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.vec3;
+import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
+import me.bokov.bsc.surfaceviewer.sdf.*;
+import org.joml.Vector3f;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
-import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
-import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
-import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
-import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
-import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
-import me.bokov.bsc.surfaceviewer.sdf.GPUEvaluator;
-import org.joml.Vector3f;
+import java.util.*;
+
+import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.*;
 
 public class OpTranslateTo implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUContext>,
         Serializable {
@@ -26,7 +17,8 @@ public class OpTranslateTo implements CPUEvaluator<Float, CPUContext>, GPUEvalua
 
     private final Vector3f tmpP = new Vector3f();
 
-    public OpTranslateTo(Vector3f position,
+    public OpTranslateTo(
+            Vector3f position,
             Evaluatable<Float, CPUContext, GPUContext> generator
     ) {
         this.position = position;
@@ -38,7 +30,7 @@ public class OpTranslateTo implements CPUEvaluator<Float, CPUContext>, GPUEvalua
     public Float evaluate(CPUContext c) {
         return generator.cpu().evaluate(
                 c.transform(
-                    tmpP.set(c.getPoint()).sub(position)
+                        tmpP.set(c.getPoint()).sub(position)
                 )
         );
     }

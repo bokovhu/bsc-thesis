@@ -6,7 +6,8 @@ public class GLSLUnaryExpressionStatement extends GLSLStatement {
     private final String operator;
     private final boolean pre;
 
-    public GLSLUnaryExpressionStatement(GLSLStatement lhs, String operator,
+    public GLSLUnaryExpressionStatement(
+            GLSLStatement lhs, String operator,
             boolean pre
     ) {
         this.lhs = lhs;

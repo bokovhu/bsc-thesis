@@ -1,11 +1,7 @@
 package me.bokov.bsc.surfaceviewer.editor.scene;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
+import java.util.concurrent.atomic.*;
 
 public abstract class SceneObject {
 

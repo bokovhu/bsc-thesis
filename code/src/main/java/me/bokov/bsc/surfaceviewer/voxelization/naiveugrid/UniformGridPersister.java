@@ -1,9 +1,10 @@
 package me.bokov.bsc.surfaceviewer.voxelization.naiveugrid;
 
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import me.bokov.bsc.surfaceviewer.voxelization.VoxelStoragePersister;
 import org.lwjgl.BufferUtils;
+
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
 
 public class UniformGridPersister implements VoxelStoragePersister<UniformGrid> {
 

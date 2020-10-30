@@ -1,11 +1,10 @@
 package me.bokov.bsc.surfaceviewer.render;
 
-import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.lwjgl.opengl.GL46;
+
+import java.nio.FloatBuffer;
+import java.util.*;
+import java.util.stream.*;
 
 public class Drawable {
 

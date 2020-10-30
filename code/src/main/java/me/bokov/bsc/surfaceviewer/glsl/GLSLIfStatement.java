@@ -1,8 +1,8 @@
 package me.bokov.bsc.surfaceviewer.glsl;
 
-import static java.util.stream.Collectors.joining;
+import java.util.*;
 
-import java.util.List;
+import static java.util.stream.Collectors.*;
 
 public class GLSLIfStatement extends GLSLStatement {
 
@@ -10,7 +10,8 @@ public class GLSLIfStatement extends GLSLStatement {
     private final List<GLSLStatement> body;
     private final GLSLStatement ifElse;
 
-    public GLSLIfStatement(GLSLStatement test, List<GLSLStatement> body,
+    public GLSLIfStatement(
+            GLSLStatement test, List<GLSLStatement> body,
             GLSLStatement ifElse
     ) {
         this.test = test;

@@ -1,8 +1,9 @@
 package me.bokov.bsc.surfaceviewer.render;
 
-import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL46;
+
+import java.nio.FloatBuffer;
 
 public final class FullScreenQuad {
 

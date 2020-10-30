@@ -1,30 +1,26 @@
 package me.bokov.bsc.surfaceviewer.render.raymarcher;
 
-import java.util.Collections;
-import java.util.List;
-import me.bokov.bsc.surfaceviewer.glsl.GLSLFunctionStatement;
+import me.bokov.bsc.surfaceviewer.glsl.*;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLFunctionStatement.GLSLFunctionParameterStatement;
-import me.bokov.bsc.surfaceviewer.glsl.GLSLOutStatement;
-import me.bokov.bsc.surfaceviewer.glsl.GLSLProgram;
-import me.bokov.bsc.surfaceviewer.glsl.GLSLRawStatement;
-import me.bokov.bsc.surfaceviewer.glsl.GLSLReturnStatement;
-import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
-import me.bokov.bsc.surfaceviewer.glsl.GLSLUniformStatement;
-import me.bokov.bsc.surfaceviewer.glsl.GLSLVaryingStatement;
+import me.bokov.bsc.surfaceviewer.render.Texture;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.threed.GPUEvaluationContext;
-import org.joml.Vector3f;
+
+import java.util.*;
 
 public class RaymarcherShaderGenerator {
 
     private final Evaluatable<Float, CPUContext, GPUContext> distanceExpression;
+    private final Map<String, Texture> textureMap;
 
     public RaymarcherShaderGenerator(
-            Evaluatable<Float, CPUContext, GPUContext> distanceExpression
+            Evaluatable<Float, CPUContext, GPUContext> distanceExpression,
+            Map<String, Texture> textureMap
     ) {
         this.distanceExpression = distanceExpression;
+        this.textureMap = textureMap;
     }
 
     private void addInterfaceTo(GLSLProgram prog) {
@@ -81,6 +77,30 @@ public class RaymarcherShaderGenerator {
         final GPUEvaluationContext expressionEvaluationContext = new GPUEvaluationContext()
                 .setPointVariable("CSG_InputPoint")
                 .setContextId("CSG_Root");
+
+        for (var e : textureMap.entrySet()) {
+
+            final String uniformName = "u_texture" + e.getKey();
+
+            expressionEvaluationContext.withTexture(e.getKey(), e.getValue());
+            expressionEvaluationContext.withTextureUniform(e.getKey(), uniformName);
+
+            final var t = e.getValue();
+
+            switch (t.textureType()) {
+                case Tex1D:
+                    prog.add(new GLSLUniformStatement("sampler1D", uniformName, null));
+                    break;
+                case Tex2D:
+                    prog.add(new GLSLUniformStatement("sampler2D", uniformName, null));
+                    break;
+                case Tex3D:
+                    prog.add(new GLSLUniformStatement("sampler3D", uniformName, null));
+                    break;
+            }
+
+        }
+
         csgExecuteFunction.body(
                 distanceExpression.gpu().evaluate(expressionEvaluationContext)
                         .toArray(new GLSLStatement[0])

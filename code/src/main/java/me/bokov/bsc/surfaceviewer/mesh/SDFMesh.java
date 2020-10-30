@@ -1,13 +1,11 @@
 package me.bokov.bsc.surfaceviewer.mesh;
 
-import java.util.List;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import me.bokov.bsc.surfaceviewer.render.Drawable;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
 import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorage;
+
+import java.util.*;
+import java.util.stream.*;
 
 public class SDFMesh {
 

@@ -3,12 +3,10 @@ package me.bokov.bsc.surfaceviewer.voxelization.gpuugrid;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
-import me.bokov.bsc.surfaceviewer.sdf.GLSLDistanceExpression3D;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.GPUEvaluator;
-import me.bokov.bsc.surfaceviewer.sdf.threed.GPUEvaluationContext;
+import me.bokov.bsc.surfaceviewer.voxelization.VoxelizationContext;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxelizer3D;
-import org.joml.Vector3f;
 
 public class GPUUniformGridVoxelizer implements Voxelizer3D<GPUUniformGrid> {
 
@@ -23,13 +21,9 @@ public class GPUUniformGridVoxelizer implements Voxelizer3D<GPUUniformGrid> {
     @Override
     public GPUUniformGrid voxelize(
             Evaluatable<Float, CPUContext, GPUContext> generator,
-            MeshTransform transform
+            MeshTransform transform,
+            VoxelizationContext context
     ) {
-
-        if (!(generator instanceof GLSLDistanceExpression3D)) {
-            throw new UnsupportedOperationException(
-                    "GPU voxelization is only supported for GLSL evaluetable SDF scenes!");
-        }
 
         final GPUEvaluator<GPUContext> distanceExpression = generator.gpu();
 

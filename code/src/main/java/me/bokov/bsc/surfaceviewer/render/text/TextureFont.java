@@ -1,16 +1,13 @@
 package me.bokov.bsc.surfaceviewer.render.text;
 
+import me.bokov.bsc.surfaceviewer.render.Texture;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import me.bokov.bsc.surfaceviewer.render.Texture;
+import java.util.*;
+import java.util.stream.*;
 
 public class TextureFont {
 
@@ -40,8 +37,8 @@ public class TextureFont {
 
         try (final InputStream fntInput = TextureFont.class.getClassLoader()
                 .getResourceAsStream(fntResource);
-                final InputStreamReader fntInputReader = new InputStreamReader(fntInput);
-                BufferedReader fntReader = new BufferedReader(fntInputReader)) {
+             final InputStreamReader fntInputReader = new InputStreamReader(fntInput);
+             BufferedReader fntReader = new BufferedReader(fntInputReader)) {
 
             String fntLine = null;
             while ((fntLine = fntReader.readLine()) != null) {

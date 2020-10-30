@@ -1,28 +1,26 @@
 package me.bokov.bsc.surfaceviewer.render;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.util.function.Consumer;
-import javax.imageio.ImageIO;
 import org.joml.Vector2i;
 import org.joml.Vector3i;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL46;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.function.*;
+
 public class Texture {
 
     private int textureHandle;
-    private StorageType storageType = StorageType.RGBA_32F;
-    private TextureType textureType = TextureType.Tex2D;
+    private StorageType storageType = null;
+    private TextureType textureType = null;
     private int width = 0, height = 0, depth = 0;
 
-    private Runnable binder = () -> GL46.glBindTexture(GL46.GL_TEXTURE_2D, textureHandle);
-    private Consumer<Object> uploader = (fb) -> GL46
-            .glTexImage2D(GL46.GL_TEXTURE_2D, 0, storageType.internalFormat, width, height, 0,
-                    storageType.format, storageType.type, (FloatBuffer) fb
-            );
+    private Runnable binder = null;
+    private Consumer<Object> uploader = null;
 
     public Texture init() {
 
@@ -35,12 +33,28 @@ public class Texture {
         return new TextureUploader();
     }
 
+    public int handle() {
+        return textureHandle;
+    }
+
     public int w() {
         return width;
     }
 
     public int h() {
         return height;
+    }
+
+    public int d() {
+        return depth;
+    }
+
+    public StorageType storageType() {
+        return storageType;
+    }
+
+    public TextureType textureType() {
+        return textureType;
     }
 
     public Texture bind() {
@@ -205,6 +219,7 @@ public class Texture {
 
             width = region;
             storageType = StorageType.RGBA_32F;
+            make1D();
 
             final FloatBuffer textureData = BufferUtils.createFloatBuffer(4 * region);
 
@@ -236,6 +251,7 @@ public class Texture {
             width = region.x;
             height = region.y;
             storageType = StorageType.RGBA_32F;
+            make2D();
 
             final FloatBuffer textureData = BufferUtils.createFloatBuffer(4 * region.x * region.y);
 
@@ -268,6 +284,7 @@ public class Texture {
             height = region.y;
             depth = region.z;
             storageType = StorageType.RGBA_32F;
+            make3D();
 
             final FloatBuffer textureData = BufferUtils
                     .createFloatBuffer(4 * region.x * region.y * region.z);
@@ -299,6 +316,7 @@ public class Texture {
 
             width = region;
             storageType = StorageType.RGBA_8UI;
+            make1D();
 
             final IntBuffer textureData = BufferUtils.createIntBuffer(4 * region);
 
@@ -330,6 +348,7 @@ public class Texture {
             width = region.x;
             height = region.y;
             storageType = StorageType.RGBA_8UI;
+            make2D();
 
             final IntBuffer textureData = BufferUtils.createIntBuffer(4 * region.x * region.y);
 
@@ -361,6 +380,7 @@ public class Texture {
             width = region.x;
             height = region.y;
             storageType = StorageType.RGBA_8UI;
+            make3D();
 
             final IntBuffer textureData = BufferUtils
                     .createIntBuffer(4 * region.x * region.y * region.z);
@@ -392,6 +412,7 @@ public class Texture {
 
             width = region;
             storageType = StorageType.R_32F;
+            make1D();
 
             final FloatBuffer textureData = BufferUtils.createFloatBuffer(region);
 
@@ -423,6 +444,7 @@ public class Texture {
             width = region.x;
             height = region.y;
             storageType = StorageType.R_32F;
+            make2D();
 
             final FloatBuffer textureData = BufferUtils.createFloatBuffer(region.x * region.y);
 
@@ -455,6 +477,7 @@ public class Texture {
             height = region.y;
             depth = region.z;
             storageType = StorageType.R_32F;
+            make3D();
 
             final FloatBuffer textureData = BufferUtils
                     .createFloatBuffer(region.x * region.y * region.z);
@@ -486,6 +509,7 @@ public class Texture {
 
             width = region;
             storageType = StorageType.R_32I;
+            make1D();
 
             final IntBuffer textureData = BufferUtils.createIntBuffer(region);
 
@@ -517,6 +541,7 @@ public class Texture {
             width = region.x;
             height = region.y;
             storageType = StorageType.R_32I;
+            make2D();
 
             final IntBuffer textureData = BufferUtils.createIntBuffer(region.x * region.y);
 
@@ -549,6 +574,7 @@ public class Texture {
             height = region.y;
             depth = region.z;
             storageType = StorageType.R_32I;
+            make3D();
 
             final IntBuffer textureData = BufferUtils
                     .createIntBuffer(region.x * region.y * region.z);

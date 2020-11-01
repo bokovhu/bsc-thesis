@@ -16,10 +16,8 @@ public class Camera {
 
     private final Vector3f right = new Vector3f(1f, 0f, 0f);
     private final Vector3f forward = new Vector3f(0f, 0f, 1f);
-
-    private float aspect = 1.0f;
-
     private final float fovTan = 0.5f * (float) Math.tan(Math.toRadians(75.0f));
+    private float aspect = 1.0f;
 
     public Camera update(float aspect) {
         this.aspect = aspect;

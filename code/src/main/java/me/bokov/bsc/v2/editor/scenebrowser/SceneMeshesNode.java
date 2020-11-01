@@ -13,7 +13,7 @@ public class SceneMeshesNode extends DefaultMutableTreeNode {
         super("Meshes", true);
         this.scene = scene;
 
-        for(SceneMesh mesh : this.scene.getMeshes()) {
+        for (SceneMesh mesh : this.scene.getMeshes()) {
             add(new SceneMeshNode(mesh));
         }
     }

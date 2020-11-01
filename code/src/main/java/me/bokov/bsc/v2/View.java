@@ -24,20 +24,16 @@ public class View extends ViewBase implements Runnable {
     private final AppConfig config;
 
     private final Object nextSceneSyncObject = new Object();
+    double lastFrameTime = 0.0;
     private Scene nextScene = null;
     private Scene scene = null;
-
     private ShaderManager shaderManager = null;
     private InputManager inputManager = null;
     private CameraManager cameraManager = null;
     private Renderer renderer = null;
     private Camera camera = null;
-
     private int windowCreationWidth = 0, windowCreationHeight = 0;
-
     private float deltaTime = 0.0f, appTime = 0.0f, viewTime = 0.0f;
-    double lastFrameTime = 0.0;
-
     private long glfwWindowHandle = NULL;
 
     public View(App app, AppConfig config) {

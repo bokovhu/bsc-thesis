@@ -10,12 +10,11 @@ import java.util.concurrent.atomic.*;
 
 public class App implements Runnable {
 
+    private final long createdTime = System.currentTimeMillis();
     private View view;
     private Editor editor;
     private ExecutorService executor;
     private AtomicBoolean shouldQuit = new AtomicBoolean(false);
-
-    private final long createdTime = System.currentTimeMillis();
 
     public App() {
         this.view = new View(this, new AppConfig());

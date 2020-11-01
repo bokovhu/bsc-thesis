@@ -13,9 +13,9 @@ import java.util.*;
 public class Text {
 
     private final Map<Integer, Drawable> pageDrawables = new HashMap<>();
+    private final Vector4f color = new Vector4f(1f);
     private String text;
     private List<Glyph> glyphs = new ArrayList<>();
-    private final Vector4f color = new Vector4f(1f);
 
     private void makePageDrawables(FontInstance font) {
         for (var d : pageDrawables.values()) {

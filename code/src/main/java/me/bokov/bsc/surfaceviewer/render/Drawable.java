@@ -8,11 +8,11 @@ import java.util.stream.*;
 
 public class Drawable {
 
+    private final List<Attribute> vertexAttributes = new ArrayList<>();
     private int vboHandle;
     private int vaoHandle;
     private int primitiveType = GL46.GL_TRIANGLES;
     private int vertexCount = 0;
-    private final List<Attribute> vertexAttributes = new ArrayList<>();
 
     public Drawable() {
     }

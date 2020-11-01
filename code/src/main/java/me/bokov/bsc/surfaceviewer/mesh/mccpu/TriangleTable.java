@@ -2,9 +2,6 @@ package me.bokov.bsc.surfaceviewer.mesh.mccpu;
 
 public class TriangleTable {
 
-    private TriangleTable() {
-    }
-
     public static final int[][] TRIANGLE_TABLE = {
             {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
             {0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
@@ -263,5 +260,8 @@ public class TriangleTable {
             {0, 3, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
             {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
     };
+
+    private TriangleTable() {
+    }
 
 }

@@ -21,22 +21,15 @@ public class CameraController {
     private final AppView view;
     private final Camera camera;
     private final SurfaceViewerPlatform platform;
-    private State state = State.Identity;
-
     private final Vector3f orbitPosition = new Vector3f();
     private final Vector3f orbitTarget = new Vector3f();
     private final float orbitRadius = 6.0f;
     private final float orbitTimescale = 0.4f;
-    private float orbitTimer = 0.0f;
     private final Vector3f orbitUp = new Vector3f(0f, 1f, 0f);
-
     private final Vector3f origin = new Vector3f(0f, 0f, 0f);
     private final Vector3f rotationStartPoint = new Vector3f();
     private final Vector3f rotationStartUp = new Vector3f();
-    private float rotationYaw = 0.0f;
-    private float rotationPitch = 0.0f;
     private final Vector3f zoomStartPoint = new Vector3f();
-    private float zoomDistance = 0.0f;
     private final Vector3f panStartPoint = new Vector3f();
     private final Vector2f panDistance = new Vector2f();
     private final Vector3f panStartOrigin = new Vector3f();
@@ -48,6 +41,11 @@ public class CameraController {
     private final Vector3f tmpPanMovement = new Vector3f();
     private final Vector3f tmpNewOrigin = new Vector3f();
     private final Quaternionf tmpRotation = new Quaternionf();
+    private State state = State.Identity;
+    private float orbitTimer = 0.0f;
+    private float rotationYaw = 0.0f;
+    private float rotationPitch = 0.0f;
+    private float zoomDistance = 0.0f;
 
     public CameraController(
             AppView view, Camera camera,

@@ -12,14 +12,6 @@ import java.util.function.*;
 
 public class InputManager implements Installable<View> {
 
-    private View view = null;
-
-    private GLFWKeyCallbackI keyCallback = null;
-    private GLFWMouseButtonCallbackI mouseButtonCallback = null;
-    private GLFWCursorPosCallbackI cursorPosCallback = null;
-    private GLFWWindowSizeCallbackI windowSizeCallback = null;
-
-
     private final Map<KeyboardShortcut, List<Runnable>> keyboardShortcuts = new HashMap<>();
     private final Map<MouseShortcut, List<Runnable>> downShortcuts = new HashMap<>();
     private final Map<MouseShortcut, List<Runnable>> upShortcuts = new HashMap<>();
@@ -29,9 +21,85 @@ public class InputManager implements Installable<View> {
     private final Vector2f mouseCoords = new Vector2f();
     private final Vector2f lastMouseCoords = new Vector2f();
     private final Vector2f mouseMovement = new Vector2f();
-    private MouseShortcut lastDownMouseState = new MouseShortcut();
     private final Vector2f downMouseCoords = new Vector2f();
+    private View view = null;
+    private GLFWKeyCallbackI keyCallback = null;
+    private GLFWMouseButtonCallbackI mouseButtonCallback = null;
+    private GLFWCursorPosCallbackI cursorPosCallback = null;
+    private GLFWWindowSizeCallbackI windowSizeCallback = null;
+    private MouseShortcut lastDownMouseState = new MouseShortcut();
 
+    public static KeyboardShortcut kbShiftPlus(int key) {
+        return new KeyboardShortcut()
+                .setMods(GLFW.GLFW_MOD_SHIFT)
+                .setKeyCode(key);
+    }
+
+    public static KeyboardShortcut kbNoMods(int key) {
+        return new KeyboardShortcut()
+                .setMods(0)
+                .setKeyCode(key);
+    }
+
+    public static KeyboardShortcut kbCtrlPlus(int key) {
+        return new KeyboardShortcut()
+                .setMods(GLFW.GLFW_MOD_CONTROL)
+                .setKeyCode(key);
+    }
+
+    public static KeyboardShortcut kbAltPlus(int key) {
+        return new KeyboardShortcut()
+                .setMods(GLFW.GLFW_MOD_ALT)
+                .setKeyCode(key);
+    }
+
+    public static KeyboardShortcut kbSuperPlus(int key) {
+        return new KeyboardShortcut()
+                .setMods(GLFW.GLFW_MOD_SUPER)
+                .setKeyCode(key);
+    }
+
+    public static KeyboardShortcut kbCtrlShiftPlus(int key) {
+        return new KeyboardShortcut()
+                .setMods(GLFW.GLFW_MOD_SHIFT | GLFW.GLFW_MOD_CONTROL)
+                .setKeyCode(key);
+    }
+
+    public static MouseShortcut mShiftPlus(int button) {
+        return new MouseShortcut()
+                .setMods(GLFW.GLFW_MOD_SHIFT)
+                .setButton(button);
+    }
+
+    public static MouseShortcut mCtrlPlus(int button) {
+        return new MouseShortcut()
+                .setMods(GLFW.GLFW_MOD_CONTROL)
+                .setButton(button);
+    }
+
+    public static MouseShortcut mAltPlus(int button) {
+        return new MouseShortcut()
+                .setMods(GLFW.GLFW_MOD_ALT)
+                .setButton(button);
+    }
+
+    public static MouseShortcut mSuperPlus(int button) {
+        return new MouseShortcut()
+                .setMods(GLFW.GLFW_MOD_SUPER)
+                .setButton(button);
+    }
+
+    public static MouseShortcut mCtrlShiftPlus(int button) {
+        return new MouseShortcut()
+                .setMods(GLFW.GLFW_MOD_SHIFT | GLFW.GLFW_MOD_CONTROL)
+                .setButton(button);
+    }
+
+    public static MouseShortcut mNoMods(int button) {
+        return new MouseShortcut()
+                .setMods(0)
+                .setButton(button);
+    }
 
     @Override
     public void install(View parent) {
@@ -212,79 +280,6 @@ public class InputManager implements Installable<View> {
     public Vector2f dM() {
         return mouseMovement;
     }
-
-    public static KeyboardShortcut kbShiftPlus(int key) {
-        return new KeyboardShortcut()
-                .setMods(GLFW.GLFW_MOD_SHIFT)
-                .setKeyCode(key);
-    }
-
-    public static KeyboardShortcut kbNoMods(int key) {
-        return new KeyboardShortcut()
-                .setMods(0)
-                .setKeyCode(key);
-    }
-
-    public static KeyboardShortcut kbCtrlPlus(int key) {
-        return new KeyboardShortcut()
-                .setMods(GLFW.GLFW_MOD_CONTROL)
-                .setKeyCode(key);
-    }
-
-    public static KeyboardShortcut kbAltPlus(int key) {
-        return new KeyboardShortcut()
-                .setMods(GLFW.GLFW_MOD_ALT)
-                .setKeyCode(key);
-    }
-
-    public static KeyboardShortcut kbSuperPlus(int key) {
-        return new KeyboardShortcut()
-                .setMods(GLFW.GLFW_MOD_SUPER)
-                .setKeyCode(key);
-    }
-
-    public static KeyboardShortcut kbCtrlShiftPlus(int key) {
-        return new KeyboardShortcut()
-                .setMods(GLFW.GLFW_MOD_SHIFT | GLFW.GLFW_MOD_CONTROL)
-                .setKeyCode(key);
-    }
-
-    public static MouseShortcut mShiftPlus(int button) {
-        return new MouseShortcut()
-                .setMods(GLFW.GLFW_MOD_SHIFT)
-                .setButton(button);
-    }
-
-    public static MouseShortcut mCtrlPlus(int button) {
-        return new MouseShortcut()
-                .setMods(GLFW.GLFW_MOD_CONTROL)
-                .setButton(button);
-    }
-
-    public static MouseShortcut mAltPlus(int button) {
-        return new MouseShortcut()
-                .setMods(GLFW.GLFW_MOD_ALT)
-                .setButton(button);
-    }
-
-    public static MouseShortcut mSuperPlus(int button) {
-        return new MouseShortcut()
-                .setMods(GLFW.GLFW_MOD_SUPER)
-                .setButton(button);
-    }
-
-    public static MouseShortcut mCtrlShiftPlus(int button) {
-        return new MouseShortcut()
-                .setMods(GLFW.GLFW_MOD_SHIFT | GLFW.GLFW_MOD_CONTROL)
-                .setButton(button);
-    }
-
-    public static MouseShortcut mNoMods(int button) {
-        return new MouseShortcut()
-                .setMods(0)
-                .setButton(button);
-    }
-
 
     @Data
     @Accessors(chain = true)

@@ -24,6 +24,7 @@ public class SceneMeshSurfaceNode extends DefaultMutableTreeNode {
                 add(new SceneMeshSurfaceNode(mesh, child));
             }
         }
+
     }
 
     public Evaluatable<Float, CPUContext, GPUContext> toEvaluatable() {

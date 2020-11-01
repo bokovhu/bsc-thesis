@@ -13,26 +13,12 @@ import java.util.stream.*;
 
 public class MultiOperatorSurface extends SceneMeshSurface {
 
+    private final OperatorKind kind;
+    private final List<SceneMeshSurface> children = new ArrayList<>();
+
     public MultiOperatorSurface(OperatorKind kind) {
         this.kind = kind;
     }
-
-    public enum OperatorKind {
-        UNION("Union", Icons.FA_CUBES_SOLID_BLACK),
-        INTERSECT("Intersect", Icons.FA_CUBES_SOLID_BLACK),
-        SMOOTH_UNION("Smooth union", Icons.FA_CUBES_SOLID_BLACK),
-        SMOOTH_INTERSECT("Smooth intersect", Icons.FA_CUBES_SOLID_BLACK);
-        public final String displayName;
-        public final ImageIcon icon;
-
-        OperatorKind(String displayName, ImageIcon icon) {
-            this.displayName = displayName;
-            this.icon = icon;
-        }
-    }
-
-    private final OperatorKind kind;
-    private final List<SceneMeshSurface> children = new ArrayList<>();
 
     public MultiOperatorSurface addChild(SceneMeshSurface newChild) {
         this.children.add(newChild);
@@ -66,5 +52,19 @@ public class MultiOperatorSurface extends SceneMeshSurface {
     @Override
     public List<SceneMeshSurface> getChildSurfaces() {
         return Collections.unmodifiableList(children);
+    }
+
+    public enum OperatorKind {
+        UNION("Union", Icons.FA_CUBES_SOLID_BLACK),
+        INTERSECT("Intersect", Icons.FA_CUBES_SOLID_BLACK),
+        SMOOTH_UNION("Smooth union", Icons.FA_CUBES_SOLID_BLACK),
+        SMOOTH_INTERSECT("Smooth intersect", Icons.FA_CUBES_SOLID_BLACK);
+        public final String displayName;
+        public final ImageIcon icon;
+
+        OperatorKind(String displayName, ImageIcon icon) {
+            this.displayName = displayName;
+            this.icon = icon;
+        }
     }
 }

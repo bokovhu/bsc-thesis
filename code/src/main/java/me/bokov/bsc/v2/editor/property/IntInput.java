@@ -2,7 +2,6 @@ package me.bokov.bsc.v2.editor.property;
 
 import me.bokov.bsc.v2.Property;
 
-import javax.swing.*;
 import java.text.DecimalFormat;
 import java.text.Format;
 

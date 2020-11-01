@@ -17,6 +17,13 @@ public class CPUEvaluationContext implements CPUContext, Serializable {
 
     private Map<String, TextureView> textureViewMap = new HashMap<>();
 
+    @Deprecated
+    public static CPUEvaluationContext of(Vector3f point) {
+        return new CPUEvaluationContext()
+                .setPoint(point)
+                .setTextureViewMap(new HashMap<>());
+    }
+
     @Override
     public TextureView getTexture(String name) {
         return textureViewMap.get(name);
@@ -35,13 +42,6 @@ public class CPUEvaluationContext implements CPUContext, Serializable {
         return new CPUEvaluationContext()
                 .setPoint(point)
                 .setTextureViewMap(newMap);
-    }
-
-    @Deprecated
-    public static CPUEvaluationContext of(Vector3f point) {
-        return new CPUEvaluationContext()
-                .setPoint(point)
-                .setTextureViewMap(new HashMap<>());
     }
 
 }

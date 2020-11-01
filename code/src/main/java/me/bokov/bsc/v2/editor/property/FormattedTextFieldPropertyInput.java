@@ -3,10 +3,9 @@ package me.bokov.bsc.v2.editor.property;
 import me.bokov.bsc.v2.Property;
 
 import javax.swing.*;
-import java.text.DecimalFormat;
 import java.text.Format;
 
-public abstract class FormattedTextFieldPropertyInput <T> extends PropertyInput<T> {
+public abstract class FormattedTextFieldPropertyInput<T> extends PropertyInput<T> {
 
     protected JFormattedTextField field;
 
@@ -32,6 +31,7 @@ public abstract class FormattedTextFieldPropertyInput <T> extends PropertyInput<
     }
 
     protected abstract Format makeFormat();
+
     protected abstract <R> T convertValue(R value);
 
 }

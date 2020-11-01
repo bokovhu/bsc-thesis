@@ -4,18 +4,18 @@ import me.bokov.bsc.v2.Editor;
 import me.bokov.bsc.v2.Installable;
 import me.bokov.bsc.v2.editor.event.EditorSceneChanged;
 import me.bokov.bsc.v2.editor.scenebrowser.*;
+import me.bokov.bsc.v2.editor.surface.ShapeSurface;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.util.*;
 import java.util.function.*;
 
 public class SceneBrowser extends JPanel implements Installable<EditorLayout> {
-
-    private Editor editor;
 
     private static final Map<Class<?>, ImageIcon> NODE_TYPE_ICONS = Map.of(
             SceneNode.class, Icons.FA_THEATRE_MASKS_SOLID_BLACK,
@@ -26,11 +26,10 @@ public class SceneBrowser extends JPanel implements Installable<EditorLayout> {
             SceneLightNode.class, Icons.FA_LIGHTBULB_SOLID_BLACK,
             SceneMeshSurfaceNode.class, Icons.FA_THEATRE_MASKS_SOLID_BLACK
     );
-
     private static final Map<Class<?>, Function<Object, ImageIcon>> NODE_TYPE_ICON_FACTORIES = Map.of(
             SceneMeshSurfaceNode.class, (o) -> ((SceneMeshSurfaceNode) o).getSurface().getImageIcon()
     );
-
+    private Editor editor;
     private SceneActionBar actionBar;
     private JScrollPane treeScrollPane;
     private DefaultTreeModel treeModel;
@@ -67,6 +66,20 @@ public class SceneBrowser extends JPanel implements Installable<EditorLayout> {
 
         this.tree = new JTree(treeModel);
         this.tree.setCellRenderer(new SceneBrowserTreeCellRenderer());
+        this.tree.addTreeSelectionListener(
+                e -> {
+                    final TreeNode selected = (TreeNode) e.getPath().getLastPathComponent();
+                    if (selected instanceof SceneMeshSurfaceNode) {
+                        final var surfaceNode = (SceneMeshSurfaceNode) selected;
+                        if (surfaceNode.getSurface() instanceof ShapeSurface) {
+                            editor.getEditorLayout()
+                                    .getEditorTabset().openShapeSettingsTab(
+                                    (ShapeSurface) surfaceNode.getSurface()
+                            );
+                        }
+                    }
+                }
+        );
 
         this.treeScrollPane = new JScrollPane(this.tree);
 

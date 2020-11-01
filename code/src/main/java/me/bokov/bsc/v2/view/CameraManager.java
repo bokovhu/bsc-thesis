@@ -9,15 +9,6 @@ import org.lwjgl.glfw.GLFW;
 
 public class CameraManager implements Installable<View> {
 
-    public enum State {
-        Identity,
-        Rotating,
-        Panning,
-        Zooming
-    }
-
-    private View view = null;
-
     public static final float MOUSE_SENTITIVITY = 0.01f;
     private static final InputManager.MouseShortcut SHORTCUT_ROTATE = InputManager
             .mNoMods(GLFW.GLFW_MOUSE_BUTTON_3);
@@ -25,15 +16,10 @@ public class CameraManager implements Installable<View> {
             .mCtrlShiftPlus(GLFW.GLFW_MOUSE_BUTTON_3);
     private static final InputManager.MouseShortcut SHORTCUT_PAN = InputManager
             .mShiftPlus(GLFW.GLFW_MOUSE_BUTTON_3);
-
-    private State state = State.Identity;
     private final Vector3f origin = new Vector3f(0f, 0f, 0f);
     private final Vector3f rotationStartPoint = new Vector3f();
     private final Vector3f rotationStartUp = new Vector3f();
-    private float rotationYaw = 0.0f;
-    private float rotationPitch = 0.0f;
     private final Vector3f zoomStartPoint = new Vector3f();
-    private float zoomDistance = 0.0f;
     private final Vector3f panStartPoint = new Vector3f();
     private final Vector2f panDistance = new Vector2f();
     private final Vector3f panStartOrigin = new Vector3f();
@@ -45,6 +31,11 @@ public class CameraManager implements Installable<View> {
     private final Vector3f tmpPanMovement = new Vector3f();
     private final Vector3f tmpNewOrigin = new Vector3f();
     private final Quaternionf tmpRotation = new Quaternionf();
+    private View view = null;
+    private State state = State.Identity;
+    private float rotationYaw = 0.0f;
+    private float rotationPitch = 0.0f;
+    private float zoomDistance = 0.0f;
 
     @Override
     public void install(View parent) {
@@ -115,7 +106,7 @@ public class CameraManager implements Installable<View> {
 
     public void update() {
 
-        if (this.view == null || this.view.getCamera() == null) return;
+        if (this.view == null || this.view.getCamera() == null) { return; }
 
         final var camera = this.view.getCamera();
 
@@ -130,7 +121,8 @@ public class CameraManager implements Installable<View> {
                     camera.up()
             );
 
-        } if (state == State.Rotating) {
+        }
+        if (state == State.Rotating) {
 
             tmpRotation.identity()
                     .rotateY(rotationYaw)
@@ -168,5 +160,12 @@ public class CameraManager implements Installable<View> {
 
         this.view = null;
 
+    }
+
+    public enum State {
+        Identity,
+        Rotating,
+        Panning,
+        Zooming
     }
 }

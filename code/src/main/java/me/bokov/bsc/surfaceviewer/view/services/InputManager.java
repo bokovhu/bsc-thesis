@@ -19,8 +19,8 @@ public class InputManager {
     private final Vector2f mouseCoords = new Vector2f();
     private final Vector2f lastMouseCoords = new Vector2f();
     private final Vector2f mouseMovement = new Vector2f();
-    private MouseShortcut lastDownMouseState = new MouseShortcut();
     private final Vector2f downMouseCoords = new Vector2f();
+    private MouseShortcut lastDownMouseState = new MouseShortcut();
 
     public static KeyboardShortcut kbShiftPlus(int key) {
         return new KeyboardShortcut()

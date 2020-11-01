@@ -12,10 +12,9 @@ import java.util.*;
 // TODO: Attribute handling
 public class ShaderProgram {
 
-    private int programHandle;
     private final List<Integer> shaderHandles = new ArrayList<>();
     private final Map<String, CachedUniform> uniformCache = new HashMap<>();
-
+    private int programHandle;
     private String vertexShaderSourceCode = null;
     private String fragmentShaderSourceCode = null;
     private String geometryShaderSourceCode = null;

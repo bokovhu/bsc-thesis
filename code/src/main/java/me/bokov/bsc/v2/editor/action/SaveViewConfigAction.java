@@ -1,14 +1,11 @@
 package me.bokov.bsc.v2.editor.action;
 
 import me.bokov.bsc.v2.Editor;
-import me.bokov.bsc.v2.editor.property.PropertyInput;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.*;
 import java.util.function.*;
-
-import static java.util.stream.Collectors.*;
 
 public class SaveViewConfigAction extends AbstractAction {
 

@@ -2,9 +2,6 @@ package me.bokov.bsc.surfaceviewer.mesh.mccpu;
 
 public class EdgeTable {
 
-    private EdgeTable() {
-    }
-
     public static final int[] EDGE_TABLE = {
             0x0,
             0x109,
@@ -263,5 +260,8 @@ public class EdgeTable {
             0x109,
             0x0
     };
+
+    private EdgeTable() {
+    }
 
 }

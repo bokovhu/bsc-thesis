@@ -16,9 +16,9 @@ import java.io.Serializable;
 public class Corner<TData> implements Serializable {
 
     private final Vector3f point;
+    private final Vector3f normal;
     @Setter
     private float value;
-    private final Vector3f normal;
     @Setter
     private TData data = null;
 

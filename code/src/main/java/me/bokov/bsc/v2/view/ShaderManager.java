@@ -108,6 +108,26 @@ public class ShaderManager implements Installable<View> {
 
     }
 
+    @Override
+    public void install(View parent) {
+
+        this.programsByName.clear();
+        this.resourcesByName.clear();
+
+    }
+
+    @Override
+    public void uninstall() {
+
+        programsByName.forEach(
+                (key, value) -> value.tearDown()
+        );
+
+        programsByName.clear();
+        resourcesByName.clear();
+
+    }
+
     public class ShaderLoaderBuilder {
 
         private final String programName;
@@ -244,25 +264,5 @@ public class ShaderManager implements Installable<View> {
             this.tessellationControlResource = tessellationControlResource;
             this.tessellationEvaluationResource = tessellationEvaluationResource;
         }
-    }
-
-    @Override
-    public void install(View parent) {
-
-        this.programsByName.clear();
-        this.resourcesByName.clear();
-
-    }
-
-    @Override
-    public void uninstall() {
-
-        programsByName.forEach(
-                (key, value) -> value.tearDown()
-        );
-
-        programsByName.clear();
-        resourcesByName.clear();
-
     }
 }

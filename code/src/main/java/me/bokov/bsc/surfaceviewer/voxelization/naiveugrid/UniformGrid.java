@@ -12,10 +12,9 @@ import java.util.*;
 public class UniformGrid implements VoxelStorage, Serializable {
 
     private final int width, height, depth;
-    private MeshTransform transform;
     private final Voxel[] voxels;
-
     private final transient Vector3f tmpTransf = new Vector3f();
+    private MeshTransform transform;
 
     public UniformGrid(int width, int height, int depth) {
         this.width = width;

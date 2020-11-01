@@ -14,7 +14,12 @@ public class NewMeshAction extends AbstractAction {
     private final Editor editor;
     private final Supplier<SceneMeshSurface> rootSurfaceFactory;
 
-    public NewMeshAction(Editor editor, Supplier<SceneMeshSurface> rootSurfaceFactory, String displayName, ImageIcon icon) {
+    public NewMeshAction(
+            Editor editor,
+            Supplier<SceneMeshSurface> rootSurfaceFactory,
+            String displayName,
+            ImageIcon icon
+    ) {
         super(displayName, icon);
         this.editor = editor;
         this.rootSurfaceFactory = rootSurfaceFactory;

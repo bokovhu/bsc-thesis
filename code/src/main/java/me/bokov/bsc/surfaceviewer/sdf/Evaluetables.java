@@ -93,9 +93,9 @@ public final class Evaluetables {
     }
 
     public static Evaluatable<Float, CPUContext, GPUContext> union(List<Evaluatable<Float, CPUContext, GPUContext>> list) {
-        if (list.size() == 0) return null;
-        if (list.size() == 1) return union(list.get(0));
-        if (list.size() == 2) return union(list.get(0), list.get(1));
+        if (list.size() == 0) { return null; }
+        if (list.size() == 1) { return union(list.get(0)); }
+        if (list.size() == 2) { return union(list.get(0), list.get(1)); }
         return union(list.get(0), list.subList(1, list.size()).toArray(new Evaluatable[0]));
     }
 
@@ -126,9 +126,9 @@ public final class Evaluetables {
     }
 
     public static Evaluatable<Float, CPUContext, GPUContext> intersect(List<Evaluatable<Float, CPUContext, GPUContext>> list) {
-        if (list.size() == 0) return null;
-        if (list.size() == 1) return intersect(list.get(0));
-        if (list.size() == 2) return intersect(list.get(0), list.get(1));
+        if (list.size() == 0) { return null; }
+        if (list.size() == 1) { return intersect(list.get(0)); }
+        if (list.size() == 2) { return intersect(list.get(0), list.get(1)); }
         return intersect(list.get(0), list.subList(1, list.size()).toArray(new Evaluatable[0]));
     }
 

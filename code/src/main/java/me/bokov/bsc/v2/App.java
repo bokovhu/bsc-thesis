@@ -2,6 +2,7 @@ package me.bokov.bsc.v2;
 
 import me.bokov.bsc.surfaceviewer.AppConfig;
 import me.bokov.bsc.v2.editor.event.Event;
+import me.bokov.bsc.v2.view.renderer.RendererType;
 
 import javax.swing.*;
 import java.util.*;
@@ -39,6 +40,12 @@ public class App implements Runnable {
     public synchronized void sendConfigurationToView(Map<String, Map<String, Object>> delta) {
 
         view.changeConfiguration(delta);
+
+    }
+
+    public synchronized void sendRendererChangeToView(RendererType newRenderer) {
+
+        view.changeRenderer(newRenderer);
 
     }
 

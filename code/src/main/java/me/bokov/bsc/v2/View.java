@@ -27,6 +27,7 @@ public class View extends ViewBase implements Runnable {
     double lastFrameTime = 0.0;
     private Scene nextScene = null;
     private Scene scene = null;
+    private RendererType nextRendererType = null;
     private ShaderManager shaderManager = null;
     private InputManager inputManager = null;
     private CameraManager cameraManager = null;
@@ -69,6 +70,10 @@ public class View extends ViewBase implements Runnable {
         return this.camera;
     }
 
+    public App getApp() {
+        return app;
+    }
+
     public void init() {
 
         if (!GLFW.glfwInit()) {
@@ -92,7 +97,6 @@ public class View extends ViewBase implements Runnable {
 
         this.cameraManager = new CameraManager();
         this.cameraManager.install(this);
-        ;
 
         this.changeRenderer(RendererType.UniformGridMarchingCubes);
 
@@ -172,6 +176,19 @@ public class View extends ViewBase implements Runnable {
             }
         }
 
+        if (this.nextRendererType != null) {
+
+            if (this.renderer != null) {
+                this.renderer.uninstall();
+            }
+
+            this.renderer = nextRendererType.instance;
+            this.renderer.install(this);
+
+            this.nextRendererType = null;
+
+        }
+
         double now = GLFW.glfwGetTime();
         deltaTime = (float) (now - lastFrameTime);
         lastFrameTime = now;
@@ -217,12 +234,7 @@ public class View extends ViewBase implements Runnable {
 
     public void changeRenderer(RendererType newType) {
 
-        if (this.renderer != null) {
-            this.renderer.uninstall();
-        }
-
-        this.renderer = newType.instance;
-        this.renderer.install(this);
+        this.nextRendererType = newType;
 
     }
 

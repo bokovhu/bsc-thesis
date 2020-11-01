@@ -12,6 +12,7 @@ import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGridVoxelizer;
 import me.bokov.bsc.v2.Property;
 import me.bokov.bsc.v2.Scene;
 import me.bokov.bsc.v2.View;
+import me.bokov.bsc.v2.editor.event.RendererInitialized;
 import me.bokov.bsc.v2.view.Renderer;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -146,6 +147,10 @@ public class UniformGridMarchingCubesRenderer implements Renderer {
                         Resources.GLSL_VERTEX_STANDARD_3D_TRANSFORMED)
                 .fragmentFromResource(Resources.GLSL_FRAGMENT_BLINN_PHONG)
                 .end();
+
+        this.view.getApp()
+                .fireEditorEvent(RendererInitialized.class);
+
     }
 
     @Override

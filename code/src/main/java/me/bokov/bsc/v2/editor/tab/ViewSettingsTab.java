@@ -5,11 +5,13 @@ import me.bokov.bsc.v2.Installable;
 import me.bokov.bsc.v2.Property;
 import me.bokov.bsc.v2.editor.EditorTabset;
 import me.bokov.bsc.v2.editor.action.SaveViewConfigAction;
+import me.bokov.bsc.v2.editor.event.RendererInitialized;
 import me.bokov.bsc.v2.editor.event.ViewInitialized;
 import me.bokov.bsc.v2.editor.property.FloatInput;
 import me.bokov.bsc.v2.editor.property.IntInput;
 import me.bokov.bsc.v2.editor.property.PropertyInput;
 import me.bokov.bsc.v2.editor.property.Vec3Input;
+import me.bokov.bsc.v2.view.renderer.RendererType;
 import net.miginfocom.swing.MigLayout;
 import org.joml.Vector3f;
 
@@ -23,7 +25,10 @@ public class ViewSettingsTab extends JPanel implements Installable<EditorTabset>
     private Editor editor = null;
     private EditorTabset tabset = null;
 
+    private JComboBox<RendererType> rendererComboBox;
+
     private JPanel propertyGroupsContainer = null;
+    private JComponent propertyGroupsScroll = null;
     private List<PropertyGroupPanel> propertyGroupPanels = new ArrayList<>();
     private JButton saveButton = null;
 
@@ -61,12 +66,10 @@ public class ViewSettingsTab extends JPanel implements Installable<EditorTabset>
                 panel -> propertyGroupsContainer.add(panel, "grow, wrap")
         );
 
-        SwingUtilities.invokeLater(
-                () -> {
-                    invalidate();
-                    repaint();
-                }
-        );
+        tabset.revalidate();
+        tabset.repaint();
+
+
 
     }
 
@@ -78,12 +81,25 @@ public class ViewSettingsTab extends JPanel implements Installable<EditorTabset>
 
         this.tabset.addTab("View settings", this);
 
-        final var layout = new MigLayout("", "[grow]", "[grow]");
+        final var layout = new MigLayout("", "[grow]", "[shrink][grow]");
         setLayout(layout);
 
-        buildPropertyGroupsContainer();
+        this.rendererComboBox = new JComboBox<>(RendererType.values());
+        this.rendererComboBox.addActionListener(
+                e -> {
+                    final var newRenderer = (RendererType) this.rendererComboBox.getSelectedItem();
+                    SwingUtilities.invokeLater(
+                            () -> editor.app()
+                                    .sendRendererChangeToView(newRenderer)
+                    );
+                }
+        );
 
-        add(new JScrollPane(propertyGroupsContainer), "grow, wrap");
+        add(this.rendererComboBox, "grow, wrap");
+
+        buildPropertyGroupsContainer();
+        propertyGroupsScroll = new JScrollPane(propertyGroupsContainer);
+        add(propertyGroupsScroll, "grow, wrap");
 
         this.saveButton = new JButton(
                 new SaveViewConfigAction(
@@ -106,6 +122,7 @@ public class ViewSettingsTab extends JPanel implements Installable<EditorTabset>
         add(this.saveButton, "shrink, wrap");
 
         this.editor.getEventBus().subscribe(ViewInitialized.class, e -> this.buildPropertyGroupsContainer());
+        this.editor.getEventBus().subscribe(RendererInitialized.class, e -> this.buildPropertyGroupsContainer());
 
     }
 

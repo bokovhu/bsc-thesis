@@ -44,6 +44,8 @@ dependencies {
     implementation "org.joml:joml:${jomlVersion}"
     compile 'info.picocli:picocli:4.5.2'
 
+    compile group: 'com.miglayout', name: 'miglayout-swing', version: '5.2'
+
 }
 
 

@@ -1,35 +1,32 @@
-package me.bokov.bsc.surfaceviewer.view.services;
+package me.bokov.bsc.v2.view;
 
-import me.bokov.bsc.surfaceviewer.SurfaceViewerPlatform;
-import me.bokov.bsc.surfaceviewer.render.Camera;
-import me.bokov.bsc.surfaceviewer.view.AppView;
-import me.bokov.bsc.surfaceviewer.view.services.InputManager.MouseShortcut;
+import me.bokov.bsc.v2.Installable;
+import me.bokov.bsc.v2.View;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
-public class CameraController {
+public class CameraManager implements Installable<View> {
+
+    public enum State {
+        Identity,
+        Rotating,
+        Panning,
+        Zooming
+    }
+
+    private View view = null;
 
     public static final float MOUSE_SENTITIVITY = 0.01f;
-    private static final MouseShortcut SHORTCUT_ROTATE = InputManager
+    private static final InputManager.MouseShortcut SHORTCUT_ROTATE = InputManager
             .mNoMods(GLFW.GLFW_MOUSE_BUTTON_3);
-    private static final MouseShortcut SHORTCUT_ZOOM = InputManager
+    private static final InputManager.MouseShortcut SHORTCUT_ZOOM = InputManager
             .mCtrlShiftPlus(GLFW.GLFW_MOUSE_BUTTON_3);
-    private static final MouseShortcut SHORTCUT_PAN = InputManager
+    private static final InputManager.MouseShortcut SHORTCUT_PAN = InputManager
             .mShiftPlus(GLFW.GLFW_MOUSE_BUTTON_3);
-    private final AppView view;
-    private final Camera camera;
-    private final SurfaceViewerPlatform platform;
+
     private State state = State.Identity;
-
-    private final Vector3f orbitPosition = new Vector3f();
-    private final Vector3f orbitTarget = new Vector3f();
-    private final float orbitRadius = 6.0f;
-    private final float orbitTimescale = 0.4f;
-    private float orbitTimer = 0.0f;
-    private final Vector3f orbitUp = new Vector3f(0f, 1f, 0f);
-
     private final Vector3f origin = new Vector3f(0f, 0f, 0f);
     private final Vector3f rotationStartPoint = new Vector3f();
     private final Vector3f rotationStartUp = new Vector3f();
@@ -49,60 +46,47 @@ public class CameraController {
     private final Vector3f tmpNewOrigin = new Vector3f();
     private final Quaternionf tmpRotation = new Quaternionf();
 
-    public CameraController(
-            AppView view, Camera camera,
-            SurfaceViewerPlatform platform
-    ) {
-        this.view = view;
-        this.camera = camera;
-        this.platform = platform;
+    @Override
+    public void install(View parent) {
 
-        camera.lookAt(new Vector3f(6f, 6f, 6f), origin, new Vector3f(0f, 1f, 0f));
-        camera.update();
-
-        this.view.inputManager()
-                .shortcut(
-                        InputManager.kbShiftPlus(GLFW.GLFW_KEY_F),
-                        () -> this.state = this.state == State.Orbiting
-                                ? State.Identity
-                                : State.Orbiting
-                )
+        this.view = parent;
+        this.view.getInputManager()
                 .mouseUp(
                         SHORTCUT_ROTATE,
-                        () -> this.state = State.Identity
+                        () -> this.state = CameraManager.State.Identity
                 )
                 .mouseUp(
                         SHORTCUT_ZOOM,
-                        () -> this.state = State.Identity
+                        () -> this.state = CameraManager.State.Identity
                 )
                 .mouseUp(
                         SHORTCUT_PAN,
-                        () -> this.state = State.Identity
+                        () -> this.state = CameraManager.State.Identity
                 )
                 .mouseDown(
                         SHORTCUT_ROTATE,
                         () -> {
-                            this.state = State.Rotating;
-                            this.rotationStartPoint.set(camera.eye());
+                            this.state = CameraManager.State.Rotating;
+                            this.rotationStartPoint.set(view.getCamera().eye());
                             this.rotationPitch = 0.0f;
                             this.rotationYaw = 0.0f;
-                            this.rotationStartUp.set(camera.up());
+                            this.rotationStartUp.set(view.getCamera().up());
                         }
                 )
                 .mouseDown(
                         SHORTCUT_ZOOM,
                         () -> {
-                            this.state = State.Zooming;
+                            this.state = CameraManager.State.Zooming;
                             this.zoomDistance = 0.0f;
-                            this.zoomStartPoint.set(camera.eye());
+                            this.zoomStartPoint.set(view.getCamera().eye());
                         }
                 )
                 .mouseDown(
                         SHORTCUT_PAN,
                         () -> {
-                            this.state = State.Panning;
+                            this.state = CameraManager.State.Panning;
                             this.panDistance.set(0f, 0f);
-                            this.panStartPoint.set(camera.eye());
+                            this.panStartPoint.set(view.getCamera().eye());
                             this.panStartOrigin.set(origin);
                         }
                 )
@@ -126,25 +110,16 @@ public class CameraController {
                     this.zoomDistance -= d.y * MOUSE_SENTITIVITY;
                 }
         );
+
     }
 
-    public void update(float delta) {
+    public void update() {
 
-        if (state == State.Orbiting) {
+        if (this.view == null || this.view.getCamera() == null) return;
 
-            orbitTimer += delta;
+        final var camera = this.view.getCamera();
 
-            camera.lookAt(
-                    orbitPosition.set(
-                            (float) Math.cos(orbitTimer * orbitTimescale) * orbitRadius,
-                            4.0f,
-                            (float) Math.sin(orbitTimer * orbitTimescale) * orbitRadius
-                    ),
-                    orbitTarget,
-                    orbitUp
-            );
-
-        } else if (state == State.Zooming) {
+        if (state == State.Zooming) {
 
             tmpNewEye.set(zoomStartPoint).add(
                     tmpDir.set(camera.forward()).mul(zoomDistance)
@@ -155,7 +130,7 @@ public class CameraController {
                     camera.up()
             );
 
-        } else if (state == State.Rotating) {
+        } if (state == State.Rotating) {
 
             tmpRotation.identity()
                     .rotateY(rotationYaw)
@@ -188,12 +163,10 @@ public class CameraController {
 
     }
 
-    public enum State {
-        Identity,
-        Orbiting,
-        Rotating,
-        Panning,
-        Zooming
-    }
+    @Override
+    public void uninstall() {
 
+        this.view = null;
+
+    }
 }

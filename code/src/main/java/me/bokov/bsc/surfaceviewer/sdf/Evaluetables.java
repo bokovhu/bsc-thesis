@@ -5,6 +5,8 @@ import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import java.util.*;
+
 public final class Evaluetables {
 
     private Evaluetables() {
@@ -90,6 +92,13 @@ public final class Evaluetables {
 
     }
 
+    public static Evaluatable<Float, CPUContext, GPUContext> union(List<Evaluatable<Float, CPUContext, GPUContext>> list) {
+        if (list.size() == 0) return null;
+        if (list.size() == 1) return union(list.get(0));
+        if (list.size() == 2) return union(list.get(0), list.get(1));
+        return union(list.get(0), list.subList(1, list.size()).toArray(new Evaluatable[0]));
+    }
+
     public static Evaluatable<Float, CPUContext, GPUContext> subtract(
             Evaluatable<Float, CPUContext, GPUContext> first,
             Evaluatable<Float, CPUContext, GPUContext> second
@@ -114,6 +123,13 @@ public final class Evaluetables {
                         nextRest.length == 0 ? rest[0] : union(rest[0], nextRest)
                 )
         );
+    }
+
+    public static Evaluatable<Float, CPUContext, GPUContext> intersect(List<Evaluatable<Float, CPUContext, GPUContext>> list) {
+        if (list.size() == 0) return null;
+        if (list.size() == 1) return intersect(list.get(0));
+        if (list.size() == 2) return intersect(list.get(0), list.get(1));
+        return intersect(list.get(0), list.subList(1, list.size()).toArray(new Evaluatable[0]));
     }
 
     public static Evaluatable<Float, CPUContext, GPUContext> rotate(

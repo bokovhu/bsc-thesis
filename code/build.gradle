@@ -46,6 +46,14 @@ dependencies {
 
     compile group: 'com.miglayout', name: 'miglayout-swing', version: '5.2'
 
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.0'
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.7.0'
+
 }
 
-
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}

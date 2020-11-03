@@ -5,6 +5,7 @@ import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.GPUEvaluator;
+import me.bokov.bsc.surfaceviewer.util.MathUtil;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -39,11 +40,6 @@ public class Cone implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUCo
         );
     }
 
-    // TODO: Move to utility class
-    private float clamp(float v, float min, float max) {
-        return v < min ? min : (v > max ? max : v);
-    }
-
     @Override
     public Float evaluate(CPUContext c) {
         final Vector3f p = c.getPoint();
@@ -55,7 +51,7 @@ public class Cone implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUCo
                 .sub(
                         new Vector2f(Q)
                                 .mul(
-                                        clamp(
+                                        MathUtil.clamp(
                                                 new Vector2f(w).dot(Q) / new Vector2f(Q).dot(Q),
                                                 0.0f, 1.0f
                                         )
@@ -66,7 +62,7 @@ public class Cone implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUCo
                         new Vector2f(Q)
                                 .mul(
                                         new Vector2f(
-                                                clamp(w.x / Q.x, 0.0f, 1.0f),
+                                                MathUtil.clamp(w.x / Q.x, 0.0f, 1.0f),
                                                 1.0f
                                         )
                                 )

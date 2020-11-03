@@ -1,13 +1,11 @@
 package me.bokov.bsc.surfaceviewer.sdf.threed;
 
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
-import me.bokov.bsc.surfaceviewer.render.Texture;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.GPUEvaluator;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 import java.util.*;
 
@@ -55,26 +53,28 @@ public class PrecomputedSurface implements CPUEvaluator<Float, CPUContext>, GPUE
     @Override
     public Float evaluate(CPUContext context) {
 
-        final var t = context.getTexture(this.textureName);
+//        final var t = context.getTexture(this.textureName);
+//
+//        if (t.type() != Texture.TextureType.Tex3D) {
+//            throw new IllegalArgumentException("Texture should be a 3D texture.");
+//        }
+//
+//        final var p = context.getPoint();
+//
+//        tmpPT.set(p).sub(p000)
+//                .div(this.size)
+//                .min(new Vector3f(1f, 1f, 1f))
+//                .max(new Vector3f(0f, 0f, 0f));
+//
+//        final float u = tmpPT.x * t.width();
+//        final float v = tmpPT.y * t.height();
+//        final float w = tmpPT.z * t.depth();
+//
+//        final Vector4f color = t.atTrilinear(u, v, w);
+//
+//        return color.x;
+        return 0f;
 
-        if (t.type() != Texture.TextureType.Tex3D) {
-            throw new IllegalArgumentException("Texture should be a 3D texture.");
-        }
-
-        final var p = context.getPoint();
-
-        tmpPT.set(p).sub(p000)
-                .div(this.size)
-                .min(new Vector3f(1f, 1f, 1f))
-                .max(new Vector3f(0f, 0f, 0f));
-
-        final float u = tmpPT.x * t.width();
-        final float v = tmpPT.y * t.height();
-        final float w = tmpPT.z * t.depth();
-
-        final Vector4f color = t.atTrilinear(u, v, w);
-
-        return color.x;
     }
 
     @Override

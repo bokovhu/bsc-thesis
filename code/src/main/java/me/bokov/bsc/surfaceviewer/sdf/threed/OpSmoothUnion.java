@@ -3,6 +3,7 @@ package me.bokov.bsc.surfaceviewer.sdf.threed;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLVariableDeclarationStatement;
 import me.bokov.bsc.surfaceviewer.sdf.*;
+import me.bokov.bsc.surfaceviewer.util.MathUtil;
 
 import java.io.Serializable;
 import java.util.*;
@@ -92,26 +93,16 @@ public class OpSmoothUnion implements CPUEvaluator<Float, CPUContext>, GPUEvalua
         return result;
     }
 
-    // TODO: Should be moved to a utility class
-    private float _clamp(float v, float a, float b) {
-        return v < a ? a : v > b ? b : v;
-    }
-
-    // TODO: Should be moved to a utility class
-    private float _mix(float a, float b, float v) {
-        return a * (1.0f - v) + b * v;
-    }
-
     @Override
     public Float evaluate(CPUContext c) {
         final float v1 = a.cpu().evaluate(c);
         final float v2 = b.cpu().evaluate(c);
 
-        float h = _clamp(
+        float h = MathUtil.clamp(
                 0.5f + 0.5f * (v2 - v1) / k,
                 0.0f, 1.0f
         );
-        return _mix(v2, v1, h);
+        return MathUtil.mix(v2, v1, h);
     }
 
 }

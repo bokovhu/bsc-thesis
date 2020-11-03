@@ -78,28 +78,28 @@ public class RaymarcherShaderGenerator {
                 .setPointVariable("CSG_InputPoint")
                 .setContextId("CSG_Root");
 
-        for (var e : textureMap.entrySet()) {
-
-            final String uniformName = "u_texture" + e.getKey();
-
-            expressionEvaluationContext.withTexture(e.getKey(), e.getValue());
-            expressionEvaluationContext.withTextureUniform(e.getKey(), uniformName);
-
-            final var t = e.getValue();
-
-            switch (t.textureType()) {
-                case Tex1D:
-                    prog.add(new GLSLUniformStatement("sampler1D", uniformName, null));
-                    break;
-                case Tex2D:
-                    prog.add(new GLSLUniformStatement("sampler2D", uniformName, null));
-                    break;
-                case Tex3D:
-                    prog.add(new GLSLUniformStatement("sampler3D", uniformName, null));
-                    break;
-            }
-
-        }
+//        for (var e : textureMap.entrySet()) {
+//
+//            final String uniformName = "u_texture" + e.getKey();
+//
+//            expressionEvaluationContext.withTexture(e.getKey(), e.getValue());
+//            expressionEvaluationContext.withTextureUniform(e.getKey(), uniformName);
+//
+//            final var t = e.getValue();
+//
+//            switch (t.textureType()) {
+//                case Tex1D:
+//                    prog.add(new GLSLUniformStatement("sampler1D", uniformName, null));
+//                    break;
+//                case Tex2D:
+//                    prog.add(new GLSLUniformStatement("sampler2D", uniformName, null));
+//                    break;
+//                case Tex3D:
+//                    prog.add(new GLSLUniformStatement("sampler3D", uniformName, null));
+//                    break;
+//            }
+//
+//        }
 
         csgExecuteFunction.body(
                 distanceExpression.gpu().evaluate(expressionEvaluationContext)

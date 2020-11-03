@@ -1,9 +1,9 @@
 package me.bokov.bsc.surfaceviewer.mesh.mccpu;
 
-import me.bokov.bsc.surfaceviewer.mesh.SDFMesh;
 import me.bokov.bsc.surfaceviewer.mesh.MeshGenerator;
-import me.bokov.bsc.surfaceviewer.render.TriangleMesh;
-import me.bokov.bsc.surfaceviewer.render.TriangleMesh.Face;
+import me.bokov.bsc.surfaceviewer.render.Drawable;
+import me.bokov.bsc.surfaceviewer.render.Drawables;
+import me.bokov.bsc.surfaceviewer.render.Drawables.Face;
 import me.bokov.bsc.surfaceviewer.util.MetricsLogger;
 import me.bokov.bsc.surfaceviewer.voxelization.Corner;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
@@ -47,7 +47,7 @@ public class MarchingCubes implements MeshGenerator {
     }
 
     @Override
-    public SDFMesh generate(VoxelStorage voxelStorage) {
+    public Drawable generate(VoxelStorage voxelStorage) {
 
         List<Face> generatedTriangles = new ArrayList<>();
         final long startTime = System.currentTimeMillis();
@@ -142,9 +142,7 @@ public class MarchingCubes implements MeshGenerator {
                 )
         );
 
-        return new SDFMesh()
-                .attachVoxelStorage(voxelStorage)
-                .attachDrawable(TriangleMesh.create(generatedTriangles));
+        return Drawables.create(generatedTriangles);
     }
 
     private final class Vertex {

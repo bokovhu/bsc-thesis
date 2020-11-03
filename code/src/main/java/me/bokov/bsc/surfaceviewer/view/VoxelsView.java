@@ -15,6 +15,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 
+@Deprecated
 public class VoxelsView extends AppView {
 
     private Voxelizer3D<UniformGrid> voxelizer;

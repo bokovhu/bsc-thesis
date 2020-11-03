@@ -92,10 +92,12 @@ public class OpSmoothUnion implements CPUEvaluator<Float, CPUContext>, GPUEvalua
         return result;
     }
 
+    // TODO: Should be moved to a utility class
     private float _clamp(float v, float a, float b) {
         return v < a ? a : v > b ? b : v;
     }
 
+    // TODO: Should be moved to a utility class
     private float _mix(float a, float b, float v) {
         return a * (1.0f - v) + b * v;
     }

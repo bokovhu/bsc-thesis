@@ -2,7 +2,7 @@ package me.bokov.bsc.surfaceviewer.mesh;
 
 import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorage;
 
-public interface SDFMeshGenerator {
+public interface MeshGenerator {
 
     SDFMesh generate(VoxelStorage voxelStorage);
 

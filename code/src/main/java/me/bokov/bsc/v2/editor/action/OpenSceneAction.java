@@ -6,6 +6,7 @@ import me.bokov.bsc.v2.editor.Icons;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
+// TODO: Implement
 public class OpenSceneAction extends AbstractAction {
 
     private final Editor editor;

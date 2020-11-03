@@ -10,6 +10,7 @@ import me.bokov.bsc.surfaceviewer.util.ResourceUtil;
 
 import java.util.*;
 
+@Deprecated
 public class RayMarchingView extends AppView {
 
     private ShaderProgram rayMarchingProgram = null;

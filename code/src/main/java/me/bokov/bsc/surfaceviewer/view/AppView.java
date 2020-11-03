@@ -11,6 +11,7 @@ import me.bokov.bsc.surfaceviewer.view.services.ShaderManager;
 import org.joml.Vector2f;
 import org.lwjgl.opengl.GL46;
 
+@Deprecated
 public abstract class AppView {
 
     protected final Camera camera = new Camera();

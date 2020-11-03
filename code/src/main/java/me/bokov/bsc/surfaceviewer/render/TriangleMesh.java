@@ -8,6 +8,8 @@ import org.lwjgl.opengl.GL46;
 import java.nio.FloatBuffer;
 import java.util.*;
 
+// TODO: Should be moved to Drawables
+@Deprecated
 public class TriangleMesh {
 
     private TriangleMesh() {

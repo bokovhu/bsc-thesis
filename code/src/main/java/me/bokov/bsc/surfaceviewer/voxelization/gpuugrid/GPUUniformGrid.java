@@ -13,6 +13,7 @@ import org.lwjgl.opengl.GL46;
 import java.nio.FloatBuffer;
 import java.util.*;
 
+// TODO: Test and fix if not working
 public class GPUUniformGrid implements VoxelStorage {
 
     // Very important TODO FIXME FIXME TODO FIXME

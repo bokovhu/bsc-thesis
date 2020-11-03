@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 
+// TODO: readResource should attempt to load resource as a file
+//      If not found through the ClassLoader
 public final class ResourceUtil {
 
     private ResourceUtil() {

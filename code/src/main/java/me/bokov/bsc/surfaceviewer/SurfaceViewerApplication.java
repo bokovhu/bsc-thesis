@@ -1,5 +1,6 @@
 package me.bokov.bsc.surfaceviewer;
 
+@Deprecated
 public class SurfaceViewerApplication implements Runnable {
 
     private final SurfaceViewerPlatform platform;

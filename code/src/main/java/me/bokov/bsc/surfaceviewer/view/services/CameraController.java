@@ -9,6 +9,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
+@Deprecated
 public class CameraController {
 
     public static final float MOUSE_SENTITIVITY = 0.01f;

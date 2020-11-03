@@ -1,5 +1,6 @@
 package me.bokov.bsc.v2;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
@@ -12,9 +13,14 @@ import java.io.Serializable;
 import java.util.*;
 
 @Getter
-@Setter
+@EqualsAndHashCode
 public abstract class SceneMeshSurface implements Serializable {
 
+    private final String id;
+
+    protected SceneMeshSurface(String id) {
+        this.id = id;
+    }
 
     public abstract String getDisplayName();
 

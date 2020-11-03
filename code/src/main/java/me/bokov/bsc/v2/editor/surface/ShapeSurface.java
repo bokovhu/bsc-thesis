@@ -34,7 +34,8 @@ public class ShapeSurface extends SceneMeshSurface {
     private final ShapeKind kind;
     private ShapeDescriptor shapeDescriptor = new ShapeDescriptor(new HashMap<>());
 
-    public ShapeSurface(ShapeKind kind) {
+    public ShapeSurface(String id, ShapeKind kind) {
+        super(id);
         this.kind = kind;
     }
 

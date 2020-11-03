@@ -5,6 +5,7 @@ import me.bokov.bsc.surfaceviewer.view.AppView;
 
 import java.util.*;
 
+@Deprecated
 public class FontManager {
 
     private final AppView view;

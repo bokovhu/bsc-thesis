@@ -7,6 +7,7 @@ import java.util.*;
 
 @Data
 @Accessors(chain = true)
+@Deprecated
 public class AppConfig {
 
     private int width = 1280;

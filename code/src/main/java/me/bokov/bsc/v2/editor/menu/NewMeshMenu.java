@@ -7,6 +7,7 @@ import me.bokov.bsc.v2.editor.surface.MultiOperatorSurface;
 import me.bokov.bsc.v2.editor.surface.ShapeSurface;
 
 import javax.swing.*;
+import java.util.*;
 
 public class NewMeshMenu extends JMenu {
 
@@ -22,7 +23,7 @@ public class NewMeshMenu extends JMenu {
         add(
                 new NewMeshAction(
                         editor,
-                        () -> new ShapeSurface(ShapeSurface.ShapeKind.BOX),
+                        () -> new ShapeSurface(UUID.randomUUID().toString(), ShapeSurface.ShapeKind.BOX),
                         "Box",
                         Icons.FA_CUBES_SOLID_BLACK
                 )
@@ -31,7 +32,7 @@ public class NewMeshMenu extends JMenu {
         add(
                 new NewMeshAction(
                         editor,
-                        () -> new ShapeSurface(ShapeSurface.ShapeKind.SPHERE),
+                        () -> new ShapeSurface(UUID.randomUUID().toString(), ShapeSurface.ShapeKind.SPHERE),
                         "Sphere",
                         Icons.FA_CUBES_SOLID_BLACK
                 )
@@ -40,7 +41,7 @@ public class NewMeshMenu extends JMenu {
         add(
                 new NewMeshAction(
                         editor,
-                        () -> new MultiOperatorSurface(MultiOperatorSurface.OperatorKind.UNION),
+                        () -> new MultiOperatorSurface(UUID.randomUUID().toString(), MultiOperatorSurface.OperatorKind.UNION),
                         "Union",
                         Icons.FA_CUBES_SOLID_BLACK
                 )

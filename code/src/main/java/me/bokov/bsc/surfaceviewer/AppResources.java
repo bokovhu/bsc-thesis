@@ -5,6 +5,7 @@ import java.util.Map.*;
 
 import static java.util.stream.Collectors.*;
 
+@Deprecated
 public final class AppResources {
 
     private final Map<String, Object> resourceMap = new HashMap<>();

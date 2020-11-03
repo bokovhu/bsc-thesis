@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL46;
 
 import static org.lwjgl.system.MemoryUtil.*;
 
+@Deprecated
 public class SurfaceViewerPlatform {
 
     private final ViewManager viewManager;

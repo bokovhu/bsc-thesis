@@ -34,12 +34,6 @@ public class ShapeSettingsTab extends JPanel implements Installable<EditorTabset
         this.editor = parent.getEditor();
         this.tabset = parent;
 
-        this.tabset.addTab(
-                this.shapeSurface.getDisplayName(),
-                this.shapeSurface.getImageIcon(),
-                this
-        );
-
         setLayout(new MigLayout("", "grow", "grow"));
 
         for (var prop : shapeSurface.getShapeProperties()) {
@@ -62,6 +56,12 @@ public class ShapeSettingsTab extends JPanel implements Installable<EditorTabset
                         )
                 ),
                 "shrink, wrap"
+        );
+
+        this.tabset.addTab(
+                this.shapeSurface.getDisplayName(),
+                this.shapeSurface.getImageIcon(),
+                this
         );
 
     }

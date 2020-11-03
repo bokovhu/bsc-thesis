@@ -38,6 +38,7 @@ public class SceneBrowser extends JPanel implements Installable<EditorLayout> {
     public SceneBrowser() {
     }
 
+    // FIXME: Should not always return a new scene node!
     private SceneNode sceneToRoot() {
 
         if (editor.getScene() != null) {
@@ -69,7 +70,7 @@ public class SceneBrowser extends JPanel implements Installable<EditorLayout> {
         this.tree.addTreeSelectionListener(
                 e -> {
                     final TreeNode selected = (TreeNode) e.getPath().getLastPathComponent();
-                    if (selected instanceof SceneMeshSurfaceNode) {
+                    if (selected instanceof SceneMeshSurfaceNode && e.isAddedPath()) {
                         final var surfaceNode = (SceneMeshSurfaceNode) selected;
                         if (surfaceNode.getSurface() instanceof ShapeSurface) {
                             editor.getEditorLayout()

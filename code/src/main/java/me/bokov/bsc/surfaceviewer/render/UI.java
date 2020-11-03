@@ -3,6 +3,7 @@ package me.bokov.bsc.surfaceviewer.render;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 
+@Deprecated
 public class UI {
 
     private final Matrix4f projection = new Matrix4f();

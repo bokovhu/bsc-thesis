@@ -16,6 +16,7 @@ import java.util.stream.*;
 public class Scene implements Serializable {
 
     private String name = "New scene";
+    @Deprecated
     private String fileSystemPath = new File(System.getProperty("user.dir"), "New scene.bin").getAbsolutePath();
     private List<SceneMesh> meshes = new ArrayList<>();
     private List<SceneLight> lights = new ArrayList<>();

@@ -5,6 +5,7 @@ import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
 
+@Deprecated
 public final class AppScene {
 
     private final Evaluatable<Float, CPUContext, GPUContext> sdfGenerator;

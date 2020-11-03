@@ -16,6 +16,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 
+@Deprecated
 public class OctreeMarchingCubesView extends AppView {
 
     private static final Matrix4f IDENTITY = new Matrix4f().identity();

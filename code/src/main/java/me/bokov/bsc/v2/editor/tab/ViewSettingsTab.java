@@ -7,13 +7,9 @@ import me.bokov.bsc.v2.editor.EditorTabset;
 import me.bokov.bsc.v2.editor.action.SaveViewConfigAction;
 import me.bokov.bsc.v2.editor.event.RendererInitialized;
 import me.bokov.bsc.v2.editor.event.ViewInitialized;
-import me.bokov.bsc.v2.editor.property.FloatInput;
-import me.bokov.bsc.v2.editor.property.IntInput;
 import me.bokov.bsc.v2.editor.property.PropertyInput;
-import me.bokov.bsc.v2.editor.property.Vec3Input;
 import me.bokov.bsc.v2.view.renderer.RendererType;
 import net.miginfocom.swing.MigLayout;
-import org.joml.Vector3f;
 
 import javax.swing.*;
 import java.util.*;
@@ -57,7 +53,7 @@ public class ViewSettingsTab extends JPanel implements Installable<EditorTabset>
         propertyGroups.forEach(
                 (groupName, properties) -> {
 
-                    propertyGroupPanels.add(new PropertyGroupPanel(groupName, properties));
+                    propertyGroupPanels.add(new PropertyGroupPanel(groupName, properties, viewConfig.getOrDefault(groupName, Collections.emptyMap())));
 
                 }
         );
@@ -68,7 +64,6 @@ public class ViewSettingsTab extends JPanel implements Installable<EditorTabset>
 
         tabset.revalidate();
         tabset.repaint();
-
 
 
     }
@@ -143,7 +138,8 @@ public class ViewSettingsTab extends JPanel implements Installable<EditorTabset>
 
         private PropertyGroupPanel(
                 String groupName,
-                List<Property<?>> properties
+                List<Property<?>> properties,
+                Map<String, Object> settings
         ) {
             this.groupName = groupName;
             this.properties = properties;
@@ -154,17 +150,14 @@ public class ViewSettingsTab extends JPanel implements Installable<EditorTabset>
 
             for (var prop : properties) {
 
-                switch (prop.getType()) {
-                    case FLOAT:
-                        propertyInputs.add(new FloatInput((Property<Float>) prop));
-                        break;
-                    case INT:
-                        propertyInputs.add(new IntInput((Property<Integer>) prop));
-                        break;
-                    case VEC3:
-                        propertyInputs.add(new Vec3Input((Property<Vector3f>) prop));
-                        break;
-                }
+                final var input = PropertyInput.inputFor(
+                        new Property<>(
+                                prop.getType(), prop.getGroup(), prop.getName(),
+                                settings.getOrDefault(prop.getName(), prop.getDefaultValue())
+                        )
+                );
+
+                propertyInputs.add(input);
 
             }
 

@@ -13,6 +13,7 @@ import java.util.function.*;
 
 import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.*;
 
+@Deprecated
 // Intentionally package-private
 final class SceneManager {
 

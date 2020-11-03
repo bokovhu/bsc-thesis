@@ -7,6 +7,7 @@ import me.bokov.bsc.v2.editor.menu.NewSceneObjectMenu;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
+@Deprecated
 public class NewSceneObjectAction extends AbstractAction {
 
     private final Editor editor;

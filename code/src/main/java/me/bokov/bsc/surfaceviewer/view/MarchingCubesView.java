@@ -25,6 +25,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
 
+@Deprecated
 public class MarchingCubesView extends AppView {
 
     private static final Matrix4f IDENTITY = new Matrix4f().identity();

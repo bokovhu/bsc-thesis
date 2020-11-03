@@ -1,7 +1,7 @@
 package me.bokov.bsc.surfaceviewer.mesh.mccpu;
 
 import me.bokov.bsc.surfaceviewer.mesh.SDFMesh;
-import me.bokov.bsc.surfaceviewer.mesh.SDFMeshGenerator;
+import me.bokov.bsc.surfaceviewer.mesh.MeshGenerator;
 import me.bokov.bsc.surfaceviewer.render.TriangleMesh;
 import me.bokov.bsc.surfaceviewer.render.TriangleMesh.Face;
 import me.bokov.bsc.surfaceviewer.util.MetricsLogger;
@@ -13,7 +13,7 @@ import org.joml.Vector4f;
 
 import java.util.*;
 
-public class MarchingCubes implements SDFMeshGenerator {
+public class MarchingCubes implements MeshGenerator {
 
     private static final float EPSILON = 0.001f;
     private static final Vector4f COLOR = new Vector4f(0.2f, 0.6f, 0.95f, 1f);

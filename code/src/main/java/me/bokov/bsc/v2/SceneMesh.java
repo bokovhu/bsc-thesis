@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 
+@Deprecated
 @Getter
 @Setter
 public class SceneMesh implements Serializable {

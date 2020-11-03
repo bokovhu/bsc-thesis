@@ -6,6 +6,7 @@ import me.bokov.bsc.surfaceviewer.view.AppView;
 
 import java.util.*;
 
+@Deprecated
 public class ShaderManager {
 
     private final AppView view;

@@ -5,6 +5,7 @@ import me.bokov.bsc.surfaceviewer.view.*;
 import java.util.*;
 import java.util.function.*;
 
+@Deprecated
 // Intentionally package-private
 final class ViewManager {
 

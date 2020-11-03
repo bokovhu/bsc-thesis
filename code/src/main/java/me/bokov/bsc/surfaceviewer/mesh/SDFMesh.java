@@ -7,6 +7,10 @@ import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorage;
 import java.util.*;
 import java.util.stream.*;
 
+/**
+ * Should be able to use any Drawable instance instead of this
+ */
+@Deprecated
 public class SDFMesh {
 
     private Drawable drawable;

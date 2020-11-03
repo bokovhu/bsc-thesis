@@ -6,6 +6,7 @@ import org.joml.Vector3f;
 
 import java.io.Serializable;
 
+@Deprecated
 @Getter
 @Setter
 public class SceneMeshMaterial implements Serializable {

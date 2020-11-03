@@ -6,6 +6,7 @@ import picocli.CommandLine.Option;
 
 import java.util.*;
 
+@Deprecated
 // Intentionally package-private
 final class SurfaceViewerMain {
 

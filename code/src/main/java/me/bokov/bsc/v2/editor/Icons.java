@@ -2,6 +2,7 @@ package me.bokov.bsc.v2.editor;
 
 import javax.swing.*;
 
+// TODO: Cleanup icon handling
 public interface Icons {
 
     ImageIcon FA_PLUS_SOLID_GREEN = new ImageIcon(

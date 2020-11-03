@@ -13,6 +13,7 @@ import java.util.*;
 
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.*;
 
+// TODO: Test and fix if wrong
 public class PrecomputedSurface implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUContext> {
 
     private final String textureName;

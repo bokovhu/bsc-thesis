@@ -8,6 +8,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.*;
 import java.util.function.*;
 
+@Deprecated
 public class InputManager {
 
     private final Map<KeyboardShortcut, List<Runnable>> keyboardShortcuts = new HashMap<>();

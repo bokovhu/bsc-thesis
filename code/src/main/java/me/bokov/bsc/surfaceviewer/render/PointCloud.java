@@ -11,6 +11,8 @@ import java.nio.FloatBuffer;
 import java.util.*;
 import java.util.stream.*;
 
+// TODO: Should be migrated to Drawables
+@Deprecated
 public final class PointCloud {
 
     private PointCloud() {

@@ -16,7 +16,8 @@ public class MultiOperatorSurface extends SceneMeshSurface {
     private final OperatorKind kind;
     private final List<SceneMeshSurface> children = new ArrayList<>();
 
-    public MultiOperatorSurface(OperatorKind kind) {
+    public MultiOperatorSurface(String id, OperatorKind kind) {
+        super(id);
         this.kind = kind;
     }
 

@@ -6,6 +6,8 @@ import org.joml.Vector3f;
 
 import java.io.Serializable;
 
+// TODO: Transformation combination
+// TODO: Manipulation functions
 public class MeshTransform implements Serializable {
 
     private final Vector3f position;

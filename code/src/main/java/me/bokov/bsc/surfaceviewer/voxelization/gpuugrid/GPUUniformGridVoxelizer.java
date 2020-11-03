@@ -27,6 +27,8 @@ public class GPUUniformGridVoxelizer implements Voxelizer3D<GPUUniformGrid> {
 
         final GPUEvaluator<GPUContext> distanceExpression = generator.gpu();
 
+        // TODO: Finish
+
         return null;
     }
 }

@@ -5,6 +5,8 @@ import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;
 
+// TODO: Should be migrated to Drawables
+@Deprecated
 public final class FullScreenQuad {
 
     private FullScreenQuad() {

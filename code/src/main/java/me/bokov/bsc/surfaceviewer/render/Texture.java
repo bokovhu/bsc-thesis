@@ -12,6 +12,10 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.function.*;
 
+// TODO: Complete texture handling refactor required
+// TODO: Should support both generated and loaded textures
+// TODO: Should support 1D, 2D and 3D images
+@Deprecated
 public class Texture {
 
     private int textureHandle;

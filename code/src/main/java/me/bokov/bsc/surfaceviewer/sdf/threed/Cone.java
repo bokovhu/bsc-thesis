@@ -39,6 +39,7 @@ public class Cone implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUCo
         );
     }
 
+    // TODO: Move to utility class
     private float clamp(float v, float min, float max) {
         return v < min ? min : (v > max ? max : v);
     }

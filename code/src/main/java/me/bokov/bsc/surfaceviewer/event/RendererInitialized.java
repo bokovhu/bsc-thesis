@@ -1,4 +1,4 @@
-package me.bokov.bsc.surfaceviewer.editor.event;
+package me.bokov.bsc.surfaceviewer.event;
 
 public interface RendererInitialized extends Event {
 }

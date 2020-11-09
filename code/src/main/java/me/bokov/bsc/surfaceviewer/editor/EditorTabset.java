@@ -34,7 +34,7 @@ public class EditorTabset extends JTabbedPane implements Installable<EditorLayou
     public void openShapeSettingsTab(ShapeSurface shape) {
 
         for (int i = 0; i < getTabCount(); i++) {
-            final var tab = getTabComponentAt(i);
+            final var tab = getComponentAt(i);
 
             if (tab instanceof ShapeSettingsTab) {
                 final var shapeTab = (ShapeSettingsTab) tab;
@@ -48,6 +48,8 @@ public class EditorTabset extends JTabbedPane implements Installable<EditorLayou
         final var newTab = new ShapeSettingsTab(shape);
         newTab.install(this);
         setSelectedIndex(getTabCount() - 1);
+
+
 
     }
 

@@ -2,8 +2,8 @@ package me.bokov.bsc.surfaceviewer.editor;
 
 import me.bokov.bsc.surfaceviewer.Editor;
 import me.bokov.bsc.surfaceviewer.Installable;
-import me.bokov.bsc.surfaceviewer.editor.event.Event;
-import me.bokov.bsc.surfaceviewer.editor.event.Listener;
+import me.bokov.bsc.surfaceviewer.event.Event;
+import me.bokov.bsc.surfaceviewer.event.Listener;
 
 import java.util.*;
 

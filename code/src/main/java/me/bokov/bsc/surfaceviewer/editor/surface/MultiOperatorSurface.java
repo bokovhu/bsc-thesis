@@ -1,6 +1,6 @@
 package me.bokov.bsc.surfaceviewer.editor.surface;
 
-import me.bokov.bsc.surfaceviewer.SceneMeshSurface;
+import me.bokov.bsc.surfaceviewer.MeshSurface;
 import me.bokov.bsc.surfaceviewer.editor.Icons;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
@@ -11,16 +11,16 @@ import javax.swing.*;
 import java.util.*;
 import java.util.stream.*;
 
-public class MultiOperatorSurface extends SceneMeshSurface {
+public class MultiOperatorSurface extends MeshSurface {
 
     private final OperatorKind kind;
-    private final List<SceneMeshSurface> children = new ArrayList<>();
+    private final List<MeshSurface> children = new ArrayList<>();
 
     public MultiOperatorSurface(OperatorKind kind) {
         this.kind = kind;
     }
 
-    public MultiOperatorSurface addChild(SceneMeshSurface newChild) {
+    public MultiOperatorSurface addChild(MeshSurface newChild) {
         this.children.add(newChild);
         return this;
     }
@@ -34,7 +34,7 @@ public class MultiOperatorSurface extends SceneMeshSurface {
     public Evaluatable<Float, CPUContext, GPUContext> toEvaluatable() {
 
         final List<Evaluatable<Float, CPUContext, GPUContext>> evaluatables = children.stream()
-                .map(SceneMeshSurface::toEvaluatable)
+                .map(MeshSurface::toEvaluatable)
                 .collect(Collectors.toList());
 
         switch (kind) {
@@ -50,7 +50,7 @@ public class MultiOperatorSurface extends SceneMeshSurface {
     }
 
     @Override
-    public List<SceneMeshSurface> getChildSurfaces() {
+    public List<MeshSurface> getChildSurfaces() {
         return Collections.unmodifiableList(children);
     }
 

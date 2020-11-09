@@ -1,10 +1,12 @@
 package me.bokov.bsc.surfaceviewer.voxelization.gpuugrid;
 
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
+import me.bokov.bsc.surfaceviewer.render.Texture;
 import me.bokov.bsc.surfaceviewer.voxelization.Corner;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
 import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorage;
 import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGrid;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -13,17 +15,12 @@ import org.lwjgl.opengl.GL46;
 import java.nio.FloatBuffer;
 import java.util.*;
 
-// TODO: Test and fix if not working
 public class GPUUniformGrid implements VoxelStorage {
 
-    // Very important TODO FIXME FIXME TODO FIXME
-    // positionAndValueBuffer and normalBuffer should be (W+1)*(H+1)*(D+1) dimensional, so that
-    // GPU calculations are done per-corner
-
     private final int width, height, depth;
+    private final int vWidth, vHeight, vDepth;
     private final FloatBuffer positionAndValueBuffer, normalBuffer;
-    private int positionAndValueTextureId;
-    private int normalTextureId;
+    private Texture positionAndValueTexture, normalTexture;
     private MeshTransform transform;
     private UniformGrid cpuGrid;
     private boolean preparedTextures = false;
@@ -32,6 +29,11 @@ public class GPUUniformGrid implements VoxelStorage {
         this.width = width;
         this.height = height;
         this.depth = depth;
+
+        this.vWidth = width - 1;
+        this.vHeight = height - 1;
+        this.vDepth = depth - 1;
+
         this.transform = new MeshTransform(
                 new Vector3f(0f, 0f, 0f),
                 new Quaternionf(),
@@ -41,7 +43,7 @@ public class GPUUniformGrid implements VoxelStorage {
         );
 
         positionAndValueBuffer = BufferUtils.createFloatBuffer(width * height * depth * 4);
-        normalBuffer = BufferUtils.createFloatBuffer(width * height * depth * 3);
+        normalBuffer = BufferUtils.createFloatBuffer(width * height * depth * 4);
     }
 
     public GPUUniformGrid applyTransform(MeshTransform transform) {
@@ -55,9 +57,9 @@ public class GPUUniformGrid implements VoxelStorage {
 
     private void prepareCPUVoxels() {
 
-        for (int z = 0; z < depth; z++) {
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
+        for (int z = 0; z < vDepth; z++) {
+            for (int y = 0; y < vHeight; y++) {
+                for (int x = 0; x < vWidth; x++) {
                     cpuGrid.putVoxel(
                             x, y, z,
                             new Voxel(
@@ -83,42 +85,50 @@ public class GPUUniformGrid implements VoxelStorage {
                 positionAndValueBuffer.get(4 * idx(x, y, z) + 2)
         );
         c.getNormal().set(
-                normalBuffer.get(3 * idx(x, y, z)),
-                normalBuffer.get(3 * idx(x, y, z) + 1),
-                normalBuffer.get(3 * idx(x, y, z) + 2)
+                normalBuffer.get(4 * idx(x, y, z)),
+                normalBuffer.get(4 * idx(x, y, z) + 1),
+                normalBuffer.get(4 * idx(x, y, z) + 2)
         );
-        c.setValue(positionAndValueBuffer.get(4 * idx(x + 1, y, z) + 3));
+        c.setValue(positionAndValueBuffer.get(4 * idx(x, y, z) + 3));
     }
 
     public void downloadToRAMImage() {
 
         GL46.glFlush();
         GL46.glFinish();
+        GL46.glMemoryBarrier(GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-        GL46.glBindTexture(GL46.GL_TEXTURE_3D, positionAndValueTextureId);
+        positionAndValueTexture.bind();
         positionAndValueBuffer.clear();
-        GL46.glGetTexImage(
-                GL46.GL_TEXTURE_3D, 0, GL46.GL_RGBA, GL46.GL_FLOAT, positionAndValueBuffer);
+        GL46.glGetTexImage(GL46.GL_TEXTURE_3D, 0, GL46.GL_RGBA, GL46.GL_FLOAT, positionAndValueBuffer);
 
-        GL46.glBindTexture(GL46.GL_TEXTURE_3D, normalTextureId);
+
+        normalTexture.bind();
         normalBuffer.clear();
-        GL46.glGetTexImage(GL46.GL_TEXTURE_3D, 0, GL46.GL_RGB, GL46.GL_FLOAT, normalBuffer);
+        GL46.glGetTexImage(GL46.GL_TEXTURE_3D, 0, GL46.GL_RGBA, GL46.GL_FLOAT, normalBuffer);
+
 
     }
 
     public void downloadToCPUGrid() {
 
         if (cpuGrid == null) {
-            cpuGrid = new UniformGrid(width, height, depth);
+            cpuGrid = new UniformGrid(
+                    vWidth,
+                    vHeight,
+                    vDepth
+            );
             prepareCPUVoxels();
         }
 
         downloadToRAMImage();
 
-        for (int z = 0; z < depth; z++) {
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    final Voxel v = cpuGrid.at(idx(x, y, z));
+        for (int z = 0; z < vDepth; z++) {
+            for (int y = 0; y < vHeight; y++) {
+                for (int x = 0; x < vWidth; x++) {
+                    final Voxel v = cpuGrid.at(
+                            cpuGrid.idx(x, y, z)
+                    );
 
                     adjustCorner(v.getC000(), x, y, z);
                     adjustCorner(v.getC001(), x, y, z + 1);
@@ -138,42 +148,31 @@ public class GPUUniformGrid implements VoxelStorage {
 
     }
 
-    public void uploadFromGPUGrid() {
-
-        for (int z = 0; z < depth; z++) {
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    final Voxel v = cpuGrid.at(idx(x, y, z));
-                }
-            }
-        }
-
-    }
-
     public void prepareTexture() {
 
         if (preparedTextures) {
             return;
         }
 
-        this.positionAndValueTextureId = GL46.glGenTextures();
-        this.normalTextureId = GL46.glGenTextures();
+        this.positionAndValueTexture = new Texture()
+                .init()
+                .configure(GL46.GL_TEXTURE_3D, GL46.GL_RGBA, GL46.GL_FLOAT)
+                .resize(width, height, depth)
+                .setupSampling(
+                        GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE,
+                        GL46.GL_LINEAR, GL46.GL_LINEAR
+                )
+                .makeStorage();
 
-        GL46.glBindTexture(GL46.GL_TEXTURE_3D, positionAndValueTextureId);
-        GL46.glTexStorage3D(
-                GL46.GL_TEXTURE_3D,
-                1,
-                GL46.GL_RGBA32F,
-                width, height, depth
-        );
-
-        GL46.glBindTexture(GL46.GL_TEXTURE_3D, normalTextureId);
-        GL46.glTexStorage3D(
-                GL46.GL_TEXTURE_3D,
-                1,
-                GL46.GL_RGB32F,
-                width, height, depth
-        );
+        this.normalTexture = new Texture()
+                .init()
+                .configure(GL46.GL_TEXTURE_3D, GL46.GL_RGBA, GL46.GL_FLOAT)
+                .resize(width, height, depth)
+                .setupSampling(
+                        GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE,
+                        GL46.GL_LINEAR, GL46.GL_LINEAR
+                )
+                .makeStorage();
 
         preparedTextures = true;
 
@@ -187,5 +186,17 @@ public class GPUUniformGrid implements VoxelStorage {
     @Override
     public Voxel closestVoxel(Vector3f p) {
         return cpuGrid.closestVoxel(p);
+    }
+
+    public Matrix4f getTransformationMatrix() {
+        return transform.M();
+    }
+
+    public Texture getPositionAndValueTexture() {
+        return positionAndValueTexture;
+    }
+
+    public Texture getNormalTexture() {
+        return normalTexture;
     }
 }

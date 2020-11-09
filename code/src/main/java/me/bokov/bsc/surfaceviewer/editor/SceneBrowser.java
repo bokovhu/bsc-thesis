@@ -2,7 +2,7 @@ package me.bokov.bsc.surfaceviewer.editor;
 
 import me.bokov.bsc.surfaceviewer.Editor;
 import me.bokov.bsc.surfaceviewer.Installable;
-import me.bokov.bsc.surfaceviewer.editor.event.EditorSceneChanged;
+import me.bokov.bsc.surfaceviewer.event.EditorSceneChanged;
 import me.bokov.bsc.surfaceviewer.editor.scenebrowser.SceneMeshSurfaceNode;
 import me.bokov.bsc.surfaceviewer.editor.scenebrowser.SceneNode;
 import me.bokov.bsc.surfaceviewer.editor.surface.ShapeSurface;

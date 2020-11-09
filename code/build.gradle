@@ -1,6 +1,9 @@
 plugins {
     id 'java'
     id "io.freefair.lombok" version "5.2.1"
+    id 'antlr'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.9'
 }
 
 group 'me.bokov'
@@ -27,6 +30,11 @@ repositories {
     mavenCentral()
 }
 
+javafx {
+    version = "15.0.1"
+    modules = [ 'javafx.controls' ]
+}
+
 dependencies {
 
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
@@ -48,6 +56,9 @@ dependencies {
 
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.0'
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.7.0'
+
+    antlr "org.antlr:antlr4:4.8-1"
+    compile "org.antlr:antlr4-runtime:4.8-1"
 
 }
 

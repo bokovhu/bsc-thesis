@@ -1,7 +1,7 @@
 package me.bokov.bsc.surfaceviewer.editor.action;
 
 import me.bokov.bsc.surfaceviewer.Editor;
-import me.bokov.bsc.surfaceviewer.SceneMeshSurface;
+import me.bokov.bsc.surfaceviewer.MeshSurface;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -11,11 +11,11 @@ import java.util.function.*;
 public class NewMeshAction extends AbstractAction {
 
     private final Editor editor;
-    private final Supplier<SceneMeshSurface> rootSurfaceFactory;
+    private final Supplier<MeshSurface> rootSurfaceFactory;
 
     public NewMeshAction(
             Editor editor,
-            Supplier<SceneMeshSurface> rootSurfaceFactory,
+            Supplier<MeshSurface> rootSurfaceFactory,
             String displayName,
             ImageIcon icon
     ) {
@@ -27,7 +27,7 @@ public class NewMeshAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        List<SceneMeshSurface> newMeshes = new ArrayList<>(editor.getScene().getMeshes());
+        List<MeshSurface> newMeshes = new ArrayList<>(editor.getScene().getMeshes());
         newMeshes.add(this.rootSurfaceFactory.get());
 
         editor.getScene().setMeshes(newMeshes);

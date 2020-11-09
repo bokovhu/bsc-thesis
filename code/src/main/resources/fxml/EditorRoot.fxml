@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<AnchorPane prefHeight="768.0"
+            prefWidth="1024.0"
+            xmlns="http://javafx.com/javafx/11.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="fxml.EditorRoot">
+    <children>
+        <GridPane alignment="CENTER"
+                  AnchorPane.bottomAnchor="0.0"
+                  AnchorPane.leftAnchor="0.0"
+                  AnchorPane.rightAnchor="0.0"
+                  AnchorPane.topAnchor="0.0">
+            <children>
+                <MenuBar GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="NEVER">
+                    <menus>
+                        <Menu mnemonicParsing="false" text="File">
+                            <items>
+                                <MenuItem mnemonicParsing="false" text="New scene" />
+                                <MenuItem mnemonicParsing="false" text="Open scene ..." />
+                                <MenuItem mnemonicParsing="false" text="Save scene" />
+                                <MenuItem mnemonicParsing="false" text="Save scene as ..." />
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Scene">
+                            <items>
+                                <Menu mnemonicParsing="false" text="Add mesh ...">
+                                    <items>
+                                    </items>
+                                </Menu>
+                            </items>
+                        </Menu>
+                    </menus>
+                </MenuBar>
+                <SplitPane dividerPositions="0.3"
+                           GridPane.columnIndex="0"
+                           GridPane.hgrow="ALWAYS"
+                           GridPane.rowIndex="1"
+                           GridPane.vgrow="ALWAYS">
+                    <items>
+                        <AnchorPane minHeight="0.0" minWidth="0.0">
+                            <children>
+                                <TreeView AnchorPane.bottomAnchor="0.0"
+                                          AnchorPane.leftAnchor="0.0"
+                                          AnchorPane.rightAnchor="0.0"
+                                          AnchorPane.topAnchor="0.0"
+                                          fx:id="sceneTree"
+                                />
+                            </children>
+                        </AnchorPane>
+                        <AnchorPane minHeight="0.0" minWidth="0.0">
+                            <children>
+                                <TabPane prefHeight="200.0"
+                                         prefWidth="200.0"
+                                         tabClosingPolicy="UNAVAILABLE"
+                                         AnchorPane.bottomAnchor="0.0"
+                                         AnchorPane.leftAnchor="0.0"
+                                         AnchorPane.rightAnchor="0.0"
+                                         AnchorPane.topAnchor="0.0"
+                                         fx:id="editorTabs"
+                                >
+                                    <tabs>
+                                    </tabs>
+                                </TabPane>
+                            </children>
+                        </AnchorPane>
+                    </items>
+                </SplitPane>
+            </children>
+            <columnConstraints>
+                <ColumnConstraints />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints />
+                <RowConstraints />
+            </rowConstraints>
+        </GridPane>
+    </children>
+</AnchorPane>

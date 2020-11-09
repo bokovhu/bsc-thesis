@@ -14,20 +14,20 @@ import java.util.stream.*;
 
 @Getter
 @Setter
-public class Scene implements Serializable {
+public class World implements Serializable {
 
     private String name = "New scene";
-    private List<SceneMeshSurface> meshes = new ArrayList<>();
+    private List<MeshSurface> meshes = new ArrayList<>();
 
-    public static Scene cloneScene(Scene scene) {
+    public static World cloneWorld(World world) {
 
-        return IOUtil.serialize(scene);
+        return IOUtil.serialize(world);
 
     }
 
     public Evaluatable<Float, CPUContext, GPUContext> toUnion() {
 
-        return Evaluetables.union(meshes.stream().map(SceneMeshSurface::toEvaluatable)
+        return Evaluetables.union(meshes.stream().map(MeshSurface::toEvaluatable)
                 .collect(Collectors.toList()));
 
     }

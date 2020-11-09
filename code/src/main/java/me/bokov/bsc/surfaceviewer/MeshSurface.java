@@ -1,7 +1,5 @@
 package me.bokov.bsc.surfaceviewer;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import me.bokov.bsc.surfaceviewer.editor.Icons;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
@@ -11,10 +9,7 @@ import javax.swing.*;
 import java.io.Serializable;
 import java.util.*;
 
-// TODO: Mutator functions, and cleanup
-@Getter
-@EqualsAndHashCode
-public abstract class SceneMeshSurface implements Serializable {
+public abstract class MeshSurface implements Serializable {
 
     public abstract String getDisplayName();
 
@@ -24,7 +19,7 @@ public abstract class SceneMeshSurface implements Serializable {
 
     public abstract Evaluatable<Float, CPUContext, GPUContext> toEvaluatable();
 
-    public List<SceneMeshSurface> getChildSurfaces() {
+    public List<MeshSurface> getChildSurfaces() {
         return Collections.emptyList();
     }
 

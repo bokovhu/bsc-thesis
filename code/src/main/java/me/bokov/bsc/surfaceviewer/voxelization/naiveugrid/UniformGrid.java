@@ -30,17 +30,22 @@ public class UniformGrid implements VoxelStorage, Serializable {
         this.voxels = new Voxel[width * height * depth];
     }
 
+    public int idx(int x, int y, int z) {
+
+        final int ix = Math.max(0, Math.min(width - 1, x));
+        final int iy = Math.max(0, Math.min(height - 1, y));
+        final int iz = Math.max(0, Math.min(depth - 1, z));
+
+        return iz * width * height + iy * width + ix;
+    }
+
     public UniformGrid applyTransform(MeshTransform transform) {
         this.transform = transform;
         return this;
     }
 
     public UniformGrid putVoxel(int x, int y, int z, Voxel v) {
-        final int ix = Math.max(0, Math.min(width - 1, x));
-        final int iy = Math.max(0, Math.min(height - 1, y));
-        final int iz = Math.max(0, Math.min(depth - 1, z));
-
-        voxels[iz * width * height + iy * width + ix] = v;
+        voxels[idx(x, y, z)] = v;
 
         return this;
     }

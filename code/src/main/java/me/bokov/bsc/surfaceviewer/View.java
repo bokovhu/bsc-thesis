@@ -1,6 +1,6 @@
 package me.bokov.bsc.surfaceviewer;
 
-import me.bokov.bsc.surfaceviewer.editor.event.ViewInitialized;
+import me.bokov.bsc.surfaceviewer.event.ViewInitialized;
 import me.bokov.bsc.surfaceviewer.render.Camera;
 import me.bokov.bsc.surfaceviewer.util.IOUtil;
 import me.bokov.bsc.surfaceviewer.view.CameraManager;
@@ -21,17 +21,15 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 public class View extends ViewBase implements Runnable {
 
-    private final App app;
-
     private static final int WIDTH = 1280;
     private static final int HEIGHT = 720;
     private static final boolean FULLSCREEN = false;
     private static final long MONITOR = 0L;
-
+    private final App app;
     private final Object nextSceneSyncObject = new Object();
     double lastFrameTime = 0.0;
-    private Scene nextScene = null;
-    private Scene scene = null;
+    private World nextWorld = null;
+    private World world = null;
     private RendererType nextRendererType = null;
     private ShaderManager shaderManager = null;
     private InputManager inputManager = null;
@@ -102,7 +100,7 @@ public class View extends ViewBase implements Runnable {
         this.cameraManager = new CameraManager();
         this.cameraManager.install(this);
 
-        this.changeRenderer(RendererType.UniformGridMarchingCubes);
+        this.changeRenderer(RendererType.GPUMarchingCubes);
 
     }
 
@@ -166,10 +164,10 @@ public class View extends ViewBase implements Runnable {
 
     private void update() {
 
-        if (this.nextScene != null) {
+        if (this.nextWorld != null) {
             synchronized (this.nextSceneSyncObject) {
-                this.scene = this.nextScene;
-                this.nextScene = null;
+                this.world = this.nextWorld;
+                this.nextWorld = null;
             }
 
             if (this.renderer != null) {
@@ -207,8 +205,10 @@ public class View extends ViewBase implements Runnable {
         GL46.glClearColor(0f, 0f, 0f, 1f);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
 
-        if (this.renderer != null && this.scene != null) {
-            this.renderer.render(this.scene);
+        if (this.renderer != null) {
+            if (this.world != null || this.renderer.supportsNoWorldRendering()) {
+                this.renderer.render(this.world);
+            }
         }
 
     }
@@ -228,9 +228,9 @@ public class View extends ViewBase implements Runnable {
 
     }
 
-    public synchronized void changeScene(Scene newScene) {
+    public synchronized void changeScene(World newWorld) {
 
-        this.nextScene = newScene;
+        this.nextWorld = newWorld;
 
     }
 
@@ -250,7 +250,7 @@ public class View extends ViewBase implements Runnable {
                 }
         );
 
-        this.nextScene = scene;
+        this.nextWorld = world;
 
     }
 
@@ -287,7 +287,7 @@ public class View extends ViewBase implements Runnable {
 
         init();
 
-        this.app.fireEditorEvent(ViewInitialized.class);
+        this.app.fire(ViewInitialized.class);
 
         startMainLoop();
         tearDown();

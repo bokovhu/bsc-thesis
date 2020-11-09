@@ -1,12 +1,14 @@
 package me.bokov.bsc.surfaceviewer.editor.surface;
 
+import lombok.EqualsAndHashCode;
 import me.bokov.bsc.surfaceviewer.Property;
 import me.bokov.bsc.surfaceviewer.PropertyType;
-import me.bokov.bsc.surfaceviewer.SceneMeshSurface;
+import me.bokov.bsc.surfaceviewer.MeshSurface;
 import me.bokov.bsc.surfaceviewer.editor.Icons;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import javax.swing.*;
@@ -16,7 +18,36 @@ import java.util.function.*;
 
 import static me.bokov.bsc.surfaceviewer.sdf.Evaluetables.*;
 
-public class ShapeSurface extends SceneMeshSurface {
+@EqualsAndHashCode
+public class ShapeSurface extends MeshSurface {
+
+    private static final Property<Vector3f> P_TRANSF_POSITION = new Property<>(
+            PropertyType.VEC3,
+            "Transform",
+            "Position",
+            new Vector3f()
+    );
+
+    private static final Property<Vector3f> P_TRANSF_ROTATION_AXIS = new Property<>(
+            PropertyType.VEC3,
+            "Transform",
+            "Rotation axis",
+            new Vector3f(0f, 1f, 0f)
+    );
+
+    private static final Property<Float> P_TRANSF_ROTATION_ANGLE = new Property<>(
+            PropertyType.FLOAT,
+            "Transform",
+            "Rotation angle",
+            0.0f
+    );
+
+    private static final Property<Vector3f> P_TRANSF_SCALE = new Property<>(
+            PropertyType.VEC3,
+            "Transform",
+            "Scale",
+            new Vector3f(1f)
+    );
 
     private static final Property<Vector3f> P_BOX_BOUNDS = new Property<>(
             PropertyType.VEC3,
@@ -31,11 +62,53 @@ public class ShapeSurface extends SceneMeshSurface {
             "Radius",
             1.0f
     );
+
+    private static final Property<Float> P_CONE_ANGLE = new Property<>(
+            PropertyType.FLOAT,
+            "Cone",
+            "Angle",
+            30.0f
+    );
+    private static final Property<Float> P_CONE_HEIGHT = new Property<>(
+            PropertyType.FLOAT,
+            "Cone",
+            "Height",
+            1.0f
+    );
+
     private final ShapeKind kind;
     private ShapeDescriptor shapeDescriptor = new ShapeDescriptor(new HashMap<>());
 
     public ShapeSurface(ShapeKind kind) {
         this.kind = kind;
+    }
+
+    private static Function<ShapeDescriptor, Evaluatable<Float, CPUContext, GPUContext>> shape(
+            Function<ShapeDescriptor, Evaluatable<Float, CPUContext, GPUContext>> wrappedFactory
+    ) {
+        return desc -> rotate(
+                new Quaternionf()
+                        .fromAxisAngleDeg(
+                                desc.get(P_TRANSF_ROTATION_AXIS),
+                                desc.get(P_TRANSF_ROTATION_ANGLE)
+                        ),
+                scale(
+                        desc.get(P_TRANSF_SCALE).x,
+                        translate(
+                                desc.get(P_TRANSF_POSITION),
+                                wrappedFactory.apply(desc)
+                        )
+                )
+        );
+    }
+
+    private static List<Property<?>> shapeProps(Property<?>... args) {
+        List<Property<?>> result = new ArrayList<>();
+        result.addAll(List.of(P_TRANSF_POSITION, P_TRANSF_ROTATION_AXIS, P_TRANSF_ROTATION_ANGLE, P_TRANSF_SCALE));
+        for (var p : args) {
+            result.add(p);
+        }
+        return result;
     }
 
     @Override
@@ -64,14 +137,20 @@ public class ShapeSurface extends SceneMeshSurface {
     public enum ShapeKind {
         BOX(
                 "Box", Icons.FA_CUBES_SOLID_BLACK,
-                List.of(P_BOX_BOUNDS),
-                desc -> box(desc.get(P_BOX_BOUNDS))
+                shapeProps(P_BOX_BOUNDS),
+                shape(desc -> box(desc.get(P_BOX_BOUNDS)))
         ),
         SPHERE(
                 "Sphere",
                 Icons.FA_CUBES_SOLID_BLACK,
-                List.of(P_SPHERE_RADIUS),
-                desc -> sphere(desc.get(P_SPHERE_RADIUS))
+                shapeProps(P_SPHERE_RADIUS),
+                shape(desc -> sphere(desc.get(P_SPHERE_RADIUS)))
+        ),
+        CONE(
+                "Cone",
+                Icons.FA_CUBES_SOLID_BLACK,
+                shapeProps(P_CONE_ANGLE, P_CONE_HEIGHT),
+                shape(desc -> cone(desc.get(P_CONE_ANGLE), desc.get(P_CONE_HEIGHT)))
         );
         public final String name;
         public final ImageIcon icon;
@@ -91,6 +170,7 @@ public class ShapeSurface extends SceneMeshSurface {
         }
     }
 
+    @EqualsAndHashCode
     public static class ShapeDescriptor implements Serializable {
 
         private final Map<String, Object> properties;

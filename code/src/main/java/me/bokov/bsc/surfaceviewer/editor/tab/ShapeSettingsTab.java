@@ -34,7 +34,7 @@ public class ShapeSettingsTab extends JPanel implements Installable<EditorTabset
         this.editor = parent.getEditor();
         this.tabset = parent;
 
-        setLayout(new MigLayout("", "grow", "grow"));
+        setLayout(new MigLayout("", "grow", "shrink"));
 
         for (var prop : shapeSurface.getShapeProperties()) {
 

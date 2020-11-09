@@ -1,10 +1,10 @@
 package me.bokov.bsc.surfaceviewer;
 
-public class Main {
+public class EditorMain {
 
     public static void main(String[] args) {
 
-        App app = new App();
+        var app = new EditorApp();
         app.run();
 
     }

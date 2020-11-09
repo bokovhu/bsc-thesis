@@ -1,30 +1,30 @@
 package me.bokov.bsc.surfaceviewer.editor.scenebrowser;
 
-import me.bokov.bsc.surfaceviewer.Scene;
-import me.bokov.bsc.surfaceviewer.SceneMeshSurface;
+import me.bokov.bsc.surfaceviewer.World;
+import me.bokov.bsc.surfaceviewer.MeshSurface;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public class SceneNode extends DefaultMutableTreeNode {
 
-    private final Scene scene;
+    private final World world;
 
-    public SceneNode(Scene scene) {
-        super(scene.getName(), true);
-        this.scene = scene;
+    public SceneNode(World world) {
+        super(world.getName(), true);
+        this.world = world;
 
-        for (SceneMeshSurface surface : this.scene.getMeshes()) {
+        for (MeshSurface surface : this.world.getMeshes()) {
             add(new SceneMeshSurfaceNode(surface));
         }
     }
 
     public SceneNode() {
         super("No scene selected", false);
-        this.scene = null;
+        this.world = null;
     }
 
-    public Scene getScene() {
-        return scene;
+    public World getScene() {
+        return world;
     }
 
 

@@ -2,9 +2,9 @@ package me.bokov.bsc.surfaceviewer.view.renderer;
 
 import me.bokov.bsc.surfaceviewer.Property;
 import me.bokov.bsc.surfaceviewer.PropertyType;
-import me.bokov.bsc.surfaceviewer.Scene;
+import me.bokov.bsc.surfaceviewer.World;
 import me.bokov.bsc.surfaceviewer.View;
-import me.bokov.bsc.surfaceviewer.editor.event.RendererInitialized;
+import me.bokov.bsc.surfaceviewer.event.RendererInitialized;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
 import me.bokov.bsc.surfaceviewer.mesh.mccpu.MarchingCubes;
 import me.bokov.bsc.surfaceviewer.render.Drawable;
@@ -27,18 +27,20 @@ public class OctreeMarchingCubesRenderer implements Renderer {
 
     private static final String GROUP = "OctreeMarchingCubesRenderer";
 
+    // TODO: View settings should also be saved in the scene
+
     private static final Property<Integer> P_DEPTH = new Property<>(PropertyType.INT, GROUP, "Depth", 7);
     private static final Property<Vector3f> P_GRID_OFFSET = new Property<>(
             PropertyType.VEC3,
             GROUP,
             "GridOffset",
-            new Vector3f(0f)
+            new Vector3f(-5f, -5f, -5f)
     );
     private static final Property<Vector3f> P_GRID_SCALE = new Property<>(
             PropertyType.VEC3,
             GROUP,
             "GridScale",
-            new Vector3f(1f, 1f, 1f)
+            new Vector3f(10f, 10f, 10f)
     );
     private static final Property<Float> P_ISO_LEVEL = new Property<>(PropertyType.FLOAT, GROUP, "IsoLevel", 0.0f);
 
@@ -69,14 +71,14 @@ public class OctreeMarchingCubesRenderer implements Renderer {
 
     private View view = null;
 
-    private void voxelizeScene(Scene scene) {
-        if (scene.getMeshes() != null && scene.getMeshes().size() >= 1) {
+    private void voxelizeScene(World world) {
+        if (world.getMeshes() != null && world.getMeshes().size() >= 1) {
 
             this.voxelizer = new OctreeGridVoxelizer(
                     this.view.get(P_DEPTH)
             );
             this.voxelStorage = this.voxelizer.voxelize(
-                    scene.toUnion(),
+                    world.toUnion(),
                     new MeshTransform(
                             this.view.get(P_GRID_OFFSET),
                             new Quaternionf(),
@@ -99,10 +101,10 @@ public class OctreeMarchingCubesRenderer implements Renderer {
 
     }
 
-    public void render(Scene scene) {
+    public void render(World world) {
         if (this.mesh == null) {
 
-            this.voxelizeScene(scene);
+            this.voxelizeScene(world);
             this.executeMarchingCubes();
 
         }
@@ -145,7 +147,7 @@ public class OctreeMarchingCubesRenderer implements Renderer {
                 .end();
 
         this.view.getApp()
-                .fireEditorEvent(RendererInitialized.class);
+                .fire(RendererInitialized.class);
 
     }
 

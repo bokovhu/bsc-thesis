@@ -1,7 +1,7 @@
 package me.bokov.bsc.surfaceviewer.editor.action;
 
 import me.bokov.bsc.surfaceviewer.Editor;
-import me.bokov.bsc.surfaceviewer.Scene;
+import me.bokov.bsc.surfaceviewer.World;
 import me.bokov.bsc.surfaceviewer.editor.Icons;
 
 import javax.swing.*;
@@ -37,11 +37,11 @@ public class OpenSceneAction extends AbstractAction {
             try (FileInputStream fis = new FileInputStream(sceneFile);
                  ObjectInputStream ois = new ObjectInputStream(fis)) {
 
-                final Scene serializedScene = (Scene) ois.readObject();
+                final World serializedWorld = (World) ois.readObject();
 
-                editor.getScene().setName(serializedScene.getName());
+                editor.getScene().setName(serializedWorld.getName());
                 editor.getScene().setMeshes(
-                        new ArrayList<>(serializedScene.getMeshes())
+                        new ArrayList<>(serializedWorld.getMeshes())
                 );
 
                 editor.applySceneChanges();

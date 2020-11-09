@@ -3,23 +3,23 @@ package me.bokov.bsc.surfaceviewer;
 import me.bokov.bsc.surfaceviewer.editor.EditorEventBus;
 import me.bokov.bsc.surfaceviewer.editor.EditorLayout;
 import me.bokov.bsc.surfaceviewer.editor.EditorMenubar;
-import me.bokov.bsc.surfaceviewer.editor.event.EditorSceneChanged;
+import me.bokov.bsc.surfaceviewer.event.EditorSceneChanged;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 
 public class Editor implements Runnable {
 
-    private final App app;
+    private final EditorApp app;
 
-    private Scene scene = new Scene();
+    private World world = new World();
 
     private EditorMenubar editorMenubar = null;
     private JFrame editorFrame = null;
     private EditorLayout editorLayout = null;
     private EditorEventBus editorEventBus = null;
 
-    public Editor(App app) {
+    public Editor(EditorApp app) {
         this.app = app;
     }
 
@@ -41,16 +41,16 @@ public class Editor implements Runnable {
 
     public synchronized void applySceneChanges() {
 
-        if (this.scene != null) {
+        if (this.world != null) {
             editorEventBus.fire(EditorSceneChanged.class);
             this.app.sendSceneToView(
-                    Scene.cloneScene(this.scene)
+                    World.cloneWorld(this.world)
             );
         }
 
     }
 
-    public App app() {
+    public EditorApp app() {
         return app;
     }
 
@@ -101,8 +101,8 @@ public class Editor implements Runnable {
 
     }
 
-    public Scene getScene() {
-        return scene;
+    public World getScene() {
+        return world;
     }
 
 }

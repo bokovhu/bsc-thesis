@@ -1,6 +1,6 @@
 package me.bokov.bsc.surfaceviewer.editor.scenebrowser;
 
-import me.bokov.bsc.surfaceviewer.SceneMeshSurface;
+import me.bokov.bsc.surfaceviewer.MeshSurface;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
@@ -9,9 +9,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 public class SceneMeshSurfaceNode extends DefaultMutableTreeNode {
 
-    private final SceneMeshSurface surface;
+    private final MeshSurface surface;
 
-    public SceneMeshSurfaceNode(SceneMeshSurface surface) {
+    public SceneMeshSurfaceNode(MeshSurface surface) {
         super(surface.getDisplayName(), true);
         this.surface = surface;
 
@@ -28,7 +28,7 @@ public class SceneMeshSurfaceNode extends DefaultMutableTreeNode {
         return this.surface.toEvaluatable();
     }
 
-    public SceneMeshSurface getSurface() {
+    public MeshSurface getSurface() {
         return surface;
     }
 }

@@ -2,8 +2,8 @@ package me.bokov.bsc.surfaceviewer.view.renderer;
 
 import me.bokov.bsc.surfaceviewer.Property;
 import me.bokov.bsc.surfaceviewer.PropertyType;
-import me.bokov.bsc.surfaceviewer.World;
 import me.bokov.bsc.surfaceviewer.View;
+import me.bokov.bsc.surfaceviewer.World;
 import me.bokov.bsc.surfaceviewer.event.RendererInitialized;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
 import me.bokov.bsc.surfaceviewer.mesh.mccpu.MarchingCubes;
@@ -13,8 +13,8 @@ import me.bokov.bsc.surfaceviewer.util.Resources;
 import me.bokov.bsc.surfaceviewer.view.Renderer;
 import me.bokov.bsc.surfaceviewer.voxelization.CPUVoxelizationContext;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxelizer3D;
-import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGrid;
-import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGridVoxelizer;
+import me.bokov.bsc.surfaceviewer.voxelization.gpuugrid.GPUUniformGrid;
+import me.bokov.bsc.surfaceviewer.voxelization.gpuugrid.GPUUniformGridVoxelizer;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -23,7 +23,7 @@ import java.util.*;
 
 import static me.bokov.bsc.surfaceviewer.PropertyType.*;
 
-public class UniformGridMarchingCubesRenderer implements Renderer {
+public class GPUMarchingCubesRenderer implements Renderer {
 
     private static final Matrix4f IDENTITY = new Matrix4f().identity();
 
@@ -67,18 +67,18 @@ public class UniformGridMarchingCubesRenderer implements Renderer {
             new Vector3f(-1.5f, 2.5f, 1.6f).normalize()
     );
 
-    private View view = null;
-
-    private Voxelizer3D<UniformGrid> voxelizer;
-    private UniformGrid voxelStorage;
+    private Voxelizer3D<GPUUniformGrid> voxelizer;
+    private GPUUniformGrid voxelStorage;
     private MarchingCubes marchingCubes;
     private Drawable mesh;
     private ShaderProgram shaderProgram;
 
+    private View view;
+
     private void voxelizeScene(World world) {
         if (world.getMeshes() != null && world.getMeshes().size() >= 1) {
 
-            this.voxelizer = new UniformGridVoxelizer(
+            this.voxelizer = new GPUUniformGridVoxelizer(
                     this.view.get(P_GRID_WIDTH),
                     this.view.get(P_GRID_HEIGHT),
                     this.view.get(P_GRID_DEPTH)
@@ -187,4 +187,5 @@ public class UniformGridMarchingCubesRenderer implements Renderer {
                 P_LIGHT_ENERGY, P_LIGHT_DIRECTION, P_LIGHT_AMBIENT
         );
     }
+
 }

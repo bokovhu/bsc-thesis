@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import me.bokov.bsc.surfaceviewer.FXEditorApp;
 
 public class FXEditor extends Application {
 
@@ -11,9 +12,15 @@ public class FXEditor extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         Scene fxScene = new Scene(
-                new Label("Test")
+                new EditorWindow()
         );
         primaryStage.setScene(fxScene);
+
+        primaryStage.setTitle("Surface editor");
+        primaryStage.setOnCloseRequest(
+                event -> FXEditorApp.INSTANCE.markShouldQuit()
+        );
+
         primaryStage.show();
 
     }

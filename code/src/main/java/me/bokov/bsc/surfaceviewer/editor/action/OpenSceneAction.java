@@ -1,7 +1,7 @@
 package me.bokov.bsc.surfaceviewer.editor.action;
 
 import me.bokov.bsc.surfaceviewer.Editor;
-import me.bokov.bsc.surfaceviewer.World;
+import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.editor.Icons;
 
 import javax.swing.*;

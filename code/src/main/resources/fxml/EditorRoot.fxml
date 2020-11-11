@@ -2,11 +2,13 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<AnchorPane prefHeight="768.0"
-            prefWidth="1024.0"
-            xmlns="http://javafx.com/javafx/11.0.1"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="fxml.EditorRoot">
+
+<fx:root prefHeight="768.0"
+         prefWidth="1024.0"
+         xmlns="http://javafx.com/javafx/11.0.1"
+         xmlns:fx="http://javafx.com/fxml/1"
+         type="javafx.scene.layout.AnchorPane"
+>
     <children>
         <GridPane alignment="CENTER"
                   AnchorPane.bottomAnchor="0.0"
@@ -78,4 +80,4 @@
             </rowConstraints>
         </GridPane>
     </children>
-</AnchorPane>
+</fx:root>

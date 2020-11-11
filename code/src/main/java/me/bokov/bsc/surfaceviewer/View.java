@@ -2,6 +2,7 @@ package me.bokov.bsc.surfaceviewer;
 
 import me.bokov.bsc.surfaceviewer.event.ViewInitialized;
 import me.bokov.bsc.surfaceviewer.render.Camera;
+import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.util.IOUtil;
 import me.bokov.bsc.surfaceviewer.view.CameraManager;
 import me.bokov.bsc.surfaceviewer.view.InputManager;

@@ -1,5 +1,6 @@
 package me.bokov.bsc.surfaceviewer;
 
+import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.view.renderer.RendererType;
 
 import java.util.*;

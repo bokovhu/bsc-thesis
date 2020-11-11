@@ -46,6 +46,30 @@ public class GPUUniformGrid implements VoxelStorage {
         normalBuffer = BufferUtils.createFloatBuffer(width * height * depth * 4);
     }
 
+    public int width() {
+        return width;
+    }
+
+    public int height() {
+        return height;
+    }
+
+    public int depth() {
+        return depth;
+    }
+
+    public int vWidth() {
+        return vWidth;
+    }
+
+    public int vHeight() {
+        return vHeight;
+    }
+
+    public int vDepth() {
+        return vDepth;
+    }
+
     public GPUUniformGrid applyTransform(MeshTransform transform) {
         this.transform = transform;
         return this;

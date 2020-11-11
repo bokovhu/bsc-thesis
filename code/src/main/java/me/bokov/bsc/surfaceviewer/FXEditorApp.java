@@ -8,10 +8,14 @@ import java.util.concurrent.*;
 
 public class FXEditorApp extends AppBase {
 
+    public static FXEditorApp INSTANCE = null;
+
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Override
     public void run() {
+
+        INSTANCE = this;
 
         executor.submit(
                 () -> FXEditor.main(new String[0])

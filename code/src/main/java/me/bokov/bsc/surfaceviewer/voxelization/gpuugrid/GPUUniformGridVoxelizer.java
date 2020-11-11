@@ -6,7 +6,6 @@ import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
-import me.bokov.bsc.surfaceviewer.sdf.GPUEvaluator;
 import me.bokov.bsc.surfaceviewer.voxelization.VoxelizationContext;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxelizer3D;
 import org.lwjgl.opengl.GL46;
@@ -14,12 +13,21 @@ import org.lwjgl.opengl.GL46;
 public class GPUUniformGridVoxelizer implements Voxelizer3D<GPUUniformGrid> {
 
     private final int width, height, depth;
+    private final boolean downloadAfterDone;
     private ComputeProgram voxelizerProgram = null;
 
     public GPUUniformGridVoxelizer(int width, int height, int depth) {
         this.width = width;
         this.height = height;
         this.depth = depth;
+        this.downloadAfterDone = true;
+    }
+
+    public GPUUniformGridVoxelizer(int width, int height, int depth, boolean doDownload) {
+        this.width = width;
+        this.height = height;
+        this.depth = depth;
+        this.downloadAfterDone = doDownload;
     }
 
     @Override
@@ -59,7 +67,7 @@ public class GPUUniformGridVoxelizer implements Voxelizer3D<GPUUniformGrid> {
         GL46.glDispatchCompute(width, height, depth);
         GL46.glMemoryBarrier(GL46.GL_ALL_BARRIER_BITS);
 
-        result.downloadToCPUGrid();
+        if (downloadAfterDone) { result.downloadToCPUGrid(); }
 
         return result;
     }

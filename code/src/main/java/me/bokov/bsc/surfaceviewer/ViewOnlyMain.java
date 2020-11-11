@@ -1,6 +1,7 @@
 package me.bokov.bsc.surfaceviewer;
 
 import me.bokov.bsc.surfaceviewer.editor.surface.ShapeSurface;
+import me.bokov.bsc.surfaceviewer.scene.World;
 
 import java.util.*;
 

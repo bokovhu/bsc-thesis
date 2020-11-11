@@ -4,6 +4,7 @@ import me.bokov.bsc.surfaceviewer.editor.EditorEventBus;
 import me.bokov.bsc.surfaceviewer.editor.EditorLayout;
 import me.bokov.bsc.surfaceviewer.editor.EditorMenubar;
 import me.bokov.bsc.surfaceviewer.event.EditorSceneChanged;
+import me.bokov.bsc.surfaceviewer.scene.World;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;

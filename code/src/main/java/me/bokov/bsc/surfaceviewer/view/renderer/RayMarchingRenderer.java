@@ -1,7 +1,7 @@
 package me.bokov.bsc.surfaceviewer.view.renderer;
 
 import me.bokov.bsc.surfaceviewer.Property;
-import me.bokov.bsc.surfaceviewer.World;
+import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.View;
 import me.bokov.bsc.surfaceviewer.view.Renderer;
 

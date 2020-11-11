@@ -121,6 +121,18 @@ public class Drawable {
 
     }
 
+    public void allocate(long size, int usage) {
+
+        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, this.vboHandle);
+        GL46.glBufferData(GL46.GL_ARRAY_BUFFER, size, usage);
+
+    }
+
+    public void configure(int primitiveType, int vertexCount) {
+        this.primitiveType = primitiveType;
+        this.vertexCount = vertexCount;
+    }
+
     public void draw() {
 
         GL46.glBindVertexArray(this.vaoHandle);
@@ -142,6 +154,14 @@ public class Drawable {
         GL46.glDeleteVertexArrays(vaoHandle);
         GL46.glDeleteBuffers(vboHandle);
 
+    }
+
+    public int getVboHandle() {
+        return vboHandle;
+    }
+
+    public int getVaoHandle() {
+        return vaoHandle;
     }
 
     private static final class Attribute {

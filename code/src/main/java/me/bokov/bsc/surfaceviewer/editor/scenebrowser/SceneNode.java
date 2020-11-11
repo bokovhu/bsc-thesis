@@ -1,6 +1,6 @@
 package me.bokov.bsc.surfaceviewer.editor.scenebrowser;
 
-import me.bokov.bsc.surfaceviewer.World;
+import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.MeshSurface;
 
 import javax.swing.tree.DefaultMutableTreeNode;

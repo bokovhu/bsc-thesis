@@ -1,14 +1,16 @@
 package me.bokov.bsc.surfaceviewer.glsl;
 
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
-import org.joml.Quaternionf;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.*;
 
 import java.util.*;
 
 public class GLSLPoet {
+
+    private static Vector4f tmpMC0 = new Vector4f();
+    private static Vector4f tmpMC1 = new Vector4f();
+    private static Vector4f tmpMC2 = new Vector4f();
+    private static Vector4f tmpMC3 = new Vector4f();
 
     public static GLSLStatement abs(GLSLStatement arg) {
         return new GLSLFunctionCallStatement(
@@ -240,6 +242,44 @@ public class GLSLPoet {
 
     public static GLSLStatement vec4(Quaternionf q) {
         return vec4(q.x, q.y, q.z, q.w);
+    }
+
+    public static GLSLStatement mat4(
+            GLSLStatement col1,
+            GLSLStatement col2,
+            GLSLStatement col3,
+            GLSLStatement col4
+    ) {
+        return new GLSLFunctionCallStatement(
+                "mat4",
+                List.of(col1, col2, col3, col4)
+        );
+    }
+
+    public static GLSLStatement mat4(
+            Vector4f col1,
+            Vector4f col2,
+            Vector4f col3,
+            Vector4f col4
+    ) {
+        return mat4(
+                vec4(col1),
+                vec4(col2),
+                vec4(col3),
+                vec4(col4)
+        );
+    }
+
+    public static GLSLStatement mat4(Matrix4f m) {
+        return new GLSLFunctionCallStatement(
+                "mat4",
+                List.of(
+                        vec4(tmpMC0.set(m.m00(), m.m01(), m.m02(), m.m03())),
+                        vec4(tmpMC1.set(m.m10(), m.m11(), m.m12(), m.m13())),
+                        vec4(tmpMC2.set(m.m20(), m.m21(), m.m22(), m.m23())),
+                        vec4(tmpMC3.set(m.m30(), m.m31(), m.m32(), m.m33()))
+                )
+        );
     }
 
     public static GLSLVariableDeclarationStatement resultVar(

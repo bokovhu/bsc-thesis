@@ -40,8 +40,8 @@ public class GPUEvaluationContext implements GPUContext, Serializable {
 
     public GPUEvaluationContext transform(String suffix) {
         return new GPUEvaluationContext()
-                .setPointVariable(contextId + "_P_" + suffix)
-                .setContextId(contextId)
+                .setPointVariable(contextId + "P" + suffix)
+                .setContextId(contextId + "T" + suffix)
                 .setTextureMap(new HashMap<>(textureMap));
     }
 

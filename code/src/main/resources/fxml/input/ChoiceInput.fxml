@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.VBox?>
+<fx:root xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml"
+         type="javafx.scene.layout.HBox"
+>
+    <Label fx:id="inputLabel" text="Changeme" textAlignment="LEFT" prefWidth="160">
+        <HBox.margin>
+            <Insets right="16.0" />
+        </HBox.margin>
+    </Label>
+    <VBox fx:id="choicesVBox" prefWidth="196"></VBox>
+</fx:root>

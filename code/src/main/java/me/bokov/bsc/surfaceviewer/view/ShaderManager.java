@@ -1,13 +1,12 @@
 package me.bokov.bsc.surfaceviewer.view;
 
-import me.bokov.bsc.surfaceviewer.Installable;
 import me.bokov.bsc.surfaceviewer.View;
 import me.bokov.bsc.surfaceviewer.render.ShaderProgram;
 import me.bokov.bsc.surfaceviewer.util.ResourceUtil;
 
 import java.util.*;
 
-public class ShaderManager implements Installable<View> {
+public class ShaderManager {
 
 
     private final Map<String, ShaderResources> resourcesByName = new HashMap<>();
@@ -108,7 +107,6 @@ public class ShaderManager implements Installable<View> {
 
     }
 
-    @Override
     public void install(View parent) {
 
         this.programsByName.clear();
@@ -116,7 +114,6 @@ public class ShaderManager implements Installable<View> {
 
     }
 
-    @Override
     public void uninstall() {
 
         programsByName.forEach(

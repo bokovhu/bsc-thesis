@@ -11,12 +11,12 @@ import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.*;
 public class OpUnion implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUContext>,
         Serializable {
 
-    protected final Evaluatable<Float, CPUContext, GPUContext> a;
-    protected final Evaluatable<Float, CPUContext, GPUContext> b;
+    protected final Evaluable<Float, CPUContext, GPUContext> a;
+    protected final Evaluable<Float, CPUContext, GPUContext> b;
 
     public OpUnion(
-            Evaluatable<Float, CPUContext, GPUContext> a,
-            Evaluatable<Float, CPUContext, GPUContext> b
+            Evaluable<Float, CPUContext, GPUContext> a,
+            Evaluable<Float, CPUContext, GPUContext> b
     ) {
         this.a = a;
         this.b = b;

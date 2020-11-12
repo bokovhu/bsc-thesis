@@ -4,7 +4,7 @@ import me.bokov.bsc.surfaceviewer.compute.ComputeProgram;
 import me.bokov.bsc.surfaceviewer.compute.VoxelizerComputeShaderGenerator;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
-import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
+import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
 import me.bokov.bsc.surfaceviewer.voxelization.VoxelizationContext;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxelizer3D;
@@ -32,7 +32,7 @@ public class GPUUniformGridVoxelizer implements Voxelizer3D<GPUUniformGrid> {
 
     @Override
     public GPUUniformGrid voxelize(
-            Evaluatable<Float, CPUContext, GPUContext> generator,
+            Evaluable<Float, CPUContext, GPUContext> generator,
             MeshTransform transform,
             VoxelizationContext context
     ) {

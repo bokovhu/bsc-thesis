@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<fx:root xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml/1"
+         type="javafx.scene.control.Menu"
+         text="Add mesh ..."
+>
+    <Menu text="Operators ..." fx:id="operatorsMenu">
+    </Menu>
+    <Menu text="Shapes ..." fx:id="shapesMenu">
+    </Menu>
+</fx:root>

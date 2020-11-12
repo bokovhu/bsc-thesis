@@ -68,6 +68,20 @@ public class GLSLPoet {
         );
     }
 
+    public static GLSLStatement inverse(GLSLStatement v) {
+        return new GLSLFunctionCallStatement(
+                "inverse",
+                List.of(v)
+        );
+    }
+
+    public static GLSLStatement transpose(GLSLStatement v) {
+        return new GLSLFunctionCallStatement(
+                "transpose",
+                List.of(v)
+        );
+    }
+
     public static GLSLStatement sin(GLSLStatement v) {
         return new GLSLFunctionCallStatement("sin", List.of(v));
     }
@@ -271,15 +285,16 @@ public class GLSLPoet {
     }
 
     public static GLSLStatement mat4(Matrix4f m) {
-        return new GLSLFunctionCallStatement(
-                "mat4",
-                List.of(
-                        vec4(tmpMC0.set(m.m00(), m.m01(), m.m02(), m.m03())),
-                        vec4(tmpMC1.set(m.m10(), m.m11(), m.m12(), m.m13())),
-                        vec4(tmpMC2.set(m.m20(), m.m21(), m.m22(), m.m23())),
-                        vec4(tmpMC3.set(m.m30(), m.m31(), m.m32(), m.m33()))
-                )
-        );
+        return
+                new GLSLFunctionCallStatement(
+                        "mat4",
+                        List.of(
+                                vec4(tmpMC0.set(m.m00(), m.m01(), m.m02(), m.m03())),
+                                vec4(tmpMC1.set(m.m10(), m.m11(), m.m12(), m.m13())),
+                                vec4(tmpMC2.set(m.m20(), m.m21(), m.m22(), m.m23())),
+                                vec4(tmpMC3.set(m.m30(), m.m31(), m.m32(), m.m33()))
+                        )
+                );
     }
 
     public static GLSLVariableDeclarationStatement resultVar(

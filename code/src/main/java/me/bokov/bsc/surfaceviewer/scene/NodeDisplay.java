@@ -1,7 +1,14 @@
 package me.bokov.bsc.surfaceviewer.scene;
 
-public interface NodeDisplay {
+import lombok.Data;
+import lombok.experimental.Accessors;
 
-    String getName();
+import java.io.Serializable;
+
+@Data
+@Accessors(chain = true)
+public class NodeDisplay implements Serializable {
+
+    private String name;
 
 }

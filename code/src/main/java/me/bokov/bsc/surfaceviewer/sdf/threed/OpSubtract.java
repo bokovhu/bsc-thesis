@@ -11,12 +11,12 @@ import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.*;
 public class OpSubtract implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUContext>,
         Serializable {
 
-    protected final Evaluatable<Float, CPUContext, GPUContext> a;
-    protected final Evaluatable<Float, CPUContext, GPUContext> b;
+    protected final Evaluable<Float, CPUContext, GPUContext> a;
+    protected final Evaluable<Float, CPUContext, GPUContext> b;
 
     public OpSubtract(
-            Evaluatable<Float, CPUContext, GPUContext> a,
-            Evaluatable<Float, CPUContext, GPUContext> b
+            Evaluable<Float, CPUContext, GPUContext> a,
+            Evaluable<Float, CPUContext, GPUContext> b
     ) {
         this.a = a;
         this.b = b;
@@ -24,7 +24,7 @@ public class OpSubtract implements CPUEvaluator<Float, CPUContext>, GPUEvaluator
 
     @Override
     public Float evaluate(CPUContext c) {
-        return Math.max(-1.0f * a.cpu().evaluate(c), b.cpu().evaluate(c));
+        return Math.max(-1.0f * b.cpu().evaluate(c), a.cpu().evaluate(c));
     }
 
     @Override
@@ -43,8 +43,8 @@ public class OpSubtract implements CPUEvaluator<Float, CPUContext>, GPUEvaluator
 
         result.add(
                 resultVar(context, max(
-                        opMul(literal(-1.0f), ref(generatorAContext.getResult())),
-                        ref(generatorBContext.getResult())
+                        opMul(literal(-1.0f), ref(generatorBContext.getResult())),
+                        ref(generatorAContext.getResult())
                 ))
         );
 

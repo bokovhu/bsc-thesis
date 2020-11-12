@@ -1,22 +1,24 @@
 package me.bokov.bsc.surfaceviewer.scene;
 
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
-import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
+import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
 import org.joml.Vector3f;
 
+import java.io.Serializable;
 import java.util.*;
 
-public interface World {
+public interface World extends Serializable {
 
-    List<Node> roots();
+    List<SceneNode> roots();
 
-    void add(Node ... args);
-    void addAll(Collection<Node> nodes);
-    void remove(Node node);
+    void add(SceneNode... args);
+    void addAll(Collection<SceneNode> nodes);
+    void remove(SceneNode node);
     void remove(int id);
+    void replace(Map<Integer, SceneNode> replacements);
 
-    Optional<Node> findById(int nodeId);
+    Optional<SceneNode> findById(int nodeId);
     int nextId();
 
     Vector3f bounds000();
@@ -24,6 +26,6 @@ public interface World {
 
     void applyBounds(Vector3f b000, Vector3f b111);
 
-    Evaluatable<Float, CPUContext, GPUContext> toEvaluatable();
+    Evaluable<Float, CPUContext, GPUContext> toEvaluable();
 
 }

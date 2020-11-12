@@ -14,13 +14,13 @@ import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.*;
 public class OpSmoothSubtract implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUContext>,
         Serializable {
 
-    private final Evaluatable<Float, CPUContext, GPUContext> a;
-    private final Evaluatable<Float, CPUContext, GPUContext> b;
+    private final Evaluable<Float, CPUContext, GPUContext> a;
+    private final Evaluable<Float, CPUContext, GPUContext> b;
     private final float k;
 
     public OpSmoothSubtract(
-            Evaluatable<Float, CPUContext, GPUContext> a,
-            Evaluatable<Float, CPUContext, GPUContext> b,
+            Evaluable<Float, CPUContext, GPUContext> a,
+            Evaluable<Float, CPUContext, GPUContext> b,
             float k
     ) {
         this.a = a;

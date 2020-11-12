@@ -15,13 +15,13 @@ public class OpRotate implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<G
         Serializable {
 
     private final Quaternionf orientation;
-    private final Evaluatable<Float, CPUContext, GPUContext> generator;
+    private final Evaluable<Float, CPUContext, GPUContext> generator;
     private final Vector3f tmp = new Vector3f();
 
 
     public OpRotate(
             Quaternionf orientation,
-            Evaluatable<Float, CPUContext, GPUContext> generator
+            Evaluable<Float, CPUContext, GPUContext> generator
     ) {
         this.orientation = new Quaternionf(orientation);
         this.generator = generator;

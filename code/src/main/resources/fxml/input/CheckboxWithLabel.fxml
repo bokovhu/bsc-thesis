@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<fx:root alignment="CENTER" type="javafx.scene.layout.HBox" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <Label fx:id="inputLabel" text="Changeme" prefWidth="160" textAlignment="LEFT">
+        <HBox.margin>
+            <Insets right="16.0" />
+        </HBox.margin></Label>
+    <CheckBox fx:id="checkbox"
+    />
+</fx:root>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<fx:root alignment="BOTTOM_LEFT"
+         type="javafx.scene.layout.HBox"
+         xmlns="http://javafx.com/javafx/11.0.1"
+         xmlns:fx="http://javafx.com/fxml/1">
+    <Label fx:id="inputLabel" text="Changeme" textAlignment="LEFT" prefWidth="160">
+        <HBox.margin>
+            <Insets right="16.0" />
+        </HBox.margin>
+    </Label>
+    <VBox alignment="CENTER">
+        <HBox.margin>
+            <Insets right="16.0" />
+        </HBox.margin>
+        <Label text="X" />
+        <TextField fx:id="xInputField"
+                   prefWidth="64"
+        />
+    </VBox>
+    <VBox alignment="CENTER">
+        <Label text="Y" />
+        <TextField fx:id="yInputField"
+                   prefWidth="64"
+        />
+    </VBox>
+</fx:root>

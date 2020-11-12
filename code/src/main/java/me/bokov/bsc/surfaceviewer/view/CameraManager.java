@@ -1,13 +1,12 @@
 package me.bokov.bsc.surfaceviewer.view;
 
-import me.bokov.bsc.surfaceviewer.Installable;
 import me.bokov.bsc.surfaceviewer.View;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
-public class CameraManager implements Installable<View> {
+public class CameraManager {
 
     public static final float MOUSE_SENTITIVITY = 0.01f;
     private static final InputManager.MouseShortcut SHORTCUT_ROTATE = InputManager
@@ -37,7 +36,6 @@ public class CameraManager implements Installable<View> {
     private float rotationPitch = 0.0f;
     private float zoomDistance = 0.0f;
 
-    @Override
     public void install(View parent) {
 
         this.view = parent;
@@ -155,7 +153,6 @@ public class CameraManager implements Installable<View> {
 
     }
 
-    @Override
     public void uninstall() {
 
         this.view = null;

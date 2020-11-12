@@ -2,7 +2,7 @@ package me.bokov.bsc.surfaceviewer.compute;
 
 import me.bokov.bsc.surfaceviewer.glsl.*;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
-import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
+import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.threed.GPUEvaluationContext;
 
@@ -10,9 +10,9 @@ import java.util.*;
 
 public class VoxelizerComputeShaderGenerator {
 
-    private final Evaluatable<Float, CPUContext, GPUContext> distanceExpression;
+    private final Evaluable<Float, CPUContext, GPUContext> distanceExpression;
 
-    public VoxelizerComputeShaderGenerator(Evaluatable<Float, CPUContext, GPUContext> distanceExpression) {
+    public VoxelizerComputeShaderGenerator(Evaluable<Float, CPUContext, GPUContext> distanceExpression) {
         this.distanceExpression = distanceExpression;
     }
 

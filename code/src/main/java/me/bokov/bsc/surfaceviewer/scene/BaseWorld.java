@@ -1,41 +1,40 @@
 package me.bokov.bsc.surfaceviewer.scene;
 
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
-import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
-import me.bokov.bsc.surfaceviewer.sdf.Evaluetables;
+import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
+import me.bokov.bsc.surfaceviewer.sdf.Evaluables;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
 import org.joml.Vector3f;
 
 import java.util.*;
-import java.util.concurrent.atomic.*;
 import java.util.stream.*;
 
 public class BaseWorld implements World {
 
-    private final AtomicInteger idGenerator = new AtomicInteger(0);
     private final Vector3f b000 = new Vector3f(-1f, -1f, -1f);
     private final Vector3f b111 = new Vector3f(1f, 1f, 1f);
-    private List<Node> rootNodes = new ArrayList<>();
+    private int lastId = 0;
+    private List<SceneNode> rootNodes = new ArrayList<>();
 
     @Override
-    public List<Node> roots() {
+    public List<SceneNode> roots() {
         return rootNodes;
     }
 
     @Override
-    public void add(Node... args) {
-        for (Node root : args) {
+    public void add(SceneNode... args) {
+        for (SceneNode root : args) {
             rootNodes.add(root);
         }
     }
 
     @Override
-    public void addAll(Collection<Node> nodes) {
+    public void addAll(Collection<SceneNode> nodes) {
         rootNodes.addAll(nodes);
     }
 
     @Override
-    public void remove(Node node) {
+    public void remove(SceneNode node) {
         if (node.parent().isPresent()) {
             node.parent().get()
                     .remove(node);
@@ -46,7 +45,7 @@ public class BaseWorld implements World {
 
     @Override
     public void remove(int id) {
-        Optional<Node> foundNode = findById(id);
+        Optional<SceneNode> foundNode = findById(id);
         if (foundNode.isPresent()) {
             if (foundNode.get().parent().isPresent()) {
                 foundNode.get().parent().get()
@@ -58,9 +57,28 @@ public class BaseWorld implements World {
     }
 
     @Override
-    public Optional<Node> findById(int nodeId) {
-        for (Node root : rootNodes) {
-            Optional<Node> foundInRootSubtree = root.findById(nodeId);
+    public void replace(Map<Integer, SceneNode> replacements) {
+        replacements.forEach(
+                (id, node) -> {
+                    Optional<SceneNode> foundNode = findById(id);
+                    if (foundNode.isPresent()) {
+                        if (foundNode.get().parent().isPresent()) {
+                            final var parent = foundNode.get().parent().get();
+                            parent.remove(id);
+                            parent.add(node);
+                        } else {
+                            remove(id);
+                            add(node);
+                        }
+                    }
+                }
+        );
+    }
+
+    @Override
+    public Optional<SceneNode> findById(int nodeId) {
+        for (SceneNode root : rootNodes) {
+            Optional<SceneNode> foundInRootSubtree = root.findById(nodeId);
             if (foundInRootSubtree.isPresent()) {
                 return foundInRootSubtree;
             }
@@ -70,7 +88,7 @@ public class BaseWorld implements World {
 
     @Override
     public int nextId() {
-        return idGenerator.getAndIncrement();
+        return 1 + rootNodes.stream().mapToInt(r -> walkMaxId(r, 0)).max().orElse(0);
     }
 
     @Override
@@ -90,11 +108,22 @@ public class BaseWorld implements World {
     }
 
     @Override
-    public Evaluatable<Float, CPUContext, GPUContext> toEvaluatable() {
-        return Evaluetables.union(
-                rootNodes.stream().map(Node::toEvaluatable)
+    public Evaluable<Float, CPUContext, GPUContext> toEvaluable() {
+        return Evaluables.union(
+                rootNodes.stream().map(SceneNode::toEvaluable)
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList())
         );
     }
+
+    @Override
+    public String toString() {
+        return "The world";
+    }
+
+    private int walkMaxId(SceneNode node, int max) {
+        final int res1 = Math.max(node.getId(), max);
+        return node.children().stream().mapToInt(n -> walkMaxId(n, res1)).max().orElse(res1);
+    }
+
 }

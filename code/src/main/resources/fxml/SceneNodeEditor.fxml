@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import me.bokov.bsc.surfaceviewer.editorv2.view.input.*?>
+
+<fx:root type="javafx.scene.layout.VBox" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+
+    <TitledPane text="Settings">
+        <HBox>
+            <TitledPane text="Transform" HBox.hgrow="ALWAYS">
+                <VBox alignment="TOP_LEFT">
+                    <Vec3Input fx:id="positionInput">
+                        <VBox.margin>
+                            <Insets bottom="12" />
+                        </VBox.margin>
+                    </Vec3Input>
+                    <FloatInput fx:id="scaleInput">
+                        <VBox.margin>
+                            <Insets bottom="12" />
+                        </VBox.margin>
+                    </FloatInput>
+                    <Vec3Input fx:id="rotationAxisInput">
+                        <VBox.margin>
+                            <Insets bottom="12" />
+                        </VBox.margin>
+                    </Vec3Input>
+                    <FloatInput fx:id="rotationAngleInput" />
+                </VBox>
+            </TitledPane>
+            <TitledPane text="Properties" HBox.hgrow="SOMETIMES">
+                <VBox fx:id="settingsVBox" />
+            </TitledPane>
+        </HBox>
+    </TitledPane>
+    <TitledPane text="GLSL">
+        <TextArea fx:id="glslResultTextArea" editable="false" prefRowCount="20" style="-fx-font-family: monospace; -fx-font-size: 12px;" />
+    </TitledPane>
+
+</fx:root>

@@ -13,12 +13,12 @@ public class OpScale implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GP
         Serializable {
 
     private final float scale;
-    private final Evaluatable<Float, CPUContext, GPUContext> generator;
+    private final Evaluable<Float, CPUContext, GPUContext> generator;
 
     private final Vector3f tmpP = new Vector3f();
 
     public OpScale(
-            float scale, Evaluatable<Float, CPUContext, GPUContext> generator
+            float scale, Evaluable<Float, CPUContext, GPUContext> generator
     ) {
         this.scale = scale;
         this.generator = generator;

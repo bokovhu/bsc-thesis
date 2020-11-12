@@ -8,11 +8,33 @@ import java.io.Serializable;
 
 public class MeshTransform implements Serializable {
 
+    private static final Matrix4f IDENTITY = new Matrix4f().identity();
+    private static final Matrix4f IDENTITY_INV = new Matrix4f().identity().invert();
+
     private final Vector3f position;
     private final Quaternionf orientation;
-    private final Vector3f scale;
+    private float scale;
     private final Matrix4f modelMatrix;
     private final Matrix4f modelInvMatrix;
+
+    public MeshTransform() {
+        this.position = new Vector3f(0f, 0f, 0f);
+        this.orientation = new Quaternionf().identity();
+        this.scale = 1f;
+        this.modelMatrix = new Matrix4f();
+        this.modelInvMatrix = new Matrix4f();
+        update();
+    }
+
+    public MeshTransform(Vector3f position, Quaternionf orientation, float scale) {
+        this.position = new Vector3f(position);
+        this.orientation = new Quaternionf(orientation);
+        this.scale = scale;
+        this.modelMatrix = new Matrix4f();
+        this.modelInvMatrix = new Matrix4f();
+        update();
+
+    }
 
     private void update() {
         this.modelMatrix.identity()
@@ -22,25 +44,6 @@ public class MeshTransform implements Serializable {
         this.modelInvMatrix.identity()
                 .set(this.modelMatrix)
                 .invert();
-    }
-
-    public MeshTransform() {
-        this.position = new Vector3f(0f, 0f, 0f);
-        this.orientation = new Quaternionf().identity();
-        this.scale = new Vector3f(1f, 1f, 1f);
-        this.modelMatrix = new Matrix4f();
-        this.modelInvMatrix = new Matrix4f();
-        update();
-    }
-
-    public MeshTransform(Vector3f position, Quaternionf orientation, Vector3f scale) {
-        this.position = new Vector3f(position);
-        this.orientation = new Quaternionf(orientation);
-        this.scale = new Vector3f(scale);
-        this.modelMatrix = new Matrix4f();
-        this.modelInvMatrix = new Matrix4f();
-        update();
-
     }
 
     public Matrix4f M() {
@@ -63,8 +66,8 @@ public class MeshTransform implements Serializable {
         return this;
     }
 
-    public MeshTransform applyScale(Vector3f scale) {
-        this.scale.set(scale);
+    public MeshTransform applyScale(float scale) {
+        this.scale = 1f;
         update();
         return this;
     }
@@ -77,8 +80,12 @@ public class MeshTransform implements Serializable {
         return this.orientation;
     }
 
-    public Vector3f scale() {
+    public float scale() {
         return this.scale;
+    }
+
+    public boolean isIdentity() {
+        return modelInvMatrix.equals(IDENTITY) || modelInvMatrix.equals(IDENTITY_INV);
     }
 
 }

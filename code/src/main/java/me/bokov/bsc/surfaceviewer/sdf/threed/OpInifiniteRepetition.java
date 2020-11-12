@@ -14,13 +14,13 @@ public class OpInifiniteRepetition implements CPUEvaluator<Float, CPUContext>,
         Serializable {
 
     private final Vector3f period;
-    private final Evaluatable<Float, CPUContext, GPUContext> generator;
+    private final Evaluable<Float, CPUContext, GPUContext> generator;
 
     private final Vector3f tmpP = new Vector3f();
 
     public OpInifiniteRepetition(
             Vector3f period,
-            Evaluatable<Float, CPUContext, GPUContext> generator
+            Evaluable<Float, CPUContext, GPUContext> generator
     ) {
         this.period = period;
         this.generator = generator;

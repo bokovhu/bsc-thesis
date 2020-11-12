@@ -13,13 +13,13 @@ public class OpTranslateTo implements CPUEvaluator<Float, CPUContext>, GPUEvalua
         Serializable {
 
     private final Vector3f position;
-    private final Evaluatable<Float, CPUContext, GPUContext> generator;
+    private final Evaluable<Float, CPUContext, GPUContext> generator;
 
     private final Vector3f tmpP = new Vector3f();
 
     public OpTranslateTo(
             Vector3f position,
-            Evaluatable<Float, CPUContext, GPUContext> generator
+            Evaluable<Float, CPUContext, GPUContext> generator
     ) {
         this.position = position;
         this.generator = generator;

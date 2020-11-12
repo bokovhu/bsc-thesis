@@ -3,7 +3,7 @@ package me.bokov.bsc.surfaceviewer.voxelization.naiveugrid;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
-import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
+import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
 import me.bokov.bsc.surfaceviewer.util.MetricsLogger;
 import me.bokov.bsc.surfaceviewer.voxelization.Corner;
@@ -65,7 +65,7 @@ public class UniformGridVoxelizer implements Voxelizer3D<UniformGrid> {
 
     @Override
     public UniformGrid voxelize(
-            Evaluatable<Float, CPUContext, GPUContext> generator,
+            Evaluable<Float, CPUContext, GPUContext> generator,
             MeshTransform transform,
             VoxelizationContext context
     ) {

@@ -13,12 +13,12 @@ import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.*;
 public class OpGate implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUContext>,
         Serializable {
 
-    private final Evaluatable<Float, CPUContext, GPUContext> boundary;
-    private final Evaluatable<Float, CPUContext, GPUContext> generator;
+    private final Evaluable<Float, CPUContext, GPUContext> boundary;
+    private final Evaluable<Float, CPUContext, GPUContext> generator;
 
     public OpGate(
-            Evaluatable<Float, CPUContext, GPUContext> boundary,
-            Evaluatable<Float, CPUContext, GPUContext> generator
+            Evaluable<Float, CPUContext, GPUContext> boundary,
+            Evaluable<Float, CPUContext, GPUContext> generator
     ) {
         this.boundary = boundary;
         this.generator = generator;

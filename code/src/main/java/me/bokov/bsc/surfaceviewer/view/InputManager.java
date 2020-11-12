@@ -2,7 +2,6 @@ package me.bokov.bsc.surfaceviewer.view;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-import me.bokov.bsc.surfaceviewer.Installable;
 import me.bokov.bsc.surfaceviewer.View;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.*;
@@ -10,7 +9,7 @@ import org.lwjgl.glfw.*;
 import java.util.*;
 import java.util.function.*;
 
-public class InputManager implements Installable<View> {
+public class InputManager {
 
     private final Map<KeyboardShortcut, List<Runnable>> keyboardShortcuts = new HashMap<>();
     private final Map<MouseShortcut, List<Runnable>> downShortcuts = new HashMap<>();
@@ -101,7 +100,6 @@ public class InputManager implements Installable<View> {
                 .setButton(button);
     }
 
-    @Override
     public void install(View parent) {
 
         this.view = parent;
@@ -122,7 +120,6 @@ public class InputManager implements Installable<View> {
 
     }
 
-    @Override
     public void uninstall() {
 
         if (keyCallback != null) { GLFWKeyCallback.free(keyCallback.address()); }

@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.*?>
-
+<?import me.bokov.bsc.surfaceviewer.editorv2.view.EditorMenu?>
+<?import me.bokov.bsc.surfaceviewer.editorv2.view.RendererSettings?>
+<?import me.bokov.bsc.surfaceviewer.editorv2.view.SceneBrowser?>
 <fx:root prefHeight="768.0"
          prefWidth="1024.0"
          xmlns="http://javafx.com/javafx/11.0.1"
@@ -16,26 +20,7 @@
                   AnchorPane.rightAnchor="0.0"
                   AnchorPane.topAnchor="0.0">
             <children>
-                <MenuBar GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="NEVER">
-                    <menus>
-                        <Menu mnemonicParsing="false" text="File">
-                            <items>
-                                <MenuItem mnemonicParsing="false" text="New scene" />
-                                <MenuItem mnemonicParsing="false" text="Open scene ..." />
-                                <MenuItem mnemonicParsing="false" text="Save scene" />
-                                <MenuItem mnemonicParsing="false" text="Save scene as ..." />
-                            </items>
-                        </Menu>
-                        <Menu mnemonicParsing="false" text="Scene">
-                            <items>
-                                <Menu mnemonicParsing="false" text="Add mesh ...">
-                                    <items>
-                                    </items>
-                                </Menu>
-                            </items>
-                        </Menu>
-                    </menus>
-                </MenuBar>
+                <EditorMenu fx:id="editorMenu" />
                 <SplitPane dividerPositions="0.3"
                            GridPane.columnIndex="0"
                            GridPane.hgrow="ALWAYS"
@@ -44,11 +29,11 @@
                     <items>
                         <AnchorPane minHeight="0.0" minWidth="0.0">
                             <children>
-                                <TreeView AnchorPane.bottomAnchor="0.0"
-                                          AnchorPane.leftAnchor="0.0"
-                                          AnchorPane.rightAnchor="0.0"
-                                          AnchorPane.topAnchor="0.0"
-                                          fx:id="sceneTree"
+                                <SceneBrowser AnchorPane.bottomAnchor="0.0"
+                                              AnchorPane.leftAnchor="0.0"
+                                              AnchorPane.rightAnchor="0.0"
+                                              AnchorPane.topAnchor="0.0"
+                                              fx:id="sceneBrowser"
                                 />
                             </children>
                         </AnchorPane>
@@ -64,6 +49,9 @@
                                          fx:id="editorTabs"
                                 >
                                     <tabs>
+                                        <Tab text="Renderer settings" closable="false">
+                                            <RendererSettings fx:id="rendererSettings" />
+                                        </Tab>
                                     </tabs>
                                 </TabPane>
                             </children>

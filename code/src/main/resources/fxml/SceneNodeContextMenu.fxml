@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
+<?import me.bokov.bsc.surfaceviewer.editorv2.view.AddMeshMenu?>
+<fx:root xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml"
+         type="javafx.scene.control.ContextMenu"
+>
+    <items>
+        <MenuItem onAction="#onEditSceneNode" text="Edit" />
+        <AddMeshMenu fx:id="addMeshMenu" />
+        <MenuItem onAction="#onDeleteSceneNode" text="Delete" />
+    </items>
+</fx:root>

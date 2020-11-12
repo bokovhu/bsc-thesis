@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TitledPane?>
+<?import me.bokov.bsc.surfaceviewer.editorv2.view.input.ChoiceInput?>
+<fx:root xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml"
+         type="javafx.scene.layout.VBox"
+>
+    <TitledPane text="Renderer settings">
+        <TitledPane text="Choose renderer">
+            <ChoiceInput fx:id="rendererChoiceInput" />
+        </TitledPane>
+    </TitledPane>
+</fx:root>

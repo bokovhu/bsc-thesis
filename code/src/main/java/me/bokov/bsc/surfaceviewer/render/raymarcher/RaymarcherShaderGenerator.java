@@ -4,7 +4,7 @@ import me.bokov.bsc.surfaceviewer.glsl.*;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLFunctionStatement.GLSLFunctionParameterStatement;
 import me.bokov.bsc.surfaceviewer.render.Texture;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
-import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
+import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.threed.GPUEvaluationContext;
 
@@ -12,11 +12,11 @@ import java.util.*;
 
 public class RaymarcherShaderGenerator {
 
-    private final Evaluatable<Float, CPUContext, GPUContext> distanceExpression;
+    private final Evaluable<Float, CPUContext, GPUContext> distanceExpression;
     private final Map<String, Texture> textureMap;
 
     public RaymarcherShaderGenerator(
-            Evaluatable<Float, CPUContext, GPUContext> distanceExpression,
+            Evaluable<Float, CPUContext, GPUContext> distanceExpression,
             Map<String, Texture> textureMap
     ) {
         this.distanceExpression = distanceExpression;
@@ -28,8 +28,7 @@ public class RaymarcherShaderGenerator {
         prog.add(new GLSLRawStatement("precision highp float;"));
 
         prog.add(
-                new GLSLVaryingStatement("vec2", "v_UV"),
-                new GLSLVaryingStatement("vec3", "v_rayDir")
+                new GLSLLayoutStatement(0, "in", "vec2", "v_UV")
         );
 
         prog.add(

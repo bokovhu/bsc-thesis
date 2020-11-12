@@ -3,7 +3,7 @@ package me.bokov.bsc.surfaceviewer.voxelization.octree;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
-import me.bokov.bsc.surfaceviewer.sdf.Evaluatable;
+import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
 import me.bokov.bsc.surfaceviewer.util.MetricsLogger;
 import me.bokov.bsc.surfaceviewer.voxelization.Corner;
@@ -54,7 +54,7 @@ public class OctreeGridVoxelizer implements Voxelizer3D<OctreeGrid> {
         ).normalize();
     }
 
-    private Voxel voxelForNode(OctreeNode node, Evaluatable<Float, CPUContext, GPUContext> generator) {
+    private Voxel voxelForNode(OctreeNode node, Evaluable<Float, CPUContext, GPUContext> generator) {
 
         tmp000.set(node.getP000().x, node.getP000().y, node.getP000().z);
         tmp001.set(node.getP000().x, node.getP000().y, node.getP111().z);
@@ -95,7 +95,7 @@ public class OctreeGridVoxelizer implements Voxelizer3D<OctreeGrid> {
                 || Math.signum(v.getC001().getValue()) != Math.signum(v.getC011().getValue());
     }
 
-    private void processNode(int depth, OctreeNode node, Evaluatable<Float, CPUContext, GPUContext> generator) {
+    private void processNode(int depth, OctreeNode node, Evaluable<Float, CPUContext, GPUContext> generator) {
 
         if (depth == maxDepth) {
             node.setLeaf(true);
@@ -154,7 +154,7 @@ public class OctreeGridVoxelizer implements Voxelizer3D<OctreeGrid> {
 
     @Override
     public OctreeGrid voxelize(
-            Evaluatable<Float, CPUContext, GPUContext> generator,
+            Evaluable<Float, CPUContext, GPUContext> generator,
             MeshTransform transform,
             VoxelizationContext context
     ) {

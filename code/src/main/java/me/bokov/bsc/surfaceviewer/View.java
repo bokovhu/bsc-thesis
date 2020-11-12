@@ -1,13 +1,8 @@
 package me.bokov.bsc.surfaceviewer;
 
-import me.bokov.bsc.surfaceviewer.event.ViewInitialized;
 import me.bokov.bsc.surfaceviewer.render.Camera;
 import me.bokov.bsc.surfaceviewer.scene.World;
-import me.bokov.bsc.surfaceviewer.util.IOUtil;
-import me.bokov.bsc.surfaceviewer.view.CameraManager;
-import me.bokov.bsc.surfaceviewer.view.InputManager;
-import me.bokov.bsc.surfaceviewer.view.Renderer;
-import me.bokov.bsc.surfaceviewer.view.ShaderManager;
+import me.bokov.bsc.surfaceviewer.view.*;
 import me.bokov.bsc.surfaceviewer.view.renderer.RendererType;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -15,19 +10,16 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL46;
 
-import java.io.Serializable;
-import java.util.*;
-
 import static org.lwjgl.system.MemoryUtil.*;
 
-public class View extends ViewBase implements Runnable {
+public class View implements Runnable {
 
     private static final int WIDTH = 1280;
     private static final int HEIGHT = 720;
     private static final boolean FULLSCREEN = false;
     private static final long MONITOR = 0L;
+    private static final Object SYNCOBJ = new Object();
     private final App app;
-    private final Object nextSceneSyncObject = new Object();
     double lastFrameTime = 0.0;
     private World nextWorld = null;
     private World world = null;
@@ -40,6 +32,7 @@ public class View extends ViewBase implements Runnable {
     private int windowCreationWidth = 0, windowCreationHeight = 0;
     private float deltaTime = 0.0f, appTime = 0.0f, viewTime = 0.0f;
     private long glfwWindowHandle = NULL;
+    private RendererConfig nextRendererConfig = null;
 
     public View(App app) {
         this.app = app;
@@ -101,7 +94,7 @@ public class View extends ViewBase implements Runnable {
         this.cameraManager = new CameraManager();
         this.cameraManager.install(this);
 
-        this.changeRenderer(RendererType.GPUMarchingCubes);
+        this.nextRendererType = RendererType.UniformGridMarchingCubes;
 
     }
 
@@ -166,7 +159,7 @@ public class View extends ViewBase implements Runnable {
     private void update() {
 
         if (this.nextWorld != null) {
-            synchronized (this.nextSceneSyncObject) {
+            synchronized (SYNCOBJ) {
                 this.world = this.nextWorld;
                 this.nextWorld = null;
             }
@@ -187,6 +180,16 @@ public class View extends ViewBase implements Runnable {
             this.renderer.install(this);
 
             this.nextRendererType = null;
+
+        }
+
+        if (this.nextRendererConfig != null) {
+
+            if (this.renderer != null) {
+                this.renderer.configure(this.nextRendererConfig);
+            }
+
+            this.nextRendererConfig = null;
 
         }
 
@@ -229,57 +232,23 @@ public class View extends ViewBase implements Runnable {
 
     }
 
-    public synchronized void changeScene(World newWorld) {
+    public void changeConfig(ViewConfiguration configuration) {
 
-        this.nextWorld = newWorld;
-
-    }
-
-    public void changeRenderer(RendererType newType) {
-
-        this.nextRendererType = newType;
-
-    }
-
-    public void changeConfiguration(Map<String, Map<String, Object>> delta) {
-
-        delta.forEach(
-                (key, map) -> {
-                    final var group = this.configurationGroupSettings
-                            .computeIfAbsent(key, k -> new HashMap<>());
-                    map.forEach(group::put);
-                }
-        );
-
-        this.nextWorld = world;
-
-    }
-
-    public List<Property<?>> getConfigurableProperties() {
-
-        // MUST use the ArrayList type, because List does not extend Serializable
-        ArrayList<Property<? extends Serializable>> result = new ArrayList<>();
-
-        if (renderer != null) { result.addAll(renderer.getConfigurationProperties()); }
-
-        return IOUtil.serialize(result);
-
-    }
-
-    public Map<String, Map<String, Object>> getCurrentConfiguration() {
-
-        // MUST use the HashMap type, because Map does not extend Serializable
-        HashMap<String, Map<String, Object>> result = new HashMap<>();
-
-        this.configurationGroupSettings.forEach(
-                (groupKey, group) -> {
-                    final Map<String, Object> map = new HashMap<>();
-                    group.forEach(map::put);
-                    result.put(groupKey, map);
-                }
-        );
-
-        return IOUtil.serialize(result);
+        if (configuration.getWorld() != null) {
+            synchronized (SYNCOBJ) {
+                this.nextWorld = configuration.getWorld();
+            }
+        }
+        if (configuration.getRendererType() != null) {
+            synchronized (SYNCOBJ) {
+                this.nextRendererType = configuration.getRendererType();
+            }
+        }
+        if (configuration.getRendererConfig() != null) {
+            synchronized (SYNCOBJ) {
+                this.nextRendererConfig = configuration.getRendererConfig();
+            }
+        }
 
     }
 
@@ -287,8 +256,6 @@ public class View extends ViewBase implements Runnable {
     public void run() {
 
         init();
-
-        this.app.fire(ViewInitialized.class);
 
         startMainLoop();
         tearDown();

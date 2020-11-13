@@ -1,6 +1,7 @@
 package me.bokov.bsc.surfaceviewer;
 
 import me.bokov.bsc.surfaceviewer.util.IOUtil;
+import me.bokov.bsc.surfaceviewer.view.RendererConfig;
 import me.bokov.bsc.surfaceviewer.view.ViewClient;
 import me.bokov.bsc.surfaceviewer.view.ViewConfiguration;
 
@@ -43,6 +44,13 @@ public abstract class AppBase implements App, Runnable {
             view.changeConfig(detached);
 
         }
+
+        public synchronized RendererConfig reportRendererConfig() {
+
+            return view.provideRendererConfig();
+
+        }
+
     }
 
 }

@@ -96,9 +96,7 @@ public final class Evaluables {
     }
 
     public static Evaluable<Float, CPUContext, GPUContext> union(List<Evaluable<Float, CPUContext, GPUContext>> list) {
-        if (list.size() == 0) {
-            return Evaluable.of(context -> 0.0f, context -> List.of(resultVar(context, literal(0.0f))));
-        }
+        if (list.size() == 0) { return null; }
         if (list.size() == 1) { return union(list.get(0)); }
         if (list.size() == 2) { return union(list.get(0), list.get(1)); }
         return union(list.get(0), list.subList(1, list.size()).toArray(new Evaluable[0]));

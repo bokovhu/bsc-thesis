@@ -1,9 +1,6 @@
 package me.bokov.bsc.surfaceviewer.editorv2.view.input;
 
-import javafx.beans.property.FloatProperty;
-import javafx.beans.property.SimpleFloatProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -17,15 +14,10 @@ import me.bokov.bsc.surfaceviewer.util.FXMLUtil;
 import java.net.URL;
 import java.util.*;
 
-public class FloatInput extends HBox implements Initializable {
+public class FloatInput extends GLInput<Number> implements Initializable {
 
-    @Getter
-    private StringProperty labelProperty = new SimpleStringProperty();
     @Getter
     private FloatProperty valueProperty = new SimpleFloatProperty(0.0f);
-
-    @FXML
-    private Label inputLabel;
 
     @FXML
     private TextField inputField;
@@ -36,9 +28,8 @@ public class FloatInput extends HBox implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        super.initialize(location, resources);
 
-        inputLabel.textProperty()
-                .bind(labelProperty);
         inputField.setOnAction(
                 event -> onTextEntered(inputField.getText())
         );
@@ -52,6 +43,16 @@ public class FloatInput extends HBox implements Initializable {
                 )
         );
 
+    }
+
+    @Override
+    protected Property<Number> getInternalValueProperty() {
+        return valueProperty;
+    }
+
+    @Override
+    public void collectValue() {
+        onTextEntered(inputField.getText());
     }
 
     private void onTextEntered(String newText) {

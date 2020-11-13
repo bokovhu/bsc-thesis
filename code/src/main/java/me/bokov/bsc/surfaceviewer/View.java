@@ -1,7 +1,9 @@
 package me.bokov.bsc.surfaceviewer;
 
+import lombok.Getter;
 import me.bokov.bsc.surfaceviewer.render.Camera;
 import me.bokov.bsc.surfaceviewer.scene.World;
+import me.bokov.bsc.surfaceviewer.util.IOUtil;
 import me.bokov.bsc.surfaceviewer.view.*;
 import me.bokov.bsc.surfaceviewer.view.renderer.RendererType;
 import org.joml.Vector3f;
@@ -9,6 +11,8 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL46;
+
+import java.util.*;
 
 import static org.lwjgl.system.MemoryUtil.*;
 
@@ -19,55 +23,36 @@ public class View implements Runnable {
     private static final boolean FULLSCREEN = false;
     private static final long MONITOR = 0L;
     private static final Object SYNCOBJ = new Object();
+    @Getter
     private final App app;
     double lastFrameTime = 0.0;
     private World nextWorld = null;
+    @Getter
     private World world = null;
     private RendererType nextRendererType = null;
+    @Getter
     private ShaderManager shaderManager = null;
+    @Getter
     private InputManager inputManager = null;
+    @Getter
     private CameraManager cameraManager = null;
+    @Getter
     private Renderer renderer = null;
+    @Getter
     private Camera camera = null;
     private int windowCreationWidth = 0, windowCreationHeight = 0;
-    private float deltaTime = 0.0f, appTime = 0.0f, viewTime = 0.0f;
+    @Getter
+    private float deltaTime = 0.0f;
+    @Getter
+    private float appTime = 0.0f;
+    @Getter
+    private float viewTime = 0.0f;
+    @Getter
     private long glfwWindowHandle = NULL;
     private RendererConfig nextRendererConfig = null;
 
     public View(App app) {
         this.app = app;
-    }
-
-    public long getGlfwWindowHandle() {
-        return glfwWindowHandle;
-    }
-
-    public float getDeltaTime() {
-        return deltaTime;
-    }
-
-    public float getAppTime() {
-        return appTime;
-    }
-
-    public float getViewTime() {
-        return viewTime;
-    }
-
-    public InputManager getInputManager() {
-        return this.inputManager;
-    }
-
-    public ShaderManager getShaderManager() {
-        return this.shaderManager;
-    }
-
-    public Camera getCamera() {
-        return this.camera;
-    }
-
-    public App getApp() {
-        return app;
     }
 
     public void init() {
@@ -145,8 +130,14 @@ public class View implements Runnable {
 
         while (shouldLoop) {
 
-            update();
-            render();
+            try {
+
+                update();
+                render();
+
+            } catch (Exception e) {
+                app.onViewReport("MainLoopError", Map.of("exception", e));
+            }
 
             GLFW.glfwSwapBuffers(this.glfwWindowHandle);
             GLFW.glfwPollEvents();
@@ -249,6 +240,16 @@ public class View implements Runnable {
                 this.nextRendererConfig = configuration.getRendererConfig();
             }
         }
+
+    }
+
+    public RendererConfig provideRendererConfig() {
+
+        if (renderer != null) {
+            return IOUtil.serialize(renderer.getConfig());
+        }
+
+        return null;
 
     }
 

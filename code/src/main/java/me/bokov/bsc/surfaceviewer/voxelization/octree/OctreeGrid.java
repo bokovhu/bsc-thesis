@@ -19,7 +19,8 @@ public class OctreeGrid implements VoxelStorage {
         this.maxDivisions = maxDivisions;
         this.transform = new MeshTransform(
                 new Vector3f(0f, 0f, 0f),
-                new Quaternionf(),
+                new Vector3f(0f, 1f, 0f),
+                0f,
                 1f
         );
     }

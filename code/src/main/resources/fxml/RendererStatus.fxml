@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
+<fx:root xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml"
+         type="javafx.scene.layout.HBox"
+
+>
+    <TextArea editable="false"
+              fx:id="logArea"
+              prefRowCount="32"
+    >
+        <HBox.hgrow>ALWAYS</HBox.hgrow>
+    </TextArea>
+</fx:root>

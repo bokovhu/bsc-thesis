@@ -1,15 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.VBox?>
 <?import me.bokov.bsc.surfaceviewer.editorv2.view.input.ChoiceInput?>
+<?import me.bokov.bsc.surfaceviewer.editorv2.view.RendererProperties?>
+<?import me.bokov.bsc.surfaceviewer.editorv2.view.RendererStatus?>
 <fx:root xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml"
          type="javafx.scene.layout.VBox"
 >
     <TitledPane text="Renderer settings">
-        <TitledPane text="Choose renderer">
-            <ChoiceInput fx:id="rendererChoiceInput" />
-        </TitledPane>
+        <VBox>
+            <TitledPane text="Choose renderer">
+                <VBox>
+                    <ChoiceInput fx:id="rendererChoiceInput" />
+                </VBox>
+            </TitledPane>
+            <TitledPane text="Properties">
+                <RendererProperties fx:id="rendererProperties" />
+            </TitledPane>
+            <TitledPane text="Status" fx:id="statusPane">
+                <RendererStatus fx:id="rendererStatus" />
+            </TitledPane>
+        </VBox>
     </TitledPane>
 </fx:root>

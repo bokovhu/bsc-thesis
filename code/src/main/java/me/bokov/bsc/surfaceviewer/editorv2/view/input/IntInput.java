@@ -1,9 +1,6 @@
 package me.bokov.bsc.surfaceviewer.editorv2.view.input;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -15,15 +12,10 @@ import me.bokov.bsc.surfaceviewer.util.FXMLUtil;
 import java.net.URL;
 import java.util.*;
 
-public class IntInput extends HBox implements Initializable {
+public class IntInput extends GLInput<Number> implements Initializable {
 
-    @Getter
-    private StringProperty labelProperty = new SimpleStringProperty();
     @Getter
     private IntegerProperty valueProperty = new SimpleIntegerProperty(0);
-
-    @FXML
-    private Label inputLabel;
 
     @FXML
     private TextField inputField;
@@ -34,9 +26,8 @@ public class IntInput extends HBox implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        super.initialize(location, resources);
 
-        inputLabel.textProperty()
-                .bind(labelProperty);
         inputField.setOnAction(
                 event -> onTextEntered(inputField.getText())
         );
@@ -46,10 +37,20 @@ public class IntInput extends HBox implements Initializable {
 
         valueProperty.addListener(
                 (observable, oldValue, newValue) -> inputField.setText(
-                        String.format(Locale.ENGLISH, "%.4f", newValue)
+                        String.format(Locale.ENGLISH, "%d", newValue)
                 )
         );
 
+    }
+
+    @Override
+    protected Property<Number> getInternalValueProperty() {
+        return valueProperty;
+    }
+
+    @Override
+    public void collectValue() {
+        onTextEntered(inputField.getText());
     }
 
     private void onTextEntered(String newText) {

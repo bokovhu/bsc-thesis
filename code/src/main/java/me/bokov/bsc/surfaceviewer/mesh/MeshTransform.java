@@ -12,13 +12,17 @@ public class MeshTransform implements Serializable {
     private static final Matrix4f IDENTITY_INV = new Matrix4f().identity().invert();
 
     private final Vector3f position;
+    private final Vector3f rotationAxis;
     private final Quaternionf orientation;
-    private float scale;
     private final Matrix4f modelMatrix;
     private final Matrix4f modelInvMatrix;
+    private float rotationAngle;
+    private float scale;
 
     public MeshTransform() {
         this.position = new Vector3f(0f, 0f, 0f);
+        this.rotationAxis = new Vector3f(0f, 1f, 0f);
+        this.rotationAngle = 0.0f;
         this.orientation = new Quaternionf().identity();
         this.scale = 1f;
         this.modelMatrix = new Matrix4f();
@@ -26,9 +30,11 @@ public class MeshTransform implements Serializable {
         update();
     }
 
-    public MeshTransform(Vector3f position, Quaternionf orientation, float scale) {
+    public MeshTransform(Vector3f position, Vector3f rotationAxis, float rotationAngle, float scale) {
         this.position = new Vector3f(position);
-        this.orientation = new Quaternionf(orientation);
+        this.rotationAxis = new Vector3f(rotationAxis);
+        this.rotationAngle = rotationAngle;
+        this.orientation = new Quaternionf();
         this.scale = scale;
         this.modelMatrix = new Matrix4f();
         this.modelInvMatrix = new Matrix4f();
@@ -37,6 +43,8 @@ public class MeshTransform implements Serializable {
     }
 
     private void update() {
+        this.orientation.identity()
+                .rotateAxis((float) Math.toRadians(rotationAngle), rotationAxis);
         this.modelMatrix.identity()
                 .translate(this.position)
                 .rotate(this.orientation)
@@ -60,8 +68,9 @@ public class MeshTransform implements Serializable {
         return this;
     }
 
-    public MeshTransform applyOrientation(Quaternionf ori) {
-        this.orientation.set(ori);
+    public MeshTransform applyRotation(Vector3f rotationAxis, float angle) {
+        this.rotationAxis.set(rotationAxis);
+        this.rotationAngle = angle;
         update();
         return this;
     }
@@ -74,6 +83,14 @@ public class MeshTransform implements Serializable {
 
     public Vector3f position() {
         return this.position;
+    }
+
+    public Vector3f rotationAxis() {
+        return this.rotationAxis;
+    }
+
+    public float rotationAngle() {
+        return this.rotationAngle;
     }
 
     public Quaternionf orientation() {

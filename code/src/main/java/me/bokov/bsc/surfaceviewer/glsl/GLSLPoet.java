@@ -47,6 +47,13 @@ public class GLSLPoet {
         );
     }
 
+    public static GLSLStatement min(List<GLSLStatement> list) {
+        if (list.size() == 0) { return null; }
+        if (list.size() == 1) { return list.get(0); }
+        if (list.size() == 2) { return min(list.get(0), list.get(1)); }
+        return min(list.get(0), min(list.subList(1, list.size())));
+    }
+
     public static GLSLStatement max(GLSLStatement v1, GLSLStatement v2) {
         return new GLSLFunctionCallStatement(
                 "max",

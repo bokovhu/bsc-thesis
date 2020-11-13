@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.fxmisc.richtext.CodeArea?>
+<fx:root xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml"
+         type="javafx.scene.layout.VBox"
+>
+
+    <VBox.vgrow>ALWAYS</VBox.vgrow>
+
+    <HBox>
+        <VBox.vgrow>NEVER</VBox.vgrow>
+        <Button text="Sync" onAction="#onSyncCode" />
+        <Button text="Compile" onAction="#onCompileCode" />
+    </HBox>
+
+    <TitledPane text="Code">
+
+        <CodeArea fx:id="codeArea"
+                  editable="true"
+
+        >
+            <VBox.vgrow>ALWAYS</VBox.vgrow>
+        </CodeArea>
+
+    </TitledPane>
+
+    <TitledPane text="Errors">
+        <VBox fx:id="errorsVBox"></VBox>
+    </TitledPane>
+
+</fx:root>

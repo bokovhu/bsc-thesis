@@ -1,9 +1,6 @@
 package me.bokov.bsc.surfaceviewer.editorv2.view.input;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -17,15 +14,10 @@ import org.joml.Vector3f;
 import java.net.URL;
 import java.util.*;
 
-public class Vec3Input extends HBox implements Initializable {
+public class Vec3Input extends GLInput<Vector3f> implements Initializable {
 
-    @Getter
-    private StringProperty labelProperty = new SimpleStringProperty();
     @Getter
     private ObjectProperty<Vector3f> valueProperty = new SimpleObjectProperty<>(new Vector3f());
-
-    @FXML
-    private Label inputLabel;
 
     @FXML
     private TextField xInputField;
@@ -59,9 +51,7 @@ public class Vec3Input extends HBox implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-        inputLabel.textProperty()
-                .bind(labelProperty);
+        super.initialize(location, resources);
 
         xInputField.setOnAction(
                 event -> onInputsChanged()
@@ -79,6 +69,16 @@ public class Vec3Input extends HBox implements Initializable {
                 (observable, oldValue, newValue) -> displayValue()
         );
 
+    }
+
+    @Override
+    protected Property<Vector3f> getInternalValueProperty() {
+        return valueProperty;
+    }
+
+    @Override
+    public void collectValue() {
+        onInputsChanged();
     }
 
     private void onInputsChanged() {

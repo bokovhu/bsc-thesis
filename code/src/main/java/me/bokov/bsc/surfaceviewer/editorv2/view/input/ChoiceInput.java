@@ -1,9 +1,6 @@
 package me.bokov.bsc.surfaceviewer.editorv2.view.input;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -20,7 +17,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.function.*;
 
-public class ChoiceInput extends HBox implements Initializable {
+public class ChoiceInput extends GLInput<Object> implements Initializable {
 
     @Getter
     private ObjectProperty<Object> valueProperty = new SimpleObjectProperty<>();
@@ -31,12 +28,6 @@ public class ChoiceInput extends HBox implements Initializable {
     @Getter
     private ObservableList<Object> items = FXCollections.observableArrayList();
 
-    @Getter
-    private StringProperty labelProperty = new SimpleStringProperty();
-
-    @FXML
-    private Label inputLabel;
-
     @FXML
     private VBox choicesVBox;
 
@@ -46,8 +37,7 @@ public class ChoiceInput extends HBox implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-        inputLabel.textProperty().bind(labelProperty);
+        super.initialize(location, resources);
 
         items.addListener(
                 (ListChangeListener<? super Object>) (c -> onItemsChanged())
@@ -55,6 +45,16 @@ public class ChoiceInput extends HBox implements Initializable {
         valueProperty.addListener(
                 (observable, oldValue, newValue) -> onValueChanged(newValue)
         );
+
+    }
+
+    @Override
+    protected Property<Object> getInternalValueProperty() {
+        return valueProperty;
+    }
+
+    @Override
+    public void collectValue() {
 
     }
 

@@ -24,7 +24,8 @@ public class ShaderProgram extends BaseProgram {
         if (compileStatus != GL46.GL_TRUE) {
             throw new RuntimeException(
                     "Could not compile a shader! Info log: \n" +
-                            GL46.glGetShaderInfoLog(shaderId)
+                            GL46.glGetShaderInfoLog(shaderId) + "\n\nSource:\n\n"
+                            + source
             );
         }
 

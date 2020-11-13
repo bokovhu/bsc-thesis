@@ -60,6 +60,8 @@ dependencies {
     antlr "org.antlr:antlr4:4.8-1"
     compile "org.antlr:antlr4-runtime:4.8-1"
 
+    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.10.5'
+
 }
 
 test {

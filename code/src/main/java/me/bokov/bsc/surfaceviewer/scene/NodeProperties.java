@@ -1,5 +1,6 @@
 package me.bokov.bsc.surfaceviewer.scene;
 
+import lombok.Getter;
 import org.joml.*;
 
 import java.io.Serializable;
@@ -16,6 +17,9 @@ public class NodeProperties implements Serializable {
     private Map<String, Matrix4f> mat4Properties = new HashMap<>();
     private Map<String, Integer> intProperties = new HashMap<>();
     private Map<String, Boolean> booleanProperties = new HashMap<>();
+
+    @Getter
+    private Set<NodeTemplate.Property> includedProperties = new HashSet<>();
 
     private void removeProperty(String type, String name) {
 
@@ -93,14 +97,17 @@ public class NodeProperties implements Serializable {
 
         if (value == null) {
             removeProperty(propertyTemplate.getType(), propertyTemplate.getName());
+            includedProperties.remove(propertyTemplate);
         } else {
             putProperty(propertyTemplate.getType(), propertyTemplate.getName(), value);
+            includedProperties.add(propertyTemplate);
         }
 
     }
 
     public void exclude(NodeTemplate.Property propertyTemplate) {
         removeProperty(propertyTemplate.getType(), propertyTemplate.getName());
+        includedProperties.remove(propertyTemplate);
     }
 
     public void apply(SurfaceFactoryRequest.SurfaceFactoryRequestBuilder builder) {
@@ -194,6 +201,60 @@ public class NodeProperties implements Serializable {
         return mat4Properties.getOrDefault(name, defaultValue);
     }
 
+    public Object getValue(NodeTemplate.Property propertyTemplate) {
+
+        switch (propertyTemplate.getType()) {
+            case "float":
+                return floatProperties.getOrDefault(
+                        propertyTemplate.getName(),
+                        ((Number) propertyTemplate.getDefaultValue()).floatValue()
+                );
+            case "int":
+                return intProperties.getOrDefault(
+                        propertyTemplate.getName(),
+                        ((Number) propertyTemplate.getDefaultValue()).intValue()
+                );
+            case "vec2":
+                return vec2Properties.getOrDefault(
+                        propertyTemplate.getName(),
+                        (Vector2f) propertyTemplate.getDefaultValue()
+                );
+            case "vec3":
+                return vec3Properties.getOrDefault(
+                        propertyTemplate.getName(),
+                        (Vector3f) propertyTemplate.getDefaultValue()
+                );
+            case "vec4":
+                return vec4Properties.getOrDefault(
+                        propertyTemplate.getName(),
+                        (Vector4f) propertyTemplate.getDefaultValue()
+                );
+            case "mat2":
+                return mat2Properties.getOrDefault(
+                        propertyTemplate.getName(),
+                        (Matrix2f) propertyTemplate.getDefaultValue()
+                );
+            case "mat3":
+                return mat3Properties.getOrDefault(
+                        propertyTemplate.getName(),
+                        (Matrix3f) propertyTemplate.getDefaultValue()
+                );
+            case "mat4":
+                return mat4Properties.getOrDefault(
+                        propertyTemplate.getName(),
+                        (Matrix4f) propertyTemplate.getDefaultValue()
+                );
+            case "bool":
+                return booleanProperties.getOrDefault(
+                        propertyTemplate.getName(),
+                        Boolean.TRUE.equals(propertyTemplate.getDefaultValue())
+                );
+        }
+
+        return null;
+
+    }
+
     public void copyFrom(NodeProperties other) {
 
         floatProperties.clear();
@@ -205,6 +266,7 @@ public class NodeProperties implements Serializable {
         mat4Properties.clear();
         intProperties.clear();
         booleanProperties.clear();
+        includedProperties.clear();
 
 
         floatProperties.putAll(other.floatProperties);
@@ -216,6 +278,7 @@ public class NodeProperties implements Serializable {
         mat4Properties.putAll(other.mat4Properties);
         intProperties.putAll(other.intProperties);
         booleanProperties.putAll(other.booleanProperties);
+        includedProperties.addAll(other.includedProperties);
 
     }
 

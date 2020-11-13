@@ -22,7 +22,8 @@ public class UniformGrid implements VoxelStorage, Serializable {
         this.depth = depth;
         this.transform = new MeshTransform(
                 new Vector3f(0f, 0f, 0f),
-                new Quaternionf(),
+                new Vector3f(0f, 1f, 0f),
+                0f,
                 1f
         );
         this.voxels = new Voxel[width * height * depth];

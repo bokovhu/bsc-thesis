@@ -1,6 +1,7 @@
 package me.bokov.bsc.surfaceviewer.view.renderer;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.experimental.Accessors;
 import me.bokov.bsc.surfaceviewer.View;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
@@ -8,6 +9,7 @@ import me.bokov.bsc.surfaceviewer.mesh.mccpu.MarchingCubes;
 import me.bokov.bsc.surfaceviewer.render.Drawable;
 import me.bokov.bsc.surfaceviewer.render.ShaderProgram;
 import me.bokov.bsc.surfaceviewer.scene.World;
+import me.bokov.bsc.surfaceviewer.util.IOUtil;
 import me.bokov.bsc.surfaceviewer.util.Resources;
 import me.bokov.bsc.surfaceviewer.view.Renderer;
 import me.bokov.bsc.surfaceviewer.view.RendererConfig;
@@ -16,8 +18,9 @@ import me.bokov.bsc.surfaceviewer.voxelization.Voxelizer3D;
 import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGrid;
 import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGridVoxelizer;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
+
+import java.util.*;
 
 public class MarchingCubesRenderer implements Renderer {
 
@@ -30,14 +33,25 @@ public class MarchingCubesRenderer implements Renderer {
     private MarchingCubes marchingCubes;
     private Drawable mesh;
     private ShaderProgram shaderProgram;
+    @Getter
     private Config config = new Config()
             .setGridWidth(64).setGridHeight(64).setGridDepth(64)
-            .setGridOffset(new Vector3f(-5f)).setGridScale(new Vector3f(10f))
-            .setLightEnergy(new Vector3f(1.6f))
-            .setLightAmbient(new Vector3f(0.15f))
-            .setLightDirection(new Vector3f(-1.5f, -2.3f, 1.8f).normalize());
+            .setGridOffset(new Vector3f(-2f)).setGridScale(new Vector3f(4f))
+            .setLightEnergy(new Vector3f(1.0f))
+            .setLightAmbient(new Vector3f(0.2f))
+            .setLightDirection(new Vector3f(-1.5f, 2.3f, 1.8f).normalize())
+            .setIsoLevel(0.0f);
 
     private void voxelizeScene(World world) {
+
+        if (this.voxelizer != null) {
+            this.voxelizer.tearDown();
+            this.voxelizer = null;
+        }
+        if (this.voxelStorage != null) {
+            this.voxelStorage.tearDown();
+            this.voxelStorage = null;
+        }
 
         final var generator = world.toEvaluable();
 
@@ -51,7 +65,8 @@ public class MarchingCubesRenderer implements Renderer {
                     generator,
                     new MeshTransform(
                             config.getGridOffset(),
-                            new Quaternionf(),
+                            new Vector3f(0f, 1f, 0f),
+                            0f,
                             Math.max(
                                     config.getGridScale().x,
                                     Math.max(
@@ -65,6 +80,11 @@ public class MarchingCubesRenderer implements Renderer {
     }
 
     private void executeMarchingCubes() {
+
+        if (this.mesh != null) {
+            this.mesh.tearDown();
+            this.mesh = null;
+        }
 
         if (this.voxelStorage != null) {
 
@@ -113,11 +133,22 @@ public class MarchingCubesRenderer implements Renderer {
                 .fragmentFromResource(Resources.GLSL_FRAGMENT_BLINN_PHONG)
                 .end();
 
+        this.view.getApp().onViewReport(
+                "RendererInstalled",
+                Map.of("config", IOUtil.serialize(this.getConfig()))
+        );
+
     }
 
     @Override
     public void configure(RendererConfig config) {
         this.config = (MarchingCubesRenderer.Config) config;
+        this.view.getApp().onViewReport(
+                "RendererConfigured",
+                Map.of("config", IOUtil.serialize(this.getConfig()))
+        );
+
+        this.mesh = null;
     }
 
     @Override
@@ -144,8 +175,8 @@ public class MarchingCubesRenderer implements Renderer {
     @Accessors(chain = true)
     public static class Config implements RendererConfig {
 
-        private int gridWidth, gridHeight, gridDepth;
-        private float isoLevel;
+        private Integer gridWidth, gridHeight, gridDepth;
+        private Float isoLevel;
         private Vector3f gridOffset, gridScale;
         private Vector3f lightEnergy, lightAmbient, lightDirection;
 

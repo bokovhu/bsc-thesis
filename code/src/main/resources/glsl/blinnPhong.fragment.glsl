@@ -35,8 +35,12 @@ vec3 blinnPhong(vec3 p, vec3 n) {
 
 }
 
+vec3 toneMap(vec3 color) {
+    return pow(color, vec3(1.0 / 2.2));
+}
+
 out vec4 out_color;
 
 void main() {
-    out_color = vec4(blinnPhong(v_worldPosition, v_normal), 1.0);
+    out_color = vec4(toneMap(blinnPhong(v_worldPosition, v_normal)), 1.0);
 }

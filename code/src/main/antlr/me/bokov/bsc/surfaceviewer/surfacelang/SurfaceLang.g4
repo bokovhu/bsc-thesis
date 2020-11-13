@@ -4,169 +4,124 @@ grammar SurfaceLang;
     package me.bokov.bsc.surfaceviewer.surfacelang;
 }
 
-surfaceSpecification :
-    topLevelStatement+
+world :
+    (expression)+
     ;
 
-/// functionDeclarationStatement: sdf3d sphere(float radius): P -> { return length(P) - radius; }
-/// constantDeclarationStatement: const float MAX_RADIUS = 0.5;
-
-topLevelStatement :
-    surfaceDeclarationStatement
-    | functionDeclarationStatement
-    | constantDeclarationStatement
+expression :
+    expressionName (expressionAlias)? (expressionTransform)? (expressionProperties)? (expressionPorts)? (expressionChildren)?
     ;
 
-constantDeclarationStatement :
-    KW_CONST constantType constantName EQUALS singleExpression
-    ;
-
-constantType :
+expressionName :
     IDENTIFIER
     ;
 
-constantName :
-    IDENTIFIER
+expressionAlias :
+    '"' (IDENTIFIER)+ '"'
     ;
 
-functionDeclarationStatement :
-    typeName functionName functionParameterList functionBody
+expressionTransform :
+    KW_AT (positionTransform)? (scaleTransform)? (rotationTransform)?
     ;
 
-surfaceDeclarationStatement :
-    typeName functionName functionParameterList COLON surfacePointVariable ARROW functionBody
+positionTransform :
+    KW_POSITION position=vec3Value
     ;
 
-typeName :
-    IDENTIFIER
-    ;
-functionName :
-    IDENTIFIER
+scaleTransform :
+    KW_SCALE scale=numberValue
     ;
 
-functionParameterList :
-    LPAREN (singleFunctionParameter (COMMA singleFunctionParameter)*)? RPAREN
+rotationTransform :
+    KW_ROTATE KW_AROUND vec3Value KW_BY numberValue (KW_RADIANS | KW_DEGREES)
     ;
 
-/// Eg. float radius
-singleFunctionParameter :
-    functionParameterType functionParameterName
+expressionProperties :
+    LPAREN propertyMap RPAREN
     ;
 
-
-surfacePointVariable : IDENTIFIER
+expressionPorts :
+    LCURLY portMap RCURLY
     ;
 
-functionParameterType : IDENTIFIER;
-functionParameterName : IDENTIFIER;
-
-/// {
-/// statement1;
-/// statement2;
-/// ...
-/// }
-functionBody :
-    BLOCK_START blockStatements BLOCK_END
+expressionChildren :
+    LBRACKET childList RBRACKET
     ;
 
-blockStatements :
-    (singleStatement SEMICOLON)*
+propertyMap :
+    (propertySpec (COMMA propertySpec)*)?
     ;
 
-/// variableDeclarationStatement: float a
-/// variableDeclarationStatement: float a = 1.0
-/// assignmentStatement: a = 1.0
-/// returnStatement: return 500
-/// functionCallStatement: sphere[P](1.0)
-singleStatement :
-    returnStatement
-    | variableDeclarationStatement
-    | assignmentStatement
-    | functionCallStatement
-    | surfaceCallStatement
+portMap :
+    (portSpec (COMMA portSpec)*)?
     ;
 
-assignmentStatement :
-    variableName assignmentOperator singleExpression
+childList :
+    (expression (COMMA expression)*)?
     ;
 
-assignmentOperator :
-    EQUALS
-    | OP_ASSIGN
+propertySpec :
+    IDENTIFIER COLON propertyValue
     ;
 
-returnStatement :
-    KW_RETURN singleExpression
+portSpec :
+    IDENTIFIER COLON expression
     ;
 
-functionCallStatement :
-    functionCallAtom
+propertyValue :
+    numberValue
+    | vec2Value
+    | vec3Value
+    | vec4Value
+    | mat2Value
+    | mat3Value
+    | mat4Value
+    | boolValue
     ;
 
-surfaceCallStatement :
-    surfaceCallAtom
-    ;
-
-variableDeclarationStatement :
-    variableTypeName variableName (variableInitialValueAssignment)?
-    ;
-
-variableInitialValueAssignment :
-    EQUALS singleExpression
-    ;
-
-variableTypeName :
-    IDENTIFIER
-    ;
-
-variableName :
-    IDENTIFIER
-    ;
-
-singleExpression :
-    expressionAtom (expressionOperator expressionAtom)*
-    ;
-
-expressionOperator :
-    ADD | SUB | MUL | DIV | MOD | POW
-    ;
-
-expressionAtom :
-    numberLiteral
-    | functionCallAtom
-    | surfaceCallAtom
-    | memberAtom
-    | LPAREN singleExpression RPAREN
-    ;
-
-numberLiteral :
+numberValue :
     NUMBER
-    | '+' NUMBER
-    | '-' NUMBER
     ;
 
-functionCallAtom :
-    IDENTIFIER functionCallParameterList
+boolValue :
+    KW_TRUE
+    | KW_FALSE
     ;
 
-surfaceCallAtom :
-    IDENTIFIER surfaceCallParameterList
+vec2Value :
+    LPAREN x=numberValue COMMA y=numberValue RPAREN
     ;
 
-surfaceCallParameterList :
-    functionCallParameterList? LBRACKET singleExpression RBRACKET
+vec3Value :
+    LPAREN x=numberValue COMMA y=numberValue COMMA z=numberValue RPAREN
     ;
 
-functionCallParameterList :
-    LPAREN (singleExpression (COMMA singleExpression)*)? RPAREN
+vec4Value :
+    LPAREN x=numberValue COMMA y=numberValue COMMA z=numberValue COMMA w=numberValue RPAREN
     ;
 
-memberAtom :
-    IDENTIFIER (DOT memberAtom)?
+mat2Value :
+    LPAREN col0=vec2Value COMMA col1=vec2Value RPAREN
     ;
 
-KW_RETURN : 'return';
-KW_CONST : 'const';
+mat3Value :
+    LPAREN col0=vec3Value COMMA col1=vec3Value COMMA col2=vec3Value RPAREN
+    ;
+
+mat4Value :
+    LPAREN col0=vec4Value COMMA col1=vec4Value COMMA col2=vec4Value COMMA col3=vec4Value RPAREN
+    ;
+
+KW_AT : 'AT';
+KW_POSITION : 'POSITION';
+KW_SCALE : 'SCALE';
+KW_ROTATE : 'ROTATE';
+KW_AROUND : 'AROUND';
+KW_BY : 'BY';
+KW_RADIANS : 'RADIANS';
+KW_DEGREES : 'DEGREES';
+KW_TRUE : 'true';
+KW_FALSE : 'false';
 
 NUMBER : [0-9]+(('.')?[0-9]+)?;
 IDENTIFIER : [a-zA-Z]([a-zA-Z0-9_]*);
@@ -175,13 +130,13 @@ LPAREN : '(';
 RPAREN : ')';
 LBRACKET : '[';
 RBRACKET : ']';
+LCURLY : '{';
+RCURLY : '}';
 COMMA : ',';
 COLON : ':';
 SEMICOLON : ';';
 DOT : '.';
 ARROW : '->';
-BLOCK_START : '{';
-BLOCK_END : '}';
 OP_ASSIGN : '+=' | '-=' | '*=' | '/=';
 EQUALS : '=';
 ADD : '+';

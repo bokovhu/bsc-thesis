@@ -5,9 +5,9 @@ import lombok.Getter;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
-import me.bokov.bsc.surfaceviewer.sdf.threed.OpSmoothIntersect;
-import me.bokov.bsc.surfaceviewer.sdf.threed.OpSmoothSubtract;
-import me.bokov.bsc.surfaceviewer.sdf.threed.OpSmoothUnion;
+import me.bokov.bsc.surfaceviewer.sdf.threed.*;
+import me.bokov.bsc.surfaceviewer.sdf.twod.Box2D;
+import me.bokov.bsc.surfaceviewer.sdf.twod.Disk2D;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -92,6 +92,121 @@ public enum NodeTemplate {
                     Port.builder().name("B").color("#40e077").build()
             )
     ),
+    ONION(
+            List.of(
+                    Property.builder().defaultValue(0.1f).type("float").name("radius").build()
+            ),
+            true,
+            c -> c.getPorts().containsKey("Generator") ? Evaluable.of(
+                    new OpOnion(
+                            c.getFloatProperties().getOrDefault("radius", 0.1f),
+                            c.getPorts().get("Generator").toEvaluable()
+                    )
+            ) : null,
+            List.of(
+                    Port.builder().name("Generator").color("#4090e0").build()
+            )
+    ),
+    ROUND(
+            List.of(
+                    Property.builder().defaultValue(0.1f).type("float").name("radius").build()
+            ),
+            true,
+            c -> c.getPorts().containsKey("Generator") ? Evaluable.of(
+                    new OpRound(
+                            c.getFloatProperties().getOrDefault("radius", 0.1f),
+                            c.getPorts().get("Generator").toEvaluable()
+                    )
+            ) : null,
+            List.of(
+                    Port.builder().name("Generator").color("#4090e0").build()
+            )
+    ),
+    EXTRUDE(
+            List.of(
+                    Property.builder().defaultValue(1.0f).type("float").name("depth").build()
+            ),
+            true,
+            c -> c.getPorts().containsKey("Generator") ? Evaluable.of(
+                    new OpExtrude(
+                            c.getFloatProperties().getOrDefault("depth", 1.0f),
+                            c.getPorts().get("Generator").toEvaluable()
+                    )
+            ) : null,
+            List.of(
+                    Port.builder().name("Generator").color("#4090e0").build()
+            )
+    ),
+    SYMX(
+            true,
+            c -> c.getPorts().containsKey("Generator") ? Evaluable.of(
+                    new OpSymX(c.getPorts().get("Generator").toEvaluable())
+            ) : null,
+            List.of(
+                    Port.builder().name("Generator").color("#000000").build()
+            )
+    ),
+    SYMY(
+            true,
+            c -> c.getPorts().containsKey("Generator") ? Evaluable.of(
+                    new OpSymY(c.getPorts().get("Generator").toEvaluable())
+            ) : null,
+            List.of(
+                    Port.builder().name("Generator").color("#000000").build()
+            )
+    ),
+    SYMZ(
+            true,
+            c -> c.getPorts().containsKey("Generator") ? Evaluable.of(
+                    new OpSymZ(c.getPorts().get("Generator").toEvaluable())
+            ) : null,
+            List.of(
+                    Port.builder().name("Generator").color("#000000").build()
+            )
+    ),
+    ARRAY(
+            List.of(
+                    Property.builder().type("int").name("countX").defaultValue(1).build(),
+                    Property.builder().type("int").name("countY").defaultValue(1).build(),
+                    Property.builder().type("int").name("countZ").defaultValue(1).build(),
+                    Property.builder().type("vec3").name("offset").defaultValue(new Vector3f(1f)).build()
+            ),
+            true,
+            c -> (c.getPorts().containsKey("Generator"))
+                    ? Evaluable.of(new OpArray(
+                    c.getIntProperties().getOrDefault("countX", 1),
+                    c.getIntProperties().getOrDefault("countY", 1),
+                    c.getIntProperties().getOrDefault("countZ", 1),
+                    c.getVec3Properties().getOrDefault("offset", new Vector3f(1f)),
+                    c.getPorts().get("Generator").toEvaluable()
+            ))
+                    : null,
+            List.of(
+                    Port.builder().name("Generator").color("#000000").build()
+            )
+    ),
+    RADIAL_ARRAY(
+            List.of(
+                    Property.builder().type("int").name("count").defaultValue(4).build(),
+                    Property.builder().type("float").name("fromAngleDeg").defaultValue(0.0f).build(),
+                    Property.builder().type("float").name("toAngleDeg").defaultValue(360.0f).build(),
+                    Property.builder().type("vec3").name("axis").defaultValue(new Vector3f(0f, 0f, 1f)).build()
+            ),
+            true,
+            c -> (c.getPorts().containsKey("Generator"))
+                    ? Evaluable.of(new OpRadialArray(
+                    c.getIntProperties().getOrDefault("count", 4),
+                    c.getFloatProperties().getOrDefault("fromAngleDeg", 0.0f),
+                    c.getFloatProperties().getOrDefault("toAngleDeg", 360.0f),
+                    c.getVec3Properties().getOrDefault("axis", new Vector3f(0f, 0f, 1f)),
+                    c.getPorts().get("Generator").toEvaluable()
+            ))
+                    : null,
+            List.of(
+                    Port.builder().name("Generator").color("#000000").build()
+            )
+    ),
+
     BOX(
             List.of(
                     Property.builder().defaultValue(new Vector3f(1f)).type("vec3").name("bounds").build()
@@ -123,6 +238,31 @@ public enum NodeTemplate {
                     c.getFloatProperties().getOrDefault("height", 1.0f),
                     c.getFloatProperties().getOrDefault("radius", 0.4f)
             )
+    ),
+    CONE(
+            List.of(
+                    Property.builder().defaultValue((float) Math.toRadians(60.0)).type("float").name("angle").build(),
+                    Property.builder().defaultValue(1.0f).type("float").name("height").build()
+            ),
+            false,
+            c -> cone(
+                    c.getFloatProperties().getOrDefault("angle", (float) Math.toRadians(60.0)),
+                    c.getFloatProperties().getOrDefault("height", 1.0f)
+            )
+    ),
+    BOX2D(
+            List.of(
+                    Property.builder().defaultValue(new Vector2f(1f)).type("vec2").name("bounds").build()
+            ),
+            false,
+            c -> Evaluable.of(new Box2D(c.getVec2Properties().getOrDefault("bounds", new Vector2f(1f))))
+    ),
+    DISK2D(
+            List.of(
+                    Property.builder().defaultValue(1f).type("float").name("radius").build()
+            ),
+            false,
+            c -> Evaluable.of(new Disk2D(c.getFloatProperties().getOrDefault("radius", 1f)))
     );
     public final boolean supportsChildren;
     public final Function<SurfaceFactoryRequest, Evaluable<Float, CPUContext, GPUContext>> factory;

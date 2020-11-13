@@ -36,7 +36,7 @@ public class Cone implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUCo
     @Override
     public List<GLSLStatement> evaluate(GPUContext context) {
         return List.of(
-                fn(GLSL_FN_NAME, ref(context.getPointVariable()), literal(angle), literal(height))
+                resultVar(context, fn(GLSL_FN_NAME, ref(context.getPointVariable()), literal(angle), literal(height)))
         );
     }
 

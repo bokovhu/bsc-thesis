@@ -1,5 +1,6 @@
 package me.bokov.bsc.surfaceviewer.editorv2;
 
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -12,19 +13,18 @@ import lombok.extern.java.Log;
 import me.bokov.bsc.surfaceviewer.App;
 import me.bokov.bsc.surfaceviewer.editorv2.event.OpenSceneNodeEditorEvent;
 import me.bokov.bsc.surfaceviewer.editorv2.service.UpdateViewTask;
-import me.bokov.bsc.surfaceviewer.editorv2.view.EditorMenu;
-import me.bokov.bsc.surfaceviewer.editorv2.view.RendererSettings;
-import me.bokov.bsc.surfaceviewer.editorv2.view.SceneBrowser;
-import me.bokov.bsc.surfaceviewer.editorv2.view.SceneNodeEditor;
+import me.bokov.bsc.surfaceviewer.editorv2.view.*;
+import me.bokov.bsc.surfaceviewer.run.FXEditorApp;
 import me.bokov.bsc.surfaceviewer.scene.BaseWorld;
 import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.util.FXMLUtil;
+import me.bokov.bsc.surfaceviewer.view.RendererConfig;
 
 import java.net.URL;
 import java.util.*;
 
 @Log
-public class EditorWindow extends AnchorPane implements Initializable {
+public class EditorWindow extends AnchorPane implements Initializable, FXEditorApp.ViewReportCallback {
 
     private ObjectProperty<World> worldProperty = new SimpleObjectProperty<>(new BaseWorld());
 
@@ -43,9 +43,13 @@ public class EditorWindow extends AnchorPane implements Initializable {
     @FXML
     private RendererSettings rendererSettings;
 
+    @FXML
+    private CodeEditor codeEditor;
+
     public EditorWindow() {
 
         FXMLUtil.loadForComponent("/fxml/EditorRoot.fxml", this);
+        getStylesheets().add("/css/root.css");
 
     }
 
@@ -116,6 +120,28 @@ public class EditorWindow extends AnchorPane implements Initializable {
 
         rendererSettings.getAppProperty()
                 .bind(appProperty);
+
+        codeEditor.getWorldProperty()
+                .bindBidirectional(worldProperty);
+
+    }
+
+    @Override
+    public void onViewReport(String eventType, Map<String, Object> properties) {
+
+        switch (eventType) {
+            case "RendererInstalled":
+            case "RendererConfigured":
+                Platform.runLater(
+                        () -> rendererSettings.getRendererConfigProperty()
+                                .setValue((RendererConfig) properties.get("config"))
+                );
+                break;
+            case "MainLoopError":
+                Platform.runLater(
+                        () -> rendererSettings.onRendererError((Exception) properties.get("exception"))
+                );
+        }
 
     }
 }

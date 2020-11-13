@@ -8,6 +8,7 @@ public interface Renderer {
     void uninstall();
     void install(View view);
     void configure(RendererConfig config);
+    RendererConfig getConfig();
     void render(World world);
     default boolean supportsNoWorldRendering() {return false;}
 

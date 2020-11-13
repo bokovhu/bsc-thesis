@@ -7,6 +7,7 @@
 <?import me.bokov.bsc.surfaceviewer.editorv2.view.EditorMenu?>
 <?import me.bokov.bsc.surfaceviewer.editorv2.view.RendererSettings?>
 <?import me.bokov.bsc.surfaceviewer.editorv2.view.SceneBrowser?>
+<?import me.bokov.bsc.surfaceviewer.editorv2.view.CodeEditor?>
 <fx:root prefHeight="768.0"
          prefWidth="1024.0"
          xmlns="http://javafx.com/javafx/11.0.1"
@@ -41,16 +42,20 @@
                             <children>
                                 <TabPane prefHeight="200.0"
                                          prefWidth="200.0"
-                                         tabClosingPolicy="UNAVAILABLE"
+                                         tabClosingPolicy="ALL_TABS"
                                          AnchorPane.bottomAnchor="0.0"
                                          AnchorPane.leftAnchor="0.0"
                                          AnchorPane.rightAnchor="0.0"
                                          AnchorPane.topAnchor="0.0"
                                          fx:id="editorTabs"
+
                                 >
                                     <tabs>
                                         <Tab text="Renderer settings" closable="false">
                                             <RendererSettings fx:id="rendererSettings" />
+                                        </Tab>
+                                        <Tab text="Code editor" closable="false">
+                                            <CodeEditor fx:id="codeEditor" />
                                         </Tab>
                                     </tabs>
                                 </TabPane>

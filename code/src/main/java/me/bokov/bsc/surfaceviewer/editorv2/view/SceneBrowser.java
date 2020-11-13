@@ -33,6 +33,7 @@ public class SceneBrowser extends TreeView<Object> {
         setCellFactory(
                 treeView -> makeTreeCell()
         );
+        setEditable(true);
 
     }
 

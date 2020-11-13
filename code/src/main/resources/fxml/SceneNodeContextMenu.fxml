@@ -9,6 +9,7 @@
 >
     <items>
         <MenuItem onAction="#onEditSceneNode" text="Edit" />
+        <MenuItem onAction="#onRenameSceneNode" text="Rename" />
         <AddMeshMenu fx:id="addMeshMenu" />
         <MenuItem onAction="#onDeleteSceneNode" text="Delete" />
     </items>

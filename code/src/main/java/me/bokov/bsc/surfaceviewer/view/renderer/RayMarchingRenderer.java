@@ -1,6 +1,7 @@
 package me.bokov.bsc.surfaceviewer.view.renderer;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.experimental.Accessors;
 import me.bokov.bsc.surfaceviewer.View;
 import me.bokov.bsc.surfaceviewer.render.Drawable;
@@ -11,6 +12,7 @@ import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
+import me.bokov.bsc.surfaceviewer.util.IOUtil;
 import me.bokov.bsc.surfaceviewer.util.ResourceUtil;
 import me.bokov.bsc.surfaceviewer.view.Renderer;
 import me.bokov.bsc.surfaceviewer.view.RendererConfig;
@@ -23,6 +25,7 @@ public class RayMarchingRenderer implements Renderer {
     private ShaderProgram rayMarchingProgram = null;
     private RaymarcherShaderGenerator shaderGenerator = null;
     private Drawable fullScreenQuad = null;
+    @Getter
     private Config config = new Config();
     private View view = null;
 
@@ -43,11 +46,20 @@ public class RayMarchingRenderer implements Renderer {
 
         fullScreenQuad = Drawables.fullScreenQuad();
 
+        this.view.getApp().onViewReport(
+                "RendererInstalled",
+                Map.of("config", IOUtil.serialize(this.getConfig()))
+        );
+
     }
 
     @Override
     public void configure(RendererConfig config) {
         this.config = (RayMarchingRenderer.Config) config;
+        this.view.getApp().onViewReport(
+                "RendererConfigured",
+                Map.of("config", IOUtil.serialize(this.getConfig()))
+        );
     }
 
     @Override

@@ -9,7 +9,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
-import me.bokov.bsc.surfaceviewer.editorv2.view.input.*;
+import me.bokov.bsc.surfaceviewer.editorv2.view.input.FloatInput;
+import me.bokov.bsc.surfaceviewer.editorv2.view.input.Vec3Input;
 import me.bokov.bsc.surfaceviewer.glsl.*;
 import me.bokov.bsc.surfaceviewer.scene.NodeProperties;
 import me.bokov.bsc.surfaceviewer.scene.NodeTemplate;
@@ -18,37 +19,28 @@ import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.sdf.threed.GPUEvaluationContext;
 import me.bokov.bsc.surfaceviewer.util.FXMLUtil;
 import me.bokov.bsc.surfaceviewer.util.IOUtil;
-import org.joml.Quaternionf;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 import java.net.URL;
 import java.util.*;
 
 public class SceneNodeEditor extends VBox implements Initializable {
 
+    private final InputFactory inputFactory = new InputFactory(this);
     @Getter
     private ObjectProperty<SceneNode> sceneNodeProperty = new SimpleObjectProperty<>();
-
     @Getter
     private ObjectProperty<World> worldProperty = new SimpleObjectProperty<>();
-
     @FXML
     private VBox settingsVBox;
-
     @FXML
     private TextArea glslResultTextArea;
-
     @FXML
     private Vec3Input positionInput;
-
     @FXML
     private FloatInput scaleInput;
-
     @FXML
     private Vec3Input rotationAxisInput;
-
     @FXML
     private FloatInput rotationAngleInput;
 
@@ -104,6 +96,7 @@ public class SceneNodeEditor extends VBox implements Initializable {
                         sceneNodeProperty.get().getId()
                 ).get()
         );
+        makeSceneNodeSettings();
         generateGLSL();
     }
 
@@ -117,12 +110,9 @@ public class SceneNodeEditor extends VBox implements Initializable {
         updatedNode.localTransform()
                 .applyScale(scaleInput.getValueProperty().get());
         updatedNode.localTransform()
-                .applyOrientation(
-                        new Quaternionf()
-                        .fromAxisAngleDeg(
-                                rotationAxisInput.getValueProperty().get(),
-                                rotationAngleInput.getValueProperty().get()
-                        )
+                .applyRotation(
+                        rotationAxisInput.getValueProperty().get(),
+                        rotationAngleInput.getValueProperty().get()
                 );
 
         world.roots().forEach(SceneNode::update);
@@ -146,74 +136,21 @@ public class SceneNodeEditor extends VBox implements Initializable {
 
     private Node inputForProperty(NodeTemplate.Property property, NodeProperties properties) {
 
-        switch (property.getType()) {
-            case "float":
-                final var floatInput = new FloatInput();
-                floatInput.getLabelProperty().setValue(property.getName());
-                floatInput.getValueProperty().setValue(
-                        properties.getFloat(property.getName(), ((Number) property.getDefaultValue()).floatValue())
-                );
-                floatInput.getValueProperty().addListener(
-                        (observable, oldValue, newValue) -> onNodePropertyChanged(property, properties, newValue)
-                );
-                return floatInput;
+        try {
 
-            case "int":
-                final var intInput = new IntInput();
-                intInput.getLabelProperty().setValue(property.getName());
-                intInput.getValueProperty().setValue(
-                        properties.getInt(property.getName(), ((Number) property.getDefaultValue()).intValue())
-                );
-                intInput.getValueProperty().addListener(
-                        (observable, oldValue, newValue) -> onNodePropertyChanged(property, properties, newValue)
-                );
-                return intInput;
+            final var createdInput = inputFactory.makeInputComponentFor(
+                    property.getType(),
+                    property.getName(),
+                    properties.getValue(property)
+            );
+            createdInput.setOnValueChangedListener(
+                    (observable, oldValue, newValue) -> onNodePropertyChanged(property, properties, newValue)
+            );
 
-            case "vec2":
-                final var vec2Input = new Vec2Input();
-                vec2Input.getLabelProperty().setValue(property.getName());
-                vec2Input.getValueProperty().setValue(
-                        properties.getVec2(property.getName(), (Vector2f) property.getDefaultValue())
-                );
-                vec2Input.getValueProperty().addListener(
-                        (observable, oldValue, newValue) -> onNodePropertyChanged(property, properties, newValue)
-                );
-                return vec2Input;
+            return createdInput;
 
-            case "vec3":
-                final var vec3Input = new Vec3Input();
-                vec3Input.getLabelProperty().setValue(property.getName());
-                vec3Input.getValueProperty().setValue(
-                        properties.getVec3(property.getName(), (Vector3f) property.getDefaultValue())
-                );
-                vec3Input.getValueProperty().addListener(
-                        (observable, oldValue, newValue) -> onNodePropertyChanged(property, properties, newValue)
-                );
-                return vec3Input;
-
-            case "vec4":
-                final var vec4Input = new Vec4Input();
-                vec4Input.getLabelProperty().setValue(property.getName());
-                vec4Input.getValueProperty().setValue(
-                        properties.getVec4(property.getName(), (Vector4f) property.getDefaultValue())
-                );
-                vec4Input.getValueProperty().addListener(
-                        (observable, oldValue, newValue) -> onNodePropertyChanged(property, properties, newValue)
-                );
-                return vec4Input;
-
-            case "bool":
-                final var boolInput = new BoolInput();
-                boolInput.getLabelProperty().setValue(property.getName());
-                boolInput.getValueProperty().setValue(
-                        properties.getBool(property.getName(), Boolean.TRUE.equals(property.getDefaultValue()))
-                );
-                boolInput.getValueProperty().addListener(
-                        (observable, oldValue, newValue) -> onNodePropertyChanged(property, properties, newValue)
-                );
-                return boolInput;
-            default:
-                return null;
+        } catch (Exception ignored) {
+            return null;
         }
 
     }

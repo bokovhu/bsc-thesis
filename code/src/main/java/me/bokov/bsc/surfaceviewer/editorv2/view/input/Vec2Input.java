@@ -13,15 +13,10 @@ import org.joml.Vector2f;
 import java.net.URL;
 import java.util.*;
 
-public class Vec2Input extends HBox implements Initializable {
+public class Vec2Input extends GLInput<Vector2f> implements Initializable {
 
-    @Getter
-    private StringProperty labelProperty = new SimpleStringProperty();
     @Getter
     private ObjectProperty<Vector2f> valueProperty = new SimpleObjectProperty<>(new Vector2f());
-
-    @FXML
-    private Label inputLabel;
 
     @FXML
     private TextField xInputField;
@@ -48,9 +43,7 @@ public class Vec2Input extends HBox implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-        inputLabel.textProperty()
-                .bind(labelProperty);
+        super.initialize(location, resources);
 
         xInputField.setOnAction(
                 event -> onInputsChanged()
@@ -65,6 +58,16 @@ public class Vec2Input extends HBox implements Initializable {
                 (observable, oldValue, newValue) -> displayValue()
         );
 
+    }
+
+    @Override
+    protected Property<Vector2f> getInternalValueProperty() {
+        return valueProperty;
+    }
+
+    @Override
+    public void collectValue() {
+        onInputsChanged();
     }
 
     private void onInputsChanged() {

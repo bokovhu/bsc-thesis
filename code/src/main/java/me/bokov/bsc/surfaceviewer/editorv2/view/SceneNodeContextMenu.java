@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ContextMenu;
 import lombok.Getter;
+import me.bokov.bsc.surfaceviewer.editorv2.event.EditSceneNodeNameEvent;
 import me.bokov.bsc.surfaceviewer.editorv2.event.OpenSceneNodeEditorEvent;
 import me.bokov.bsc.surfaceviewer.scene.SceneNode;
 import me.bokov.bsc.surfaceviewer.scene.World;
@@ -52,6 +53,13 @@ public class SceneNodeContextMenu extends ContextMenu implements Initializable {
                 )
         );
 
+    }
+
+    @FXML
+    public void onRenameSceneNode(ActionEvent event) {
+        fireEvent(
+                new EditSceneNodeNameEvent(sceneNodeProperty.get().getId())
+        );
     }
 
     @Override

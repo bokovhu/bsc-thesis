@@ -20,6 +20,7 @@ public class FXEditor extends Application {
             final EditorWindow editorWindow = new EditorWindow();
             editorWindow.getAppProperty()
                     .setValue(FXEditorApp.INSTANCE);
+            FXEditorApp.INSTANCE.setViewReportCallback(editorWindow);
             Scene fxScene = new Scene(
                     editorWindow
             );

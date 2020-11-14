@@ -78,7 +78,7 @@ public class GPUMarchingCubes implements MeshGenerator {
 
         drawable.allocate(
                 drawable.vertexElementCount()
-                        * (5 * 3 * gpuGrid.vWidth() * gpuGrid.vHeight() * gpuGrid.vDepth())
+                        * (5 * 3 * gpuGrid.xVoxelCount() * gpuGrid.yVoxelCount() * gpuGrid.zVoxelCount())
                         * Float.BYTES,
                 GL46.GL_DYNAMIC_DRAW
         );
@@ -103,9 +103,9 @@ public class GPUMarchingCubes implements MeshGenerator {
         marchingCubesProgram.use();
 
         GL46.glDispatchCompute(
-                gpuGrid.vWidth(),
-                gpuGrid.vHeight(),
-                gpuGrid.vDepth()
+                gpuGrid.xVoxelCount(),
+                gpuGrid.yVoxelCount(),
+                gpuGrid.zVoxelCount()
         );
         GL46.glMemoryBarrier(GL46.GL_ALL_BARRIER_BITS);
 

@@ -6,9 +6,12 @@ import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
+import me.bokov.bsc.surfaceviewer.util.MetricsLogger;
 import me.bokov.bsc.surfaceviewer.voxelization.VoxelizationContext;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxelizer3D;
 import org.lwjgl.opengl.GL46;
+
+import java.util.*;
 
 public class GPUUniformGridVoxelizer implements Voxelizer3D<GPUUniformGrid> {
 
@@ -37,6 +40,8 @@ public class GPUUniformGridVoxelizer implements Voxelizer3D<GPUUniformGrid> {
             VoxelizationContext context
     ) {
 
+        long start = System.currentTimeMillis();
+
         if (voxelizerProgram == null) {
             voxelizerProgram = new ComputeProgram();
             voxelizerProgram.init();
@@ -49,7 +54,6 @@ public class GPUUniformGridVoxelizer implements Voxelizer3D<GPUUniformGrid> {
 
         final var result = new GPUUniformGrid(width, height, depth);
 
-        result.applyTransform(transform);
         result.prepareTexture();
 
         voxelizerProgram.use();
@@ -62,12 +66,26 @@ public class GPUUniformGridVoxelizer implements Voxelizer3D<GPUUniformGrid> {
                 .bindImage(1, false, true);
 
         voxelizerProgram.uniform("u_transform")
-                .mat4(result.getTransformationMatrix());
+                .mat4(transform.M());
 
         GL46.glDispatchCompute(width, height, depth);
         GL46.glMemoryBarrier(GL46.GL_ALL_BARRIER_BITS);
 
+        long gpuEnd = System.currentTimeMillis();
+
         if (downloadAfterDone) { result.downloadToCPUGrid(); }
+
+        long downloadEnd = System.currentTimeMillis();
+
+        MetricsLogger.logMetrics(
+                "GPU Uniform Grid voxelization",
+                Map.of(
+                        "Runtime", (System.currentTimeMillis() - start) + " ms",
+                        "GPU runtime", (gpuEnd - start) + " ms",
+                        "Download runtime", (downloadEnd - start) + " ms",
+                        "Number of generated voxels", result.xVoxelCount() * result.yVoxelCount() * result.zVoxelCount()
+                )
+        );
 
         return result;
     }

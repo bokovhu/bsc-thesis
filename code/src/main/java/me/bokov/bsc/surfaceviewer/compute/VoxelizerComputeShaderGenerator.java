@@ -26,6 +26,9 @@ public class VoxelizerComputeShaderGenerator {
                 new GLSLUniformStatement("mat4", "u_transform", null)
         );
 
+        prog.include("glsl/rm_sdfOp.glsl")
+                .include("glsl/rm_noise.glsl");
+
     }
 
     public String generateVoxelizerComputeShaderSource() {

@@ -139,7 +139,11 @@ public class EditorWindow extends AnchorPane implements Initializable, FXEditorA
                 break;
             case "MainLoopError":
                 Platform.runLater(
-                        () -> rendererSettings.onRendererError((Exception) properties.get("exception"))
+                        () -> {
+                            final var exc = (Exception) properties.get("exception");
+                            rendererSettings.onRendererError(exc);
+                            exc.printStackTrace();
+                        }
                 );
         }
 

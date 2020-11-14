@@ -11,6 +11,7 @@ import javafx.stage.FileChooser;
 import lombok.Getter;
 import me.bokov.bsc.surfaceviewer.editorv2.service.LoadSceneTask;
 import me.bokov.bsc.surfaceviewer.editorv2.service.SaveSceneTask;
+import me.bokov.bsc.surfaceviewer.scene.BaseWorld;
 import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.util.FXMLUtil;
 import me.bokov.bsc.surfaceviewer.util.IOUtil;
@@ -94,6 +95,13 @@ public class EditorMenu extends MenuBar implements Initializable {
 
                 }
         );
+
+    }
+
+    @FXML
+    public void onNewScene(ActionEvent event) {
+
+        worldProperty.setValue(new BaseWorld());
 
     }
 

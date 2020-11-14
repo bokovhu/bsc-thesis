@@ -1,106 +1,91 @@
 package me.bokov.bsc.surfaceviewer.voxelization.naiveugrid;
 
-import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
+import me.bokov.bsc.surfaceviewer.voxelization.GridVoxel;
+import me.bokov.bsc.surfaceviewer.voxelization.GridVoxelStorage;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
-import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorage;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.io.Serializable;
+import java.nio.FloatBuffer;
 import java.util.*;
 
-public class UniformGrid implements VoxelStorage, Serializable {
+public class UniformGrid implements GridVoxelStorage, Serializable {
 
     private final int width, height, depth;
-    private final Voxel[] voxels;
-    private final transient Vector3f tmpTransf = new Vector3f();
-    private MeshTransform transform;
+    private final int vWidth, vHeight, vDepth;
+    private final GridVoxel[] voxels;
+    private final FloatBuffer positionDistanceBuffer, normalBuffer;
 
-    public UniformGrid(int width, int height, int depth) {
+    public UniformGrid(
+            int width,
+            int height,
+            int depth,
+            FloatBuffer positionDistanceBuffer,
+            FloatBuffer normalBuffer
+    ) {
         this.width = width;
         this.height = height;
         this.depth = depth;
-        this.transform = new MeshTransform(
-                new Vector3f(0f, 0f, 0f),
-                new Vector3f(0f, 1f, 0f),
-                0f,
-                1f
-        );
-        this.voxels = new Voxel[width * height * depth];
+
+        this.vWidth = width - 1;
+        this.vHeight = height - 1;
+        this.vDepth = depth - 1;
+
+        this.positionDistanceBuffer = positionDistanceBuffer;
+        this.normalBuffer = normalBuffer;
+
+        this.voxels = new GridVoxel[vWidth * vHeight * vDepth];
+        for (int z = 0; z < vDepth; z++) {
+            for (int y = 0; y < vHeight; y++) {
+                for (int x = 0; x < vWidth; x++) {
+                    this.voxels[voxelXyzToIndex(x, y, z)] = new GridVoxel(
+                            x, y, z,
+                            positionDistanceBuffer,
+                            normalBuffer,
+                            this
+                    );
+                }
+            }
+        }
     }
 
-    public int idx(int x, int y, int z) {
-
-        final int ix = Math.max(0, Math.min(width - 1, x));
-        final int iy = Math.max(0, Math.min(height - 1, y));
-        final int iz = Math.max(0, Math.min(depth - 1, z));
-
-        return iz * width * height + iy * width + ix;
-    }
-
-    public UniformGrid applyTransform(MeshTransform transform) {
-        this.transform = transform;
-        return this;
-    }
-
-    public UniformGrid putVoxel(int x, int y, int z, Voxel v) {
-        voxels[idx(x, y, z)] = v;
-
-        return this;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public int getDepth() {
-        return depth;
+    private int voxelXyzToIndex(int vx, int vy, int vz) {
+        return Math.min(vDepth - 1, Math.max(0, vz)) * vWidth * vHeight
+                + Math.min(vHeight - 1, Math.max(0, vy)) * vWidth
+                + Math.min(vWidth - 1, Math.max(0, vx));
     }
 
     @Override
-    public Vector3f localToGlobal(Vector3f local) {
-        return this.transform.M().transformPosition(
-                tmpTransf.set(local).mul(1f / (float) width)
-        );
-    }
-
-    @Override
-    public Vector3f globalToLocal(Vector3f global) {
-        return this.transform.Minv().transformPosition(
-                tmpTransf.set(global).mul((float) width)
-        );
-    }
-
-
-    @Override
-    public Vector3f globalToLocal(Vector3f in, Vector3f out) {
-        this.transform.Minv().transformPosition(
-                tmpTransf.set(in).mul((float) width),
-                out
-        );
-        return out;
-    }
-
-    @Override
-    public Vector3f localToGlobal(Vector3f in, Vector3f out) {
-        this.transform.M().transformPosition(
-                tmpTransf.set(in).mul(1f / (float) width),
-                out
-        );
-        return out;
-    }
-
-    public Voxel at(int idx) {
+    public GridVoxel at(int idx) {
         return voxels[idx];
     }
 
     @Override
+    public GridVoxel at(int x, int y, int z) {
+        return voxels[voxelXyzToIndex(x, y, z)];
+    }
+
+    @Override
+    public int xVoxelCount() {
+        return vWidth;
+    }
+
+    @Override
+    public int yVoxelCount() {
+        return vHeight;
+    }
+
+    @Override
+    public int zVoxelCount() {
+        return vDepth;
+    }
+
+    @Override
     public Iterator<Voxel> voxelIterator() {
-        return Arrays.stream(voxels).iterator();
+        return Arrays.stream(voxels)
+                .sequential()
+                .map(Voxel.class::cast)
+                .iterator();
     }
 
     @Override
@@ -108,11 +93,27 @@ public class UniformGrid implements VoxelStorage, Serializable {
 
         final Vector3f pTransformed = globalToLocal(p);
 
-        final int ix = Math.max(0, Math.min(width - 1, (int) Math.floor(pTransformed.x)));
-        final int iy = Math.max(0, Math.min(height - 1, (int) Math.floor(pTransformed.y)));
-        final int iz = Math.max(0, Math.min(height - 1, (int) Math.floor(pTransformed.z)));
-
-        return voxels[iz * width * height + iy * width + ix];
+        return voxels[
+                xyzToIndex(
+                        (int) Math.floor(pTransformed.x),
+                        (int) Math.floor(pTransformed.y),
+                        (int) Math.floor(pTransformed.z)
+                )
+                ];
     }
 
+    @Override
+    public int width() {
+        return width;
+    }
+
+    @Override
+    public int height() {
+        return height;
+    }
+
+    @Override
+    public int depth() {
+        return depth;
+    }
 }

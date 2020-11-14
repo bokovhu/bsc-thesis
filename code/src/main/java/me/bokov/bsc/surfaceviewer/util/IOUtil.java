@@ -1,6 +1,9 @@
 package me.bokov.bsc.surfaceviewer.util;
 
+import org.lwjgl.BufferUtils;
+
 import java.io.*;
+import java.nio.FloatBuffer;
 
 public final class IOUtil {
 
@@ -29,6 +32,17 @@ public final class IOUtil {
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
+
+    }
+
+    public static FloatBuffer copyFloatBuffer(FloatBuffer data) {
+
+        FloatBuffer copy = BufferUtils.createFloatBuffer(data.capacity());
+        for(int i = 0; i < copy.capacity(); i++) {
+            copy.put(data.get(i));
+        }
+
+        return  copy;
 
     }
 

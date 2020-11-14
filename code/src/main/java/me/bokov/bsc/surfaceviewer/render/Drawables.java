@@ -56,67 +56,67 @@ public interface Drawables {
 
         for (Voxel v : voxels) {
 
-            float w = Math.abs(v.getP2().x - v.getP1().x);
-            float h = Math.abs(v.getP2().y - v.getP1().y);
-            float d = Math.abs(v.getP2().z - v.getP1().z);
+            float w = Math.abs(v.x111() - v.x000());
+            float h = Math.abs(v.y111() - v.y000());
+            float d = Math.abs(v.z111() - v.z000());
 
-            Vector3f c000 = new Vector3f(v.getP1());
-            Vector3f c001 = new Vector3f(v.getP1()).add(0, 0, d);
-            Vector3f c010 = new Vector3f(v.getP1()).add(0, h, 0);
-            Vector3f c011 = new Vector3f(v.getP1()).add(0, h, d);
+            Vector3f c000 = new Vector3f(v.x000(), v.y000(), v.z000());
+            Vector3f c001 = new Vector3f(v.x000(), v.y000(), v.z000()).add(0, 0, d);
+            Vector3f c010 = new Vector3f(v.x000(), v.y000(), v.z000()).add(0, h, 0);
+            Vector3f c011 = new Vector3f(v.x000(), v.y000(), v.z000()).add(0, h, d);
 
-            Vector3f c100 = new Vector3f(v.getP1()).add(w, 0, 0);
-            Vector3f c101 = new Vector3f(v.getP1()).add(w, 0, d);
-            Vector3f c110 = new Vector3f(v.getP1()).add(w, h, 0);
-            Vector3f c111 = new Vector3f(v.getP1()).add(w, h, d);
+            Vector3f c100 = new Vector3f(v.x000(), v.y000(), v.z000()).add(w, 0, 0);
+            Vector3f c101 = new Vector3f(v.x000(), v.y000(), v.z000()).add(w, 0, d);
+            Vector3f c110 = new Vector3f(v.x000(), v.y000(), v.z000()).add(w, h, 0);
+            Vector3f c111 = new Vector3f(v.x000(), v.y000(), v.z000()).add(w, h, d);
 
             if (usedPoints.add(c000)) {
                 resultPoints.add(new Vector4f(
                         c000,
-                        MathUtil.threshold(v.getC000().getValue(), threshold, 1.0f, 0.0f)
+                        MathUtil.threshold(v.v000(), threshold, 1.0f, 0.0f)
                 ));
             }
             if (usedPoints.add(c001)) {
                 resultPoints.add(new Vector4f(
                         c001,
-                        MathUtil.threshold(v.getC001().getValue(), threshold, 1.0f, 0.0f)
+                        MathUtil.threshold(v.v001(), threshold, 1.0f, 0.0f)
                 ));
             }
             if (usedPoints.add(c010)) {
                 resultPoints.add(new Vector4f(
                         c010,
-                        MathUtil.threshold(v.getC010().getValue(), threshold, 1.0f, 0.0f)
+                        MathUtil.threshold(v.v010(), threshold, 1.0f, 0.0f)
                 ));
             }
             if (usedPoints.add(c011)) {
                 resultPoints.add(new Vector4f(
                         c011,
-                        MathUtil.threshold(v.getC011().getValue(), threshold, 1.0f, 0.0f)
+                        MathUtil.threshold(v.v011(), threshold, 1.0f, 0.0f)
                 ));
             }
 
             if (usedPoints.add(c100)) {
                 resultPoints.add(new Vector4f(
                         c100,
-                        MathUtil.threshold(v.getC100().getValue(), threshold, 1.0f, 0.0f)
+                        MathUtil.threshold(v.v100(), threshold, 1.0f, 0.0f)
                 ));
             }
             if (usedPoints.add(c101)) {
                 resultPoints.add(new Vector4f(
                         c101,
-                        MathUtil.threshold(v.getC101().getValue(), threshold, 1.0f, 0.0f)
+                        MathUtil.threshold(v.v101(), threshold, 1.0f, 0.0f)
                 ));
             }
             if (usedPoints.add(c110)) {
                 resultPoints.add(new Vector4f(
                         c110,
-                        MathUtil.threshold(v.getC110().getValue(), threshold, 1.0f, 0.0f)
+                        MathUtil.threshold(v.v110(), threshold, 1.0f, 0.0f)
                 ));
             }
             if (usedPoints.add(c111)) {
                 resultPoints.add(new Vector4f(
                         c111,
-                        MathUtil.threshold(v.getC111().getValue(), threshold, 1.0f, 0.0f)
+                        MathUtil.threshold(v.v111(), threshold, 1.0f, 0.0f)
                 ));
             }
 

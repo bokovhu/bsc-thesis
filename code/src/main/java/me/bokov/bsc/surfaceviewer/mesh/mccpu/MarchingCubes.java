@@ -49,8 +49,7 @@ public class MarchingCubes implements MeshGenerator {
 
     }
 
-    @Override
-    public Drawable generate(VoxelStorage voxelStorage) {
+    public List<Face> generateTriangles(VoxelStorage voxelStorage) {
 
         List<Face> generatedTriangles = new ArrayList<>();
         final long startTime = System.currentTimeMillis();
@@ -519,7 +518,12 @@ public class MarchingCubes implements MeshGenerator {
                 )
         );
 
-        return Drawables.create(generatedTriangles);
+        return generatedTriangles;
+    }
+
+    @Override
+    public Drawable generate(VoxelStorage voxelStorage) {
+        return Drawables.create(generateTriangles(voxelStorage));
     }
 
     private final class Vertex {

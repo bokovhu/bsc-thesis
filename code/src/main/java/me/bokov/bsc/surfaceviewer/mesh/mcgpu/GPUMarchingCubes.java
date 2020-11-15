@@ -5,7 +5,8 @@ import me.bokov.bsc.surfaceviewer.mesh.MeshGenerator;
 import me.bokov.bsc.surfaceviewer.mesh.mccpu.EdgeTable;
 import me.bokov.bsc.surfaceviewer.mesh.mccpu.TriangleTable;
 import me.bokov.bsc.surfaceviewer.render.Drawable;
-import me.bokov.bsc.surfaceviewer.render.Texture;
+import me.bokov.bsc.surfaceviewer.render.GPUBuffer;
+import me.bokov.bsc.surfaceviewer.util.MetricsLogger;
 import me.bokov.bsc.surfaceviewer.util.ResourceUtil;
 import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorage;
 import me.bokov.bsc.surfaceviewer.voxelization.gpuugrid.GPUUniformGrid;
@@ -13,16 +14,20 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.IntBuffer;
+import java.util.*;
 
 public class GPUMarchingCubes implements MeshGenerator {
 
     private ComputeProgram marchingCubesProgram;
-    private int vertexCountBufferHandle;
 
-    private Texture edgeTableLUTTexture;
-    private Texture triangleTableLUTTexture;
+    private GPUBuffer vertexCountBuffer;
+    private GPUBuffer outputDataBuffer;
+    private GPUBuffer triangleTableBuffer;
+    private GPUBuffer edgeTableBuffer;
 
     private Drawable doGenerate(GPUUniformGrid gpuGrid) {
+
+        long start = System.currentTimeMillis();
 
         if (marchingCubesProgram == null) {
 
@@ -35,14 +40,25 @@ public class GPUMarchingCubes implements MeshGenerator {
             marchingCubesProgram.linkAndValidate();
 
 
-            vertexCountBufferHandle = GL46.glGenBuffers();
-            GL46.glBindBuffer(GL46.GL_ATOMIC_COUNTER_BUFFER, vertexCountBufferHandle);
-            GL46.glBufferData(GL46.GL_ATOMIC_COUNTER_BUFFER, Integer.BYTES, GL46.GL_DYNAMIC_DRAW);
+            vertexCountBuffer = new GPUBuffer().init()
+                    .bind(GL46.GL_SHADER_STORAGE_BUFFER)
+                    .storage(4L, GL46.GL_MAP_READ_BIT | GL46.GL_MAP_WRITE_BIT);
+            outputDataBuffer = new GPUBuffer().init().bind(GL46.GL_SHADER_STORAGE_BUFFER)
+                    .storage(
+                            (3 + 3 + 4) * (5 * 3 * gpuGrid.xVoxelCount() * gpuGrid.yVoxelCount() * gpuGrid.zVoxelCount()) * Float.BYTES,
+                            GL46.GL_MAP_READ_BIT | GL46.GL_MAP_WRITE_BIT
+                    );
 
-            final IntBuffer edgeTableData = BufferUtils.createIntBuffer(256);
-            edgeTableData.put(EdgeTable.EDGE_TABLE);
+            final IntBuffer edgeTableData = BufferUtils.createIntBuffer(EdgeTable.EDGE_TABLE.length);
+            for (int i = 0; i < EdgeTable.EDGE_TABLE.length; i++) {
+                edgeTableData.put(EdgeTable.EDGE_TABLE[i]);
+            }
 
-            final IntBuffer triangleTableData = BufferUtils.createIntBuffer(256 * 16);
+            edgeTableBuffer = new GPUBuffer().init()
+                    .bind(GL46.GL_SHADER_STORAGE_BUFFER)
+                    .upload(edgeTableData.flip(), GL46.GL_STATIC_DRAW);
+
+            final IntBuffer triangleTableData = BufferUtils.createIntBuffer(16 * TriangleTable.TRIANGLE_TABLE.length);
             for (int i = 0; i < TriangleTable.TRIANGLE_TABLE.length; i++) {
 
                 final int[] triangleTableRow = TriangleTable.TRIANGLE_TABLE[i];
@@ -59,59 +75,99 @@ public class GPUMarchingCubes implements MeshGenerator {
 
             }
 
-            edgeTableLUTTexture = new Texture()
-                    .resize(256)
-                    .configure(GL46.GL_TEXTURE_1D, GL46.GL_RED, GL46.GL_UNSIGNED_INT)
-                    .setupSampling(GL46.GL_CLAMP_TO_EDGE, GL46.GL_NEAREST, GL46.GL_NEAREST)
-                    .uploadInt(edgeTableData.flip(), false);
-
-            triangleTableLUTTexture = new Texture()
-                    .resize(16, 256)
-                    .configure(GL46.GL_TEXTURE_2D, GL46.GL_RED, GL46.GL_INT)
-                    .setupSampling(GL46.GL_CLAMP_TO_EDGE, GL46.GL_NEAREST, GL46.GL_NEAREST)
-                    .uploadInt(triangleTableData.flip(), true);
+            triangleTableBuffer = new GPUBuffer().init()
+                    .bind(GL46.GL_SHADER_STORAGE_BUFFER)
+                    .upload(triangleTableData.flip(), GL46.GL_STATIC_DRAW);
 
         }
 
-        Drawable drawable = Drawable.standard3D();
-        drawable.init();
-
-        drawable.allocate(
-                drawable.vertexElementCount()
-                        * (5 * 3 * gpuGrid.xVoxelCount() * gpuGrid.yVoxelCount() * gpuGrid.zVoxelCount())
-                        * Float.BYTES,
-                GL46.GL_DYNAMIC_DRAW
-        );
-
-        GL46.glBindVertexArray(0);
-        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);
-
-        GL46.glBindBufferBase(GL46.GL_SHADER_STORAGE_BUFFER, 0, drawable.getVboHandle());
-        GL46.glBindBufferBase(GL46.GL_ATOMIC_COUNTER_BUFFER, 0, vertexCountBufferHandle);
-
-        gpuGrid.getPositionAndValueTexture().bind(0);
-        gpuGrid.getPositionAndValueTexture().bindImage(0, true, false);
-
-        gpuGrid.getNormalTexture().bind(1);
-        gpuGrid.getNormalTexture().bindImage(1, true, false);
-
-        triangleTableLUTTexture.bind(2)
-                .bindImage(2, true, false);
-        edgeTableLUTTexture.bind(3)
-                .bindImage(3, true, false);
+        long initEnd = System.currentTimeMillis();
 
         marchingCubesProgram.use();
+
+        outputDataBuffer.bind(GL46.GL_SHADER_STORAGE_BUFFER);
+        outputDataBuffer.bind(GL46.GL_SHADER_STORAGE_BUFFER, 0);
+
+        vertexCountBuffer.bind(GL46.GL_SHADER_STORAGE_BUFFER);
+        vertexCountBuffer.bind(GL46.GL_SHADER_STORAGE_BUFFER, 1);
+
+        gpuGrid.getPositionAndValueTexture().bind(2)
+                .setupSampling(
+                        GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE,
+                        GL46.GL_LINEAR, GL46.GL_LINEAR
+                );
+        gpuGrid.getPositionAndValueTexture().bindImage(2, true, false);
+
+        gpuGrid.getNormalTexture().bind(3)
+                .setupSampling(
+                        GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE,
+                        GL46.GL_LINEAR, GL46.GL_LINEAR
+                );
+        gpuGrid.getNormalTexture().bindImage(3, true, false);
+
+        triangleTableBuffer.bind(GL46.GL_SHADER_STORAGE_BUFFER, 4);
+        edgeTableBuffer.bind(GL46.GL_SHADER_STORAGE_BUFFER, 5);
+
+        long setupEnd = System.currentTimeMillis();
 
         GL46.glDispatchCompute(
                 gpuGrid.xVoxelCount(),
                 gpuGrid.yVoxelCount(),
                 gpuGrid.zVoxelCount()
         );
+
         GL46.glMemoryBarrier(GL46.GL_ALL_BARRIER_BITS);
 
-        final var mappedCounterBuffer = GL46.glMapBuffer(GL46.GL_ATOMIC_COUNTER_BUFFER, GL46.GL_READ_ONLY);
-        drawable.configure(GL46.GL_TRIANGLES, mappedCounterBuffer.getInt());
-        GL46.glUnmapBuffer(GL46.GL_ATOMIC_COUNTER_BUFFER);
+        GL46.glFlush();
+        GL46.glFinish();
+
+        long computeEnd = System.currentTimeMillis();
+
+        vertexCountBuffer.bind(GL46.GL_SHADER_STORAGE_BUFFER);
+        IntBuffer vertexCountContent = BufferUtils.createIntBuffer(1);
+        GL46.glGetBufferSubData(GL46.GL_SHADER_STORAGE_BUFFER, 0L, vertexCountContent);
+        final int vertexCount = vertexCountContent.get(0);
+
+        Drawable drawable = Drawable.standard3D();
+        drawable.init();
+        GL46.glBindVertexArray(0);
+        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);
+        outputDataBuffer.bind(GL46.GL_COPY_READ_BUFFER);
+        GL46.glBindBuffer(GL46.GL_COPY_WRITE_BUFFER, drawable.getVboHandle());
+        GL46.glBufferStorage(
+                GL46.GL_COPY_WRITE_BUFFER,
+                Float.BYTES * (3 + 3 + 4) * vertexCount,
+                GL46.GL_MAP_READ_BIT | GL46.GL_MAP_WRITE_BIT
+        );
+        GL46.glCopyBufferSubData(
+                GL46.GL_COPY_READ_BUFFER,
+                GL46.GL_COPY_WRITE_BUFFER,
+                0L,
+                0L,
+                Float.BYTES * (3 + 3 + 4) * vertexCount
+        );
+        drawable.configure(GL46.GL_TRIANGLES, vertexCount);
+
+        long resultEnd = System.currentTimeMillis();
+
+        MetricsLogger.logMetrics(
+                "GPU Marching cubes (compute shader)",
+                Map.of(
+                        "Runtime", (System.currentTimeMillis() - start) + " ms",
+                        "Initialization time", (initEnd - start) + " ms",
+                        "Setup time", (setupEnd - initEnd) + " ms",
+                        "Compute time", (computeEnd - setupEnd) + " ms",
+                        "Result mapping time", (resultEnd - computeEnd) + " ms",
+                        "Generated triangle count", (drawable.getVertexCount() / 3)
+                )
+        );
+
+        GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, 0);
+        GL46.glBindBuffer(GL46.GL_COPY_WRITE_BUFFER, 0);
+        GL46.glBindBuffer(GL46.GL_COPY_READ_BUFFER, 0);
+        GL46.glActiveTexture(0);
+        GL46.glBindTexture(GL46.GL_TEXTURE_2D, 0);
+        GL46.glBindTexture(GL46.GL_TEXTURE_3D, 0);
 
         return drawable;
 
@@ -125,6 +181,23 @@ public class GPUMarchingCubes implements MeshGenerator {
         }
 
         throw new UnsupportedOperationException("Only GPUUniformGrid is supported at the moment!");
+
+    }
+
+    @Override
+    public void tearDown() {
+
+        if (edgeTableBuffer != null) { edgeTableBuffer.tearDown(); }
+        if (triangleTableBuffer != null) { triangleTableBuffer.tearDown(); }
+        if (marchingCubesProgram != null) { marchingCubesProgram.tearDown(); }
+        if (vertexCountBuffer != null) { vertexCountBuffer.tearDown(); }
+        if (outputDataBuffer != null) { outputDataBuffer.tearDown(); }
+
+        edgeTableBuffer = null;
+        triangleTableBuffer = null;
+        marchingCubesProgram = null;
+        vertexCountBuffer = null;
+        outputDataBuffer = null;
 
     }
 }

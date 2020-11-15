@@ -23,7 +23,7 @@ public class Texture {
     private int minFilter = GL46.GL_LINEAR;
     private int magFilter = GL46.GL_LINEAR;
 
-    private int findInternalFormatFor(int format, int dataType) {
+    private static int findInternalFormatFor(int format, int dataType) {
 
         if (format == GL46.GL_RED) {
 
@@ -349,6 +349,58 @@ public class Texture {
                         0,
                         this.format,
                         signed ? GL46.GL_BYTE : GL46.GL_UNSIGNED_BYTE,
+                        buffer
+                );
+                break;
+            default:
+                throw new IllegalStateException("Invalid upload target!");
+        }
+
+        return this;
+
+    }
+
+    public Texture uploadByte(ByteBuffer buffer, int dataType) {
+
+        bind();
+
+        switch (this.target) {
+            case GL46.GL_TEXTURE_1D:
+                GL46.glTexImage1D(
+                        this.target,
+                        0,
+                        this.internalFormat,
+                        this.width,
+                        0,
+                        this.format,
+                        dataType,
+                        buffer
+                );
+                break;
+            case GL46.GL_TEXTURE_2D:
+                GL46.glTexImage2D(
+                        this.target,
+                        0,
+                        this.internalFormat,
+                        this.width,
+                        this.height,
+                        0,
+                        this.format,
+                        dataType,
+                        buffer
+                );
+                break;
+            case GL46.GL_TEXTURE_3D:
+                GL46.glTexImage3D(
+                        this.target,
+                        0,
+                        this.internalFormat,
+                        this.width,
+                        this.height,
+                        this.depth,
+                        0,
+                        this.format,
+                        dataType,
                         buffer
                 );
                 break;

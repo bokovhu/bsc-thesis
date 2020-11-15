@@ -9,6 +9,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.MenuBar;
 import javafx.stage.FileChooser;
 import lombok.Getter;
+import me.bokov.bsc.surfaceviewer.editorv2.service.ExportMarchingCubesGLTFTask;
 import me.bokov.bsc.surfaceviewer.editorv2.service.LoadSceneTask;
 import me.bokov.bsc.surfaceviewer.editorv2.service.SaveSceneTask;
 import me.bokov.bsc.surfaceviewer.scene.BaseWorld;
@@ -66,6 +67,35 @@ public class EditorMenu extends MenuBar implements Initializable {
     @FXML
     public void onSaveSceneAs(ActionEvent event) {
         onSaveScene(event);
+    }
+
+    @FXML
+    public void onExportGLTF(ActionEvent event) {
+
+        Platform.runLater(
+                () -> {
+
+                    FileChooser fileChooser = new FileChooser();
+
+                    fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+                    fileChooser.setInitialFileName("Scene.gltf");
+                    fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter(
+                            "GLTF",
+                            "*.gltf"
+                    ));
+                    fileChooser.setTitle("Save scene");
+
+                    final File outputFile = fileChooser.showSaveDialog(getScene().getWindow());
+
+                    ExportMarchingCubesGLTFTask task = new ExportMarchingCubesGLTFTask();
+                    task.getOutputPathProperty().setValue(outputFile.getAbsolutePath());
+                    task.getWorldProperty().setValue(IOUtil.serialize(worldProperty.get()));
+
+                    task.run();
+
+                }
+        );
+
     }
 
     @FXML

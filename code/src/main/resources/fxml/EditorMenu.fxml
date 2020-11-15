@@ -17,6 +17,7 @@
                 <MenuItem mnemonicParsing="false" onAction="#onOpenScene" text="Open scene ..." />
                 <MenuItem mnemonicParsing="false" onAction="#onSaveScene" text="Save scene" />
                 <MenuItem mnemonicParsing="false" onAction="#onSaveSceneAs" text="Save scene as ..." />
+                <MenuItem onAction="#onExportGLTF" text="Export GLTF" />
             </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Scene">

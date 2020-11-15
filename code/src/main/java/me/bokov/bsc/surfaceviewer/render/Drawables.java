@@ -186,9 +186,9 @@ public interface Drawables {
 
     class Face {
 
-        private final Vector3f pos1, pos2, pos3;
-        private final Vector3f normal1, normal2, normal3;
-        private final Vector4f color1, color2, color3;
+        public final Vector3f pos1, pos2, pos3;
+        public final Vector3f normal1, normal2, normal3;
+        public final Vector4f color1, color2, color3;
 
         public Face(
                 Vector3f pos1, Vector3f pos2, Vector3f pos3, Vector3f normal1,

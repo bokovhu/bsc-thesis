@@ -1,7 +1,9 @@
 package me.bokov.bsc.surfaceviewer.render;
 
+import lombok.Getter;
 import org.lwjgl.opengl.GL46;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.*;
 import java.util.stream.*;
@@ -12,6 +14,7 @@ public class Drawable {
     private int vboHandle;
     private int vaoHandle;
     private int primitiveType = GL46.GL_TRIANGLES;
+    @Getter
     private int vertexCount = 0;
 
     public Drawable() {
@@ -112,6 +115,16 @@ public class Drawable {
     }
 
     public void upload(FloatBuffer vertexData, int primitiveType, int vertexCount) {
+
+        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, this.vboHandle);
+        GL46.glBufferData(GL46.GL_ARRAY_BUFFER, vertexData, GL46.GL_STATIC_DRAW);
+
+        this.primitiveType = primitiveType;
+        this.vertexCount = vertexCount;
+
+    }
+
+    public void upload(ByteBuffer vertexData, int primitiveType, int vertexCount) {
 
         GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, this.vboHandle);
         GL46.glBufferData(GL46.GL_ARRAY_BUFFER, vertexData, GL46.GL_STATIC_DRAW);

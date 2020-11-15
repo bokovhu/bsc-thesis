@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 import me.bokov.bsc.surfaceviewer.View;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
 import me.bokov.bsc.surfaceviewer.mesh.mccpu.MarchingCubes;
+import me.bokov.bsc.surfaceviewer.mesh.mcgpu.GPUMarchingCubes;
 import me.bokov.bsc.surfaceviewer.render.Drawable;
 import me.bokov.bsc.surfaceviewer.render.ShaderProgram;
 import me.bokov.bsc.surfaceviewer.scene.World;
@@ -41,6 +42,7 @@ public class MarchingCubesRenderer implements Renderer {
     private VoxelStorage marchingCubesInputStorage = null;
 
     private MarchingCubes marchingCubes;
+    private GPUMarchingCubes gpuMarchingCubes;
     private Drawable mesh;
     private ShaderProgram shaderProgram;
     @Getter
@@ -61,7 +63,7 @@ public class MarchingCubesRenderer implements Renderer {
                     config.getGridWidth(),
                     config.getGridHeight(),
                     config.getGridDepth(),
-                    true
+                    !config.useGPUMeshGenerator
             );
             this.gpuVoxelStorage = this.gpuVoxelizer.voxelize(
                     generator,
@@ -160,7 +162,7 @@ public class MarchingCubesRenderer implements Renderer {
 
     }
 
-    private void executeMarchingCubes() {
+    private void executeMarchingCubesCPU() {
 
         if (this.mesh != null) {
             this.mesh.tearDown();
@@ -173,6 +175,40 @@ public class MarchingCubesRenderer implements Renderer {
             this.mesh = this.marchingCubes
                     .generate(marchingCubesInputStorage);
 
+        }
+
+    }
+
+    private void executeMarchingCubesGPU() {
+
+        if (this.mesh != null) {
+            this.mesh.tearDown();
+            this.mesh = null;
+        }
+
+        if (this.gpuMarchingCubes != null) {
+            this.gpuMarchingCubes.tearDown();
+            this.gpuMarchingCubes = null;
+        }
+
+        if (this.marchingCubesInputStorage instanceof GPUUniformGrid) {
+
+            final var storage = (GPUUniformGrid) this.marchingCubesInputStorage;
+            this.gpuMarchingCubes = new GPUMarchingCubes();
+
+            this.mesh = this.gpuMarchingCubes
+                    .generate(storage);
+
+        }
+
+    }
+
+    private void executeMarchingCubes() {
+
+        if (config.useGPUMeshGenerator) {
+            executeMarchingCubesGPU();
+        } else {
+            executeMarchingCubesCPU();
         }
 
     }
@@ -201,6 +237,8 @@ public class MarchingCubesRenderer implements Renderer {
             this.mesh.draw();
 
         }
+
+        // this.mesh = null;
 
     }
 
@@ -237,6 +275,8 @@ public class MarchingCubesRenderer implements Renderer {
 
         if (marchingCubes != null) { marchingCubes.tearDown(); }
 
+        if (gpuMarchingCubes != null) { gpuMarchingCubes.tearDown(); }
+
         if (voxelizer != null) { voxelizer.tearDown(); }
 
         if (mesh != null) { mesh.tearDown(); }
@@ -251,6 +291,7 @@ public class MarchingCubesRenderer implements Renderer {
         this.voxelizer = null;
         this.voxelStorage = null;
         this.marchingCubes = null;
+        this.gpuMarchingCubes = null;
         this.mesh = null;
         this.gpuVoxelizer = null;
         this.gpuVoxelStorage = null;
@@ -270,6 +311,7 @@ public class MarchingCubesRenderer implements Renderer {
         private Vector3f lightEnergy, lightAmbient, lightDirection;
         private Boolean dumpVoxels = false;
         private Boolean useGPUVoxelization = true;
+        private Boolean useGPUMeshGenerator = true;
 
     }
 

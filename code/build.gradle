@@ -30,6 +30,18 @@ repositories {
     mavenCentral()
 }
 
+mainClassName = 'me.bokov.bsc.surfaceviewer.run.FXEditorMain'
+
+jar {
+    manifest {
+        attributes "Main-Class": "me.bokov.bsc.surfaceviewer.run.FXEditorMain"
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
 javafx {
     version = "15.0.1"
     modules = [ 'javafx.controls', 'javafx.fxml' ]

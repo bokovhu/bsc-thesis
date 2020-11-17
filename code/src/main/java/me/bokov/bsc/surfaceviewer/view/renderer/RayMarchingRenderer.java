@@ -71,14 +71,14 @@ public class RayMarchingRenderer implements Renderer {
 
             if (evaluable != null) {
 
-                this.shaderGenerator = new RaymarcherShaderGenerator(evaluable, new HashMap<>());
+                this.shaderGenerator = new RaymarcherShaderGenerator(world);
                 this.rayMarchingProgram = new ShaderProgram();
                 this.rayMarchingProgram.init();
                 this.rayMarchingProgram.attachVertexShaderFromSource(
                         ResourceUtil.readResource("glsl/directPassthrough.vertex.glsl")
                 );
                 this.rayMarchingProgram.attachFragmentShaderFromSource(
-                        this.shaderGenerator.generateRaymarcherFragmentSource()
+                        this.shaderGenerator.generateFragmentSource()
                 );
 
                 try {
@@ -98,11 +98,6 @@ public class RayMarchingRenderer implements Renderer {
 
             this.rayMarchingProgram.use();
 
-            this.rayMarchingProgram.uniform("u_Le").vec3(config.getLightEnergy());
-            this.rayMarchingProgram.uniform("u_Ls").vec3(config.getLightSpecular());
-            this.rayMarchingProgram.uniform("u_La").vec3(config.getLightAmbient());
-            this.rayMarchingProgram.uniform("u_Ld").vec3(config.getLightDirection());
-
             this.rayMarchingProgram.uniform("u_eye").vec3(view.getCamera().eye());
             this.rayMarchingProgram.uniform("u_forward").vec3(view.getCamera().forward());
             this.rayMarchingProgram.uniform("u_right").vec3(view.getCamera().right());
@@ -119,11 +114,6 @@ public class RayMarchingRenderer implements Renderer {
     @Data
     @Accessors(chain = true)
     public static class Config implements RendererConfig {
-
-        private Vector3f lightEnergy = new Vector3f(1.0f);
-        private Vector3f lightSpecular = new Vector3f(1.0f);
-        private Vector3f lightAmbient = new Vector3f(0.2f);
-        private Vector3f lightDirection = new Vector3f(-1.5f, 2.5f, 2.5f).normalize();
 
     }
 

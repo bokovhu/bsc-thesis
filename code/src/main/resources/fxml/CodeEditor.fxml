@@ -18,12 +18,14 @@
 
     <TitledPane text="Code">
 
-        <CodeArea fx:id="codeArea"
+        <TextArea fx:id="codeArea"
                   editable="true"
+                  prefRowCount="64"
+                  style="-fx-font-family: 'Source Code Pro', 'Droid Sans Mono', 'Courier New', monospace; -fx-font-size: 14px; -fx-font-weight: 800;"
 
         >
             <VBox.vgrow>ALWAYS</VBox.vgrow>
-        </CodeArea>
+        </TextArea>
 
     </TitledPane>
 

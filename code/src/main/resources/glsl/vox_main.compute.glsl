@@ -4,26 +4,34 @@ void main() {
     ivec3 outputSize = imageSize(u_positionAndValueOutput);
 
     vec3 pTextureSpace = vec3(
-        float(pInvocationSpace.x) / float(outputSize.x),
-        float(pInvocationSpace.y) / float(outputSize.y),
-        float(pInvocationSpace.z) / float(outputSize.z)
+    float(pInvocationSpace.x) / float(outputSize.x),
+    float(pInvocationSpace.y) / float(outputSize.y),
+    float(pInvocationSpace.z) / float(outputSize.z)
     );
 
     vec3 pWorldSpace = (u_transform * vec4(pTextureSpace, 1.0)).xyz;
 
     float calculatedDistance = csgExecute(pWorldSpace);
     vec3 calculatedNormal = csgNormal(pWorldSpace);
+    vec3 calculatedDiffuse = csgColor(pWorldSpace);
+    float calculatedShininess = csgShininess(pWorldSpace);
 
     imageStore(
-        u_positionAndValueOutput,
-        pInvocationSpace,
-        vec4(pWorldSpace, calculatedDistance)
+    u_positionAndValueOutput,
+    pInvocationSpace,
+    vec4(pWorldSpace, calculatedDistance)
     );
 
     imageStore(
-        u_normalOutput,
-        pInvocationSpace,
-        vec4(calculatedNormal, 1.0)
+    u_normalOutput,
+    pInvocationSpace,
+    vec4(calculatedNormal, 1.0)
+    );
+
+    imageStore(
+    u_colorShininessOutput,
+    pInvocationSpace,
+    vec4(calculatedDiffuse, calculatedShininess / 200.0)
     );
 
 }

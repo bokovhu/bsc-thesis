@@ -20,6 +20,10 @@ import static me.bokov.bsc.surfaceviewer.sdf.Evaluables.*;
 
 public enum NodeTemplate {
 
+    EVERYWHERE(
+            false,
+            c -> Evaluable.of(new Everywhere())
+    ),
     UNION(
             true,
             c -> union(
@@ -40,6 +44,20 @@ public enum NodeTemplate {
     INTERSECT(
             true,
             c -> intersect(c.getChildren().stream().map(SceneNode::toEvaluable).collect(Collectors.toList()))
+    ),
+    GATE(
+            List.of(),
+            true,
+            c -> c.getPorts().containsKey("Boundary") && c.getPorts().containsKey("Generator") ? Evaluable.of(
+                    new OpGate(
+                            c.getPorts().get("Boundary").toEvaluable(),
+                            c.getPorts().get("Generator").toEvaluable()
+                    )
+            ) : null,
+            List.of(
+                    Port.builder().name("Boundary").color("#e07740").build(),
+                    Port.builder().name("Generator").color("#40e077").build()
+            )
     ),
     SMOOTH_UNION(
             List.of(
@@ -206,7 +224,34 @@ public enum NodeTemplate {
                     Port.builder().name("Generator").color("#000000").build()
             )
     ),
-
+    INFINITE_REPEAT(
+            List.of(
+                    Property.builder().type("vec3").name("period").defaultValue(new Vector3f(1f)).build()
+            ),
+            true,
+            c -> c.getPorts().containsKey("Generator") ? Evaluable.of(
+                    new OpInifiniteRepetition(
+                            c.getVec3Properties().getOrDefault("period", new Vector3f(1f)),
+                            c.getPorts().get("Generator").toEvaluable()
+                    )
+            ) : null,
+            List.of(
+                    Port.builder().name("Generator").color("#000000").build()
+            )
+    ),
+    PLANE(
+            List.of(
+                    Property.builder().defaultValue(new Vector3f(0f, 1f, 0f)).type("vec3").name("normal").build(),
+                    Property.builder().defaultValue(1.0f).type("float").name("h").build()
+            ),
+            false,
+            c -> Evaluable.of(
+                    new Plane(
+                            c.getVec3Properties().getOrDefault("normal", new Vector3f(0f, 1f, 0f)),
+                            c.getFloatProperties().getOrDefault("h", 1.0f)
+                    )
+            )
+    ),
     BOX(
             List.of(
                     Property.builder().defaultValue(new Vector3f(1f)).type("vec3").name("bounds").build()
@@ -248,6 +293,23 @@ public enum NodeTemplate {
             c -> cone(
                     c.getFloatProperties().getOrDefault("angle", (float) Math.toRadians(60.0)),
                     c.getFloatProperties().getOrDefault("height", 1.0f)
+            )
+    ),
+    CAPPED_CONE(
+            List.of(
+                    Property.builder().defaultValue(new Vector3f(0f, 0f, 0f)).type("vec3").name("a").build(),
+                    Property.builder().defaultValue(new Vector3f(0f, 1f, 0f)).type("vec3").name("b").build(),
+                    Property.builder().defaultValue(0.5f).type("float").name("ra").build(),
+                    Property.builder().defaultValue(0.25f).type("float").name("rb").build()
+            ),
+            false,
+            c -> Evaluable.of(
+                    new CappedCone(
+                            c.getVec3Properties().getOrDefault("a", new Vector3f(0f, 0f, 0f)),
+                            c.getFloatProperties().getOrDefault("ra", 0.5f),
+                            c.getVec3Properties().getOrDefault("b", new Vector3f(0f, 1f, 0f)),
+                            c.getFloatProperties().getOrDefault("rb", 0.25f)
+                    )
             )
     ),
     BOX2D(

@@ -14,6 +14,7 @@ public class OpGate implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPU
         Serializable {
 
     private final Evaluable<Float, CPUContext, GPUContext> boundary;
+    private final float threshold = 0.1f;
     private final Evaluable<Float, CPUContext, GPUContext> generator;
 
     public OpGate(
@@ -59,10 +60,10 @@ public class OpGate implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPU
         );
         result.add(
                 new GLSLIfStatement(
-                        cmpLt(ref(boundaryVolumeContext.getResult()), literal(0.0f)),
+                        cmpLt(ref(boundaryVolumeContext.getResult()), literal(threshold)),
                         generatorStatements,
                         block(
-                                opAssign(ref(context.getResult()), literal(1f))
+                                opAssign(ref(context.getResult()), ref(boundaryVolumeContext.getResult()))
                         )
                 )
         );
@@ -74,7 +75,7 @@ public class OpGate implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPU
     public Float evaluate(CPUContext c) {
 
         float boundaryValue = boundary.cpu().evaluate(c);
-        if (boundaryValue > 0.0f) {
+        if (boundaryValue > threshold) {
             return boundaryValue;
         }
 

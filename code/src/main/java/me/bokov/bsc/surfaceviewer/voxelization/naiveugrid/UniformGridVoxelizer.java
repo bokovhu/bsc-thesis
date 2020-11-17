@@ -1,6 +1,8 @@
 package me.bokov.bsc.surfaceviewer.voxelization.naiveugrid;
 
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
+import me.bokov.bsc.surfaceviewer.scene.Materializer;
+import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
@@ -56,7 +58,7 @@ public class UniformGridVoxelizer implements Voxelizer3D<UniformGrid> {
 
     @Override
     public UniformGrid voxelize(
-            Evaluable<Float, CPUContext, GPUContext> generator,
+            World world,
             MeshTransform transform,
             VoxelizationContext context
     ) {
@@ -65,10 +67,12 @@ public class UniformGridVoxelizer implements Voxelizer3D<UniformGrid> {
 
         FloatBuffer positionValueBuffer = BufferUtils.createFloatBuffer(4 * width * height * depth);
         FloatBuffer normalBuffer = smoothNormals ? BufferUtils.createFloatBuffer(3 * width * height * depth) : null;
+        FloatBuffer colorBuffer = BufferUtils.createFloatBuffer(4 * width * height * depth);
 
         final Vector3f p = new Vector3f();
+        final Vector3f col = new Vector3f();
         final float pScale = 1.0f / Math.max(width, Math.max(height, depth));
-        final var cpu = generator.cpu();
+        final var cpu = world.toEvaluable().cpu();
 
         CPUContext rootContext = new CPUEvaluationContext().setPoint(p);
 
@@ -90,6 +94,19 @@ public class UniformGridVoxelizer implements Voxelizer3D<UniformGrid> {
                         normalBuffer.put(tmpNormal.x).put(tmpNormal.y).put(tmpNormal.z);
                     }
 
+                    float shininess = 0.0f;
+                    col.set(0f);
+
+                    for(Materializer m : world.getMaterializers()) {
+                        if (m.getBoundary().cpu().evaluate(rootContext) < 0.0f) {
+                            col.set(m.getDiffuseColor().cpu().evaluate(rootContext));
+                            shininess = m.getShininess().cpu().evaluate(rootContext);
+                            break;
+                        }
+                    }
+
+                    colorBuffer.put(col.x).put(col.y).put(col.z).put(shininess / 200.0f);
+
                 }
             }
         }
@@ -99,7 +116,8 @@ public class UniformGridVoxelizer implements Voxelizer3D<UniformGrid> {
         UniformGrid result = new UniformGrid(
                 width, height, depth,
                 positionValueBuffer,
-                normalBuffer
+                normalBuffer,
+                colorBuffer
         );
 
         long end = System.currentTimeMillis();

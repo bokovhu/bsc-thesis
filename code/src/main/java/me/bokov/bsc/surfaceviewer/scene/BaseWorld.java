@@ -1,9 +1,12 @@
 package me.bokov.bsc.surfaceviewer.scene;
 
+import me.bokov.bsc.surfaceviewer.scene.materializer.ConstantMaterial;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluables;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
+import me.bokov.bsc.surfaceviewer.sdf.threed.Everywhere;
+import me.bokov.bsc.surfaceviewer.sdf.threed.Sphere;
 import org.joml.Vector3f;
 
 import java.util.*;
@@ -13,8 +16,10 @@ public class BaseWorld implements World {
 
     private final Vector3f b000 = new Vector3f(-1f, -1f, -1f);
     private final Vector3f b111 = new Vector3f(1f, 1f, 1f);
-    private int lastId = 0;
+    private Integer lastId = null;
     private List<SceneNode> rootNodes = new ArrayList<>();
+    private List<LightSource> lightSources = new ArrayList<>();
+    private List<Materializer> materializers = new ArrayList<>();
 
     @Override
     public List<SceneNode> roots() {
@@ -88,7 +93,10 @@ public class BaseWorld implements World {
 
     @Override
     public int nextId() {
-        return 1 + rootNodes.stream().mapToInt(r -> walkMaxId(r, 0)).max().orElse(0);
+        if (lastId == null) {
+            lastId = 0;
+        }
+        return lastId++;
     }
 
     @Override
@@ -114,6 +122,50 @@ public class BaseWorld implements World {
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList())
         );
+    }
+
+    @Override
+    public List<LightSource> getLightSources() {
+        return lightSources;
+    }
+
+    @Override
+    public void add(LightSource... args) {
+        for (LightSource ls : args) {
+            lightSources.add(ls);
+        }
+    }
+
+    @Override
+    public void remove(LightSource ls) {
+        lightSources.removeIf(l -> l.getId() == ls.getId());
+    }
+
+    @Override
+    public void removeLightSource(int id) {
+        lightSources.removeIf(l -> l.getId() == id);
+    }
+
+    @Override
+    public List<Materializer> getMaterializers() {
+        return materializers;
+    }
+
+    @Override
+    public void add(Materializer... args) {
+        for (Materializer m : args) {
+            materializers.add(m);
+        }
+    }
+
+    @Override
+    public void remove(Materializer materializer) {
+        materializers.removeIf(m -> m.getId() == materializer.getId());
+    }
+
+    @Override
+    public void removeMaterializer(int id) {
+        materializers.removeIf(m -> m.getId() == id);
     }
 
     @Override

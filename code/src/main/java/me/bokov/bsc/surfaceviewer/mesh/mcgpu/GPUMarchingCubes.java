@@ -91,24 +91,38 @@ public class GPUMarchingCubes implements MeshGenerator {
         vertexCountBuffer.bind(GL46.GL_SHADER_STORAGE_BUFFER);
         vertexCountBuffer.bind(GL46.GL_SHADER_STORAGE_BUFFER, 1);
 
-        gpuGrid.getPositionAndValueTexture().bind(2)
+        gpuGrid.getPositionAndValueTexture().bind(0)
                 .setupSampling(
                         GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE,
                         GL46.GL_LINEAR, GL46.GL_LINEAR
                 );
-        gpuGrid.getPositionAndValueTexture().bindImage(2, true, false);
+        // gpuGrid.getPositionAndValueTexture().bindImage(2, true, false);
 
-        gpuGrid.getNormalTexture().bind(3)
+        gpuGrid.getNormalTexture().bind(1)
                 .setupSampling(
                         GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE,
                         GL46.GL_LINEAR, GL46.GL_LINEAR
                 );
-        gpuGrid.getNormalTexture().bindImage(3, true, false);
+        // gpuGrid.getNormalTexture().bindImage(3, true, false);
 
-        triangleTableBuffer.bind(GL46.GL_SHADER_STORAGE_BUFFER, 4);
-        edgeTableBuffer.bind(GL46.GL_SHADER_STORAGE_BUFFER, 5);
+        gpuGrid.getColorShininessTexture()
+                .bind(2)
+                .setupSampling(
+                        GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE,
+                        GL46.GL_LINEAR, GL46.GL_LINEAR
+                );
+
+        triangleTableBuffer.bind(GL46.GL_SHADER_STORAGE_BUFFER, 2);
+        edgeTableBuffer.bind(GL46.GL_SHADER_STORAGE_BUFFER, 3);
 
         long setupEnd = System.currentTimeMillis();
+
+        marchingCubesProgram.uniform("in_positionAndValue")
+                .i1(0);
+        marchingCubesProgram.uniform("in_normal")
+                .i1(1);
+        marchingCubesProgram.uniform("in_colorShininess")
+                .i1(2);
 
         GL46.glDispatchCompute(
                 gpuGrid.xVoxelCount(),

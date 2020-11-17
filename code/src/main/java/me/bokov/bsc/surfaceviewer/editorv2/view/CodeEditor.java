@@ -7,12 +7,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
 import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.surfacelang.SurfaceLangExpression;
 import me.bokov.bsc.surfaceviewer.util.FXMLUtil;
-import org.fxmisc.richtext.CodeArea;
 
 import java.net.URL;
 import java.util.*;
@@ -26,7 +27,7 @@ public class CodeEditor extends VBox implements Initializable {
     private ObjectProperty<SurfaceLangExpression> expressionProperty = new SimpleObjectProperty<>(new SurfaceLangExpression());
 
     @FXML
-    private CodeArea codeArea;
+    private TextArea codeArea;
 
     @FXML
     private VBox errorsVBox;
@@ -44,7 +45,7 @@ public class CodeEditor extends VBox implements Initializable {
             expr.format(worldProperty.get());
 
             expressionProperty.setValue(expr);
-            codeArea.replaceText(expressionProperty.get().getCode());
+            codeArea.setText(expressionProperty.get().getCode());
 
             errorsVBox.getChildren().clear();
 
@@ -89,6 +90,26 @@ public class CodeEditor extends VBox implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        codeArea.addEventFilter(
+                KeyEvent.KEY_PRESSED,
+                (KeyEvent event) -> {
+                    if (event.getCode() == KeyCode.TAB) {
+                        codeArea.insertText(
+                                codeArea.getCaretPosition(),
+                                "    "
+                        );
+                        event.consume();
+                    }
+
+                    if (event.getCode() == KeyCode.ENTER && event.isControlDown()) {
+
+                        onCompileCode(new ActionEvent(this, event.getTarget()));
+                        event.consume();
+
+                    }
+                }
+        );
 
     }
 }

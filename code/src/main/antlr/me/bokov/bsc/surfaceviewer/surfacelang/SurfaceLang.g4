@@ -5,11 +5,87 @@ grammar SurfaceLang;
 }
 
 world :
-    (expression)+
+    (expression | material | light)+
+    ;
+
+light :
+    KW_LIGHT lightType (lightAlias)? lightDef
+    ;
+
+lightType :
+    IDENTIFIER
+    ;
+
+lightAlias :
+    '"' (IDENTIFIER)+ '"'
+    ;
+
+lightDef :
+    LCURLY (lightParamList)? RCURLY
+    ;
+
+lightParamList :
+    lightParam (COMMA lightParam)*
+    ;
+
+lightParam :
+    lightParamName COLON (
+    numberValue
+        | vec2Value
+        | vec3Value
+        | vec4Value
+        | mat2Value
+        | mat3Value
+        | mat4Value
+        | boolValue
+        | expression
+    )
+    ;
+
+lightParamName :
+    IDENTIFIER
+    ;
+
+material :
+    KW_MATERIAL materialType (materialAlias)? materialDef
+    ;
+
+materialType :
+    IDENTIFIER
+    ;
+
+materialAlias :
+    '"' (IDENTIFIER)+ '"'
+    ;
+
+materialDef :
+    LCURLY (materialParamList)? RCURLY
+    ;
+
+materialParamList :
+    materialParam (COMMA materialParam)*
+    ;
+
+materialParam :
+    materialParamName COLON (
+    numberValue
+        | vec2Value
+        | vec3Value
+        | vec4Value
+        | mat2Value
+        | mat3Value
+        | mat4Value
+        | boolValue
+        | expression
+    )
+    ;
+
+materialParamName :
+    IDENTIFIER
     ;
 
 expression :
-    expressionName (expressionAlias)? (expressionTransform)? (expressionProperties)? (expressionPorts)? (expressionChildren)?
+    KW_OBJECT? expressionName (expressionAlias)? (expressionTransform)? (expressionProperties)? (expressionPorts)? (expressionChildren)?
     ;
 
 expressionName :
@@ -89,15 +165,15 @@ boolValue :
     ;
 
 vec2Value :
-    LPAREN x=numberValue COMMA y=numberValue RPAREN
+    KW_NORM? LPAREN x=numberValue COMMA y=numberValue RPAREN
     ;
 
 vec3Value :
-    LPAREN x=numberValue COMMA y=numberValue COMMA z=numberValue RPAREN
+    KW_NORM? LPAREN x=numberValue COMMA y=numberValue COMMA z=numberValue RPAREN
     ;
 
 vec4Value :
-    LPAREN x=numberValue COMMA y=numberValue COMMA z=numberValue COMMA w=numberValue RPAREN
+    KW_NORM? LPAREN x=numberValue COMMA y=numberValue COMMA z=numberValue COMMA w=numberValue RPAREN
     ;
 
 mat2Value :
@@ -112,18 +188,22 @@ mat4Value :
     LPAREN col0=vec4Value COMMA col1=vec4Value COMMA col2=vec4Value COMMA col3=vec4Value RPAREN
     ;
 
-KW_AT : 'AT';
-KW_POSITION : 'POSITION';
-KW_SCALE : 'SCALE';
-KW_ROTATE : 'ROTATE';
-KW_AROUND : 'AROUND';
-KW_BY : 'BY';
-KW_RADIANS : 'RADIANS';
-KW_DEGREES : 'DEGREES';
-KW_TRUE : 'true';
-KW_FALSE : 'false';
+KW_AT : 'AT' | 'at';
+KW_POSITION : 'POSITION' | 'position';
+KW_SCALE : 'SCALE' | 'scale';
+KW_ROTATE : 'ROTATE' | 'rotate';
+KW_AROUND : 'AROUND' | 'around';
+KW_BY : 'BY' | 'by';
+KW_RADIANS : 'RADIANS' | 'radians';
+KW_DEGREES : 'DEGREES' | 'degrees';
+KW_TRUE : 'true' | 'TRUE';
+KW_FALSE : 'false' | 'FALSE';
+KW_MATERIAL : 'MATERIAL' | 'material';
+KW_LIGHT : 'LIGHT' | 'light';
+KW_OBJECT : 'OBJECT' | 'object';
+KW_NORM : 'NORM' | 'norm';
 
-NUMBER : [0-9]+(('.')?[0-9]+)?;
+NUMBER : SUB? [0-9]+(('.')?[0-9]+)?;
 IDENTIFIER : [a-zA-Z]([a-zA-Z0-9_]*);
 
 LPAREN : '(';

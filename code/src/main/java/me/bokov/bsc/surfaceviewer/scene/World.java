@@ -28,4 +28,14 @@ public interface World extends Serializable {
 
     Evaluable<Float, CPUContext, GPUContext> toEvaluable();
 
+    List<LightSource> getLightSources();
+    void add(LightSource ... args);
+    void remove(LightSource ls);
+    void removeLightSource(int id);
+
+    List<Materializer> getMaterializers();
+    void add(Materializer ... args);
+    void remove(Materializer materializer);
+    void removeMaterializer(int id);
+
 }

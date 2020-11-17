@@ -9,8 +9,10 @@ import me.bokov.bsc.surfaceviewer.mesh.mccpu.MarchingCubes;
 import me.bokov.bsc.surfaceviewer.mesh.mcgpu.GPUMarchingCubes;
 import me.bokov.bsc.surfaceviewer.render.Drawable;
 import me.bokov.bsc.surfaceviewer.render.ShaderProgram;
+import me.bokov.bsc.surfaceviewer.render.blinnphong.BlinnPhongShaderGenerator;
 import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.util.IOUtil;
+import me.bokov.bsc.surfaceviewer.util.ResourceUtil;
 import me.bokov.bsc.surfaceviewer.util.Resources;
 import me.bokov.bsc.surfaceviewer.view.Renderer;
 import me.bokov.bsc.surfaceviewer.view.RendererConfig;
@@ -49,16 +51,34 @@ public class MarchingCubesRenderer implements Renderer {
     private Config config = new Config()
             .setGridWidth(64).setGridHeight(64).setGridDepth(64)
             .setGridOffset(new Vector3f(-2f)).setGridScale(new Vector3f(4f))
-            .setLightEnergy(new Vector3f(1.0f))
-            .setLightAmbient(new Vector3f(0.2f))
-            .setLightDirection(new Vector3f(-1.5f, 2.3f, 1.8f).normalize())
             .setIsoLevel(0.0f);
+
+    private void createShader(World world) {
+
+        if (this.shaderProgram != null) { this.shaderProgram.tearDown(); }
+
+        this.shaderProgram = null;
+
+        if (this.shaderProgram == null && world != null) {
+
+            final var generator = new BlinnPhongShaderGenerator(world);
+
+            this.shaderProgram = new ShaderProgram();
+            this.shaderProgram.init();
+            this.shaderProgram.attachVertexShaderFromSource(
+                    ResourceUtil.readResource(Resources.GLSL_VERTEX_STANDARD_3D_TRANSFORMED)
+            );
+            this.shaderProgram
+                    .attachFragmentShaderFromSource(generator.generateFragmentSource());
+            this.shaderProgram.linkAndValidate();
+
+        }
+
+    }
 
     private void voxelizeSceneGPU(World world) {
 
-        final var generator = world.toEvaluable();
-
-        if (generator != null) {
+        if (world != null) {
             this.gpuVoxelizer = new GPUUniformGridVoxelizer(
                     config.getGridWidth(),
                     config.getGridHeight(),
@@ -66,7 +86,7 @@ public class MarchingCubesRenderer implements Renderer {
                     !config.useGPUMeshGenerator
             );
             this.gpuVoxelStorage = this.gpuVoxelizer.voxelize(
-                    generator,
+                    world,
                     new MeshTransform(
                             config.getGridOffset(),
                             new Vector3f(0f, 1f, 0f),
@@ -85,16 +105,15 @@ public class MarchingCubesRenderer implements Renderer {
     }
 
     private void voxelizeSceneCPU(World world) {
-        final var generator = world.toEvaluable();
 
-        if (generator != null) {
+        if (world != null) {
             this.voxelizer = new UniformGridVoxelizer(
                     config.getGridWidth(),
                     config.getGridHeight(),
                     config.getGridDepth()
             );
             this.voxelStorage = this.voxelizer.voxelize(
-                    generator,
+                    world,
                     new MeshTransform(
                             config.getGridOffset(),
                             new Vector3f(0f, 1f, 0f),
@@ -218,18 +237,16 @@ public class MarchingCubesRenderer implements Renderer {
 
         if (this.mesh == null) {
 
+            this.createShader(world);
             this.voxelizeScene(world);
             this.executeMarchingCubes();
 
         }
 
-        if (this.mesh != null) {
+        if (this.mesh != null && this.shaderProgram != null) {
 
             this.shaderProgram.use();
 
-            this.shaderProgram.uniform("u_Le").vec3(config.getLightEnergy());
-            this.shaderProgram.uniform("u_La").vec3(config.getLightAmbient());
-            this.shaderProgram.uniform("u_Ld").vec3(config.getLightDirection());
             this.shaderProgram.uniform("u_eye").vec3(this.view.getCamera().eye());
             this.shaderProgram.uniform("u_M").mat4(IDENTITY);
             this.shaderProgram.uniform("u_MVP").mat4(this.view.getCamera().VP());
@@ -245,12 +262,6 @@ public class MarchingCubesRenderer implements Renderer {
     @Override
     public void install(View parent) {
         this.view = parent;
-
-        this.shaderProgram = parent.getShaderManager().load("default")
-                .vertexFromResource(
-                        Resources.GLSL_VERTEX_STANDARD_3D_TRANSFORMED)
-                .fragmentFromResource(Resources.GLSL_FRAGMENT_BLINN_PHONG)
-                .end();
 
         this.view.getApp().onViewReport(
                 "RendererInstalled",
@@ -308,7 +319,6 @@ public class MarchingCubesRenderer implements Renderer {
         private Integer gridWidth, gridHeight, gridDepth;
         private Float isoLevel;
         private Vector3f gridOffset, gridScale;
-        private Vector3f lightEnergy, lightAmbient, lightDirection;
         private Boolean dumpVoxels = false;
         private Boolean useGPUVoxelization = true;
         private Boolean useGPUMeshGenerator = true;

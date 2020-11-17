@@ -2,6 +2,9 @@ package me.bokov.bsc.surfaceviewer.surfacelang;
 
 import lombok.Getter;
 import me.bokov.bsc.surfaceviewer.scene.*;
+import me.bokov.bsc.surfaceviewer.scene.materializer.ConstantMaterial;
+import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
+import me.bokov.bsc.surfaceviewer.sdf.threed.Everywhere;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -21,6 +24,58 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
     private World world = new BaseWorld();
 
     private int lastId = world.nextId();
+
+    private float floatVal(SurfaceLangParser.NumberValueContext ctx) {
+        return Float.parseFloat(ctx.getText());
+    }
+
+    private Vector2f vec2Val(SurfaceLangParser.Vec2ValueContext ctx) {
+
+        Vector2f r = new Vector2f(
+                Float.parseFloat(ctx.x.getText()),
+                Float.parseFloat(ctx.y.getText())
+        );
+
+        if (ctx.KW_NORM() != null && !ctx.KW_NORM().getText().isBlank()) {
+            r = r.normalize();
+        }
+
+        return r;
+
+    }
+
+    private Vector3f vec3Val(SurfaceLangParser.Vec3ValueContext ctx) {
+
+        Vector3f r = new Vector3f(
+                Float.parseFloat(ctx.x.getText()),
+                Float.parseFloat(ctx.y.getText()),
+                Float.parseFloat(ctx.z.getText())
+        );
+
+        if (ctx.KW_NORM() != null && !ctx.KW_NORM().getText().isBlank()) {
+            r = r.normalize();
+        }
+
+        return r;
+
+    }
+
+    private Vector4f vec4Val(SurfaceLangParser.Vec4ValueContext ctx) {
+
+        Vector4f r = new Vector4f(
+                Float.parseFloat(ctx.x.getText()),
+                Float.parseFloat(ctx.y.getText()),
+                Float.parseFloat(ctx.z.getText()),
+                Float.parseFloat(ctx.w.getText())
+        );
+
+        if (ctx.KW_NORM() != null && !ctx.KW_NORM().getText().isBlank()) {
+            r = r.normalize();
+        }
+
+        return r;
+
+    }
 
     private void putPropBySpec(SurfaceLangParser.PropertySpecContext ctx, SceneNode node) {
 
@@ -197,9 +252,11 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
 
     private SceneNode expressionToSceneNode(SurfaceLangParser.ExpressionContext ctx) {
 
+        final var nodeType = ctx.expressionName().IDENTIFIER().getText().toUpperCase();
+
         SceneNode node = new BaseSceneNode(
                 lastId++,
-                NodeTemplate.valueOf(ctx.expressionName().IDENTIFIER().getText().toUpperCase())
+                NodeTemplate.valueOf(nodeType)
         );
 
         if (ctx.expressionAlias() != null && ctx.expressionAlias().IDENTIFIER() != null && ctx.expressionAlias()
@@ -300,6 +357,111 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
         }
 
         return node;
+
+    }
+
+    private LightSource lightToLightSource(SurfaceLangParser.LightContext ctx) {
+
+        final var type = ctx.lightType().IDENTIFIER().getText();
+
+        final SurfaceLangParser.Vec3ValueContext energyCtx = ctx.lightDef()
+                .lightParamList()
+                .lightParam()
+                .stream()
+                .filter(lp -> lp.lightParamName().IDENTIFIER().getText().equals("energy") && lp.vec3Value() != null)
+                .map(SurfaceLangParser.LightParamContext::vec3Value)
+                .findFirst()
+                .orElseThrow();
+
+        switch (type.toLowerCase()) {
+            case "ambient":
+
+                AmbientLight ambientLight = new AmbientLight(world.nextId());
+
+                ambientLight.setEnergy(vec3Val(energyCtx));
+                return ambientLight;
+
+            case "directional":
+
+                DirectionalLight directionalLight = new DirectionalLight(world.nextId());
+
+                directionalLight.setEnergy(vec3Val(energyCtx));
+
+                final SurfaceLangParser.Vec3ValueContext directionCtx = ctx.lightDef()
+                        .lightParamList()
+                        .lightParam()
+                        .stream()
+                        .filter(lp -> lp.lightParamName()
+                                .IDENTIFIER()
+                                .getText()
+                                .equals("direction") && lp.vec3Value() != null)
+                        .map(SurfaceLangParser.LightParamContext::vec3Value)
+                        .findFirst()
+                        .orElseThrow();
+
+                directionalLight.dir(vec3Val(directionCtx));
+
+                return directionalLight;
+            default:
+                throw new UnsupportedOperationException("Light type not supported: " + type);
+        }
+
+    }
+
+    private Materializer parseMaterial(SurfaceLangParser.MaterialContext ctx) {
+
+        final var type = ctx.materialType().IDENTIFIER().getText();
+
+        final SurfaceLangParser.ExpressionContext boundaryContext = ctx.materialDef()
+                .materialParamList()
+                .materialParam()
+                .stream()
+                .filter(mp -> mp.expression() != null && mp.materialParamName()
+                        .IDENTIFIER()
+                        .getText()
+                        .equals("boundary"))
+                .map(SurfaceLangParser.MaterialParamContext::expression)
+                .findFirst()
+                .orElseThrow();
+
+        switch (type.toLowerCase()) {
+            case "constant":
+
+                final SurfaceLangParser.Vec3ValueContext diffuseCtx = ctx.materialDef()
+                        .materialParamList()
+                        .materialParam()
+                        .stream()
+                        .filter(mp -> mp.materialParamName()
+                                .IDENTIFIER()
+                                .getText()
+                                .equals("diffuse") && mp.vec3Value() != null)
+                        .map(SurfaceLangParser.MaterialParamContext::vec3Value)
+                        .findFirst()
+                        .orElseThrow();
+                final SurfaceLangParser.NumberValueContext shininessCtx = ctx.materialDef()
+                        .materialParamList()
+                        .materialParam()
+                        .stream()
+                        .filter(mp -> mp.materialParamName()
+                                .IDENTIFIER()
+                                .getText()
+                                .equals("shininess") && mp.numberValue() != null)
+                        .map(SurfaceLangParser.MaterialParamContext::numberValue)
+                        .findFirst()
+                        .orElseThrow();
+
+                ConstantMaterial constantMaterial = new ConstantMaterial(
+                        world.nextId(),
+                        expressionToSceneNode(boundaryContext).toEvaluable(),
+                        vec3Val(diffuseCtx),
+                        floatVal(shininessCtx)
+                );
+
+                return constantMaterial;
+
+            default:
+                throw new UnsupportedOperationException("Materializer type not supported: " + type);
+        }
 
     }
 
@@ -435,7 +597,10 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
 
         return portKeyList.stream()
                 .map(
-                        portKey -> "    ".repeat(indentation) + portKey + ": " + formatNode(portMap.get(portKey), indentation)
+                        portKey -> "    ".repeat(indentation) + portKey + ": " + formatNode(
+                                portMap.get(portKey),
+                                indentation
+                        )
                 ).collect(joining(",\n")).stripTrailing();
 
     }
@@ -530,9 +695,34 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
         super.exitWorld(ctx);
 
         world = new BaseWorld();
+        world.getLightSources().clear();
         ctx.expression().forEach(
                 expr -> world.add(expressionToSceneNode(expr))
         );
+        ctx.light().forEach(
+                l -> world.add(lightToLightSource(l))
+        );
+        ctx.material().forEach(
+                m -> world.add(parseMaterial(m))
+        );
+
+        if (world.getLightSources().isEmpty()) {
+            world.add(
+                    new AmbientLight(world.nextId()).setEnergy(0.2f, 0.2f, 0.2f),
+                    new DirectionalLight(world.nextId()).dir(1.5f, 2.5f, -1.5f).setEnergy(1f, 1f, 1f)
+            );
+        }
+
+        if (world.getMaterializers().isEmpty()) {
+            world.add(
+                    new ConstantMaterial(
+                            world.nextId(),
+                            Evaluable.of(new Everywhere()),
+                            new Vector3f(1f),
+                            80.0f
+                    )
+            );
+        }
 
     }
 }

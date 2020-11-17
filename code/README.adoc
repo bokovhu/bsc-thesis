@@ -1,79 +1,10 @@
 # BSC Thesis
 
-## Surface viewer
+## TODO
 
-### Voxelization techniques
-
-#### CPU
-
-##### Uniform grid
-
-_Package_: `me.bokov.bsc.surfaceviewer.voxelization.cpuugrid`
-
-##### Octree - top to bottom
-
-_Package_: `me.bokov.bsc.surfaceviewer.voxelization.cpuoctree.toptobottom`
-
-##### Octree - bottom to top
-
-_Package_: `me.bokov.bsc.surfaceviewer.voxelization.cpuoctree.bottomtotop`
-
-#### GPU
-
-##### GPU uniform grid
-
-_Package_: `me.bokov.bsc.surfaceviewer.voxelization.gpuugrid`
-
-##### GPU octree
-
-_Package_: `me.bokov.bsc.surfaceviewer.voxelization.gpuoctree`
-
-### Rendering techniques
-
-#### GPU Ray marching
-
-_Package_: `me.bokov.bsc.surfaceviewer.render.raymarch`
-
-#### Triangle-based forward rendering pipeline
-
-_Package_: `me.bokov.bsc.surfaceviewer.render.triangleforward`
-
-#### Quad-based forward rendering pipeline
-
-_Package_: `me.bokov.bsc.surfaceviewer.render.quadforward`
-
-#### Point cloud
-
-_Package_: `me.bokov.bsc.surfaceviewer.render.pointcloud`
-
-### Mesh extraction techniques
-
-#### Marching cubes
-
-##### CPU implementation
-
-_Package_: `me.bokov.bsc.surfaceviewer.mesh.mccpu`
-
-##### GPU Geometry shader implementation
-
-_Package_: `me.bokov.bsc.surfaceviewer.mesh.mcgs`
-
-##### GPU Compute shader implementation
-
-_Package_: `me.bokov.bsc.surfaceviewer.mesh.mccompute`
-
-#### Dual-contouring
-
-##### CPU implementation
-
-_Package_: `me.bokov.bsc.surfaceviewer.mesh.dccpu`
-
-##### GPU Compute shader implementation
-
-_Package_: `me.bokov.bsc.surfaceviewer.mesh.dccompute`
-
-### Generating distance fields
-
-#### CSG command tree executor
-
-_Package_: `me.bokov.bsc.surfaceviewer.sdf`
+* `CappedCone : vec3 a, vec3 b, float ra, float rb`
+* `CylinderTo : vec3 a, vec3 b, float r`
+* `LineTo : vec3 a, vec3 b, float r`
+* `RoundConeTo : vec3 a, vec3 b, float ra, float rb`
+* `OpElongate`
+* `OpRevolution`

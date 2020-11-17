@@ -45,13 +45,13 @@ public class ExportMarchingCubesGLTFTask extends Task<File> {
     @Override
     protected File call() throws Exception {
 
-        Evaluable<Float, CPUContext, GPUContext> generator = worldProperty.get().toEvaluable();
+        World world = worldProperty.get();
 
         UniformGridVoxelizer voxelizer = new UniformGridVoxelizer(
                 64, 64, 64
         );
         final var voxelStorage = voxelizer.voxelize(
-                generator,
+                world,
                 new MeshTransform(
                         gridOffsetProperty.get(),
                         new Vector3f(0f, 1f, 0f), 0f,

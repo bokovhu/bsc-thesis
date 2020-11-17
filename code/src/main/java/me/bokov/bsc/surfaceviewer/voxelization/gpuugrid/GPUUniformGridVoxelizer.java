@@ -3,9 +3,7 @@ package me.bokov.bsc.surfaceviewer.voxelization.gpuugrid;
 import me.bokov.bsc.surfaceviewer.compute.ComputeProgram;
 import me.bokov.bsc.surfaceviewer.compute.VoxelizerComputeShaderGenerator;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
-import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
-import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
-import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
+import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.util.MetricsLogger;
 import me.bokov.bsc.surfaceviewer.voxelization.VoxelizationContext;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxelizer3D;
@@ -35,7 +33,7 @@ public class GPUUniformGridVoxelizer implements Voxelizer3D<GPUUniformGrid> {
 
     @Override
     public GPUUniformGrid voxelize(
-            Evaluable<Float, CPUContext, GPUContext> generator,
+            World world,
             MeshTransform transform,
             VoxelizationContext context
     ) {
@@ -46,7 +44,7 @@ public class GPUUniformGridVoxelizer implements Voxelizer3D<GPUUniformGrid> {
             voxelizerProgram = new ComputeProgram();
             voxelizerProgram.init();
 
-            final var programGenerator = new VoxelizerComputeShaderGenerator(generator);
+            final var programGenerator = new VoxelizerComputeShaderGenerator(world);
             voxelizerProgram.attachSource(programGenerator.generateVoxelizerComputeShaderSource());
 
             voxelizerProgram.linkAndValidate();
@@ -64,6 +62,9 @@ public class GPUUniformGridVoxelizer implements Voxelizer3D<GPUUniformGrid> {
         result.getNormalTexture()
                 .bind(1)
                 .bindImage(1, false, true);
+        result.getColorShininessTexture()
+                .bind(2)
+                .bindImage(2, false, true);
 
         voxelizerProgram.uniform("u_transform")
                 .mat4(transform.M());

@@ -14,14 +14,15 @@ public class UniformGrid implements GridVoxelStorage, Serializable {
     private final int width, height, depth;
     private final int vWidth, vHeight, vDepth;
     private final GridVoxel[] voxels;
-    private final FloatBuffer positionDistanceBuffer, normalBuffer;
+    private final FloatBuffer positionDistanceBuffer, normalBuffer, colorBuffer;
 
     public UniformGrid(
             int width,
             int height,
             int depth,
             FloatBuffer positionDistanceBuffer,
-            FloatBuffer normalBuffer
+            FloatBuffer normalBuffer,
+            FloatBuffer colorBuffer
     ) {
         this.width = width;
         this.height = height;
@@ -33,6 +34,7 @@ public class UniformGrid implements GridVoxelStorage, Serializable {
 
         this.positionDistanceBuffer = positionDistanceBuffer;
         this.normalBuffer = normalBuffer;
+        this.colorBuffer = colorBuffer;
 
         this.voxels = new GridVoxel[vWidth * vHeight * vDepth];
         for (int z = 0; z < vDepth; z++) {
@@ -42,6 +44,7 @@ public class UniformGrid implements GridVoxelStorage, Serializable {
                             x, y, z,
                             positionDistanceBuffer,
                             normalBuffer,
+                            colorBuffer,
                             this
                     );
                 }

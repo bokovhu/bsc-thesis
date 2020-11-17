@@ -1,11 +1,10 @@
 package me.bokov.bsc.surfaceviewer.voxelization.gpuugrid;
 
-import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
 import me.bokov.bsc.surfaceviewer.render.Texture;
-import me.bokov.bsc.surfaceviewer.util.IOUtil;
-import me.bokov.bsc.surfaceviewer.voxelization.*;
+import me.bokov.bsc.surfaceviewer.voxelization.GridVoxel;
+import me.bokov.bsc.surfaceviewer.voxelization.GridVoxelStorage;
+import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
 import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGrid;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL46;
@@ -17,8 +16,8 @@ public class GPUUniformGrid implements GridVoxelStorage {
 
     private final int width, height, depth;
     private final int vWidth, vHeight, vDepth;
-    private final FloatBuffer positionAndValueBuffer, normalBuffer;
-    private Texture positionAndValueTexture, normalTexture;
+    private final FloatBuffer positionAndValueBuffer, normalBuffer, colorBuffer;
+    private Texture positionAndValueTexture, normalTexture, colorShininessTexture;
     private UniformGrid tmpUniformGrid = null;
     private boolean preparedTextures = false;
 
@@ -33,6 +32,7 @@ public class GPUUniformGrid implements GridVoxelStorage {
 
         positionAndValueBuffer = BufferUtils.createFloatBuffer(width * height * depth * 4);
         normalBuffer = BufferUtils.createFloatBuffer(width * height * depth * 3);
+        colorBuffer = BufferUtils.createFloatBuffer(width * height * depth * 4);
     }
 
     @Override
@@ -66,6 +66,9 @@ public class GPUUniformGrid implements GridVoxelStorage {
         GL46.glGetTexImage(GL46.GL_TEXTURE_3D, 0, GL46.GL_RGB, GL46.GL_FLOAT, normalBuffer);
 
 
+        colorShininessTexture.bind();
+        colorBuffer.clear();
+        GL46.glGetTexImage(GL46.GL_TEXTURE_3D, 0, GL46.GL_RGBA, GL46.GL_FLOAT, colorBuffer);
     }
 
     public void downloadToCPUGrid() {
@@ -75,7 +78,8 @@ public class GPUUniformGrid implements GridVoxelStorage {
         tmpUniformGrid = new UniformGrid(
                 width, height, depth,
                 positionAndValueBuffer,
-                normalBuffer
+                normalBuffer,
+                colorBuffer
         );
 
     }
@@ -106,6 +110,16 @@ public class GPUUniformGrid implements GridVoxelStorage {
                 )
                 .makeStorage();
 
+        this.colorShininessTexture = new Texture()
+                .init()
+                .configure(GL46.GL_TEXTURE_3D, GL46.GL_RGBA, GL46.GL_FLOAT)
+                .resize(width, height, depth)
+                .setupSampling(
+                        GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE,
+                        GL46.GL_LINEAR, GL46.GL_LINEAR
+                )
+                .makeStorage();
+
     }
 
     @Override
@@ -127,6 +141,10 @@ public class GPUUniformGrid implements GridVoxelStorage {
 
     public Texture getNormalTexture() {
         return normalTexture;
+    }
+
+    public Texture getColorShininessTexture() {
+        return colorShininessTexture;
     }
 
     @Override

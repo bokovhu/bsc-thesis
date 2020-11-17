@@ -6,6 +6,8 @@ import java.util.*;
 
 public class ShaderProgram extends BaseProgram {
 
+    private static final boolean DEBUG = true;
+
     private final List<Integer> shaderHandles = new ArrayList<>();
     private String vertexShaderSourceCode = null;
     private String fragmentShaderSourceCode = null;
@@ -72,11 +74,17 @@ public class ShaderProgram extends BaseProgram {
     public void attachVertexShaderFromSource(String source) {
         this.vertexShaderSourceCode = source;
         attachShaderFromSource(source, GL46.GL_VERTEX_SHADER);
+        if (DEBUG) {
+            System.out.println("Attached vertex shader source to program " + programHandle + "\n" + source + "\n------");
+        }
     }
 
     public void attachFragmentShaderFromSource(String source) {
         this.fragmentShaderSourceCode = source;
         attachShaderFromSource(source, GL46.GL_FRAGMENT_SHADER);
+        if (DEBUG) {
+            System.out.println("Attached fragment shader source to program " + programHandle + "\n" + source + "\n------");
+        }
     }
 
     public void attachGeometryShaderFromSource(String source) {

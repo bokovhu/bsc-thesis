@@ -71,7 +71,8 @@ public class GPUUniformGridVoxelizer implements Voxelizer3D<GPUUniformGrid> {
 
         GL46.glDispatchCompute(width, height, depth);
         GL46.glMemoryBarrier(GL46.GL_ALL_BARRIER_BITS);
-
+        long fence = GL46.glFenceSync(GL46.GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+        GL46.glClientWaitSync(fence, 0, 100_000L);
 
         long gpuEnd = System.currentTimeMillis();
 

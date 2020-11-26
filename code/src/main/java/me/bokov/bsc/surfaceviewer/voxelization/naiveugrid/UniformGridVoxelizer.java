@@ -5,8 +5,6 @@ import me.bokov.bsc.surfaceviewer.scene.Materializer;
 import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.CPUEvaluator;
-import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
-import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.threed.CPUEvaluationContext;
 import me.bokov.bsc.surfaceviewer.util.MetricsLogger;
 import me.bokov.bsc.surfaceviewer.voxelization.VoxelizationContext;
@@ -97,8 +95,8 @@ public class UniformGridVoxelizer implements Voxelizer3D<UniformGrid> {
                     float shininess = 0.0f;
                     col.set(0f);
 
-                    for(Materializer m : world.getMaterializers()) {
-                        if (m.getBoundary().cpu().evaluate(rootContext) < 0.0f) {
+                    for (Materializer m : world.getMaterializers()) {
+                        if (m.getBoundary().toEvaluable().cpu().evaluate(rootContext) < 0.0f) {
                             col.set(m.getDiffuseColor().cpu().evaluate(rootContext));
                             shininess = m.getShininess().cpu().evaluate(rootContext);
                             break;

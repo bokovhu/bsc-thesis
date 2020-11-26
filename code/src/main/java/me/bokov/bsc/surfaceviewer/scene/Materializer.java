@@ -11,7 +11,7 @@ public interface Materializer extends Serializable {
 
     int getId();
 
-    Evaluable<Float, CPUContext, GPUContext> getBoundary();
+    SceneNode getBoundary();
     Evaluable<Vector3f, CPUContext, GPUContext> getDiffuseColor();
     Evaluable<Float, CPUContext, GPUContext> getShininess();
 

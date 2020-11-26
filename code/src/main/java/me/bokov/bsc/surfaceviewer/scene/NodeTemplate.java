@@ -140,6 +140,21 @@ public enum NodeTemplate {
                     Port.builder().name("Generator").color("#4090e0").build()
             )
     ),
+    ELONGATE(
+            List.of(
+                    Property.builder().defaultValue(new Vector3f(0f, 0f, 1f)).type("vec3").name("axis").build()
+            ),
+            true,
+            c -> c.getPorts().containsKey("Generator") ? Evaluable.of(
+                    new OpElongate(
+                            c.getVec3Properties().getOrDefault("axis", new Vector3f(0f, 0f, 1f)),
+                            c.getPorts().get("Generator").toEvaluable()
+                    )
+            ) : null,
+            List.of(
+                    Port.builder().name("Generator").color("#4090e0").build()
+            )
+    ),
     EXTRUDE(
             List.of(
                     Property.builder().defaultValue(1.0f).type("float").name("depth").build()
@@ -149,6 +164,21 @@ public enum NodeTemplate {
                     new OpExtrude(
                             c.getFloatProperties().getOrDefault("depth", 1.0f),
                             c.getPorts().get("Generator").toEvaluable()
+                    )
+            ) : null,
+            List.of(
+                    Port.builder().name("Generator").color("#4090e0").build()
+            )
+    ),
+    REVOLUTION(
+            List.of(
+                    Property.builder().defaultValue(0.0f).type("float").name("O").build()
+            ),
+            true,
+            c -> c.getPorts().containsKey("Generator") ? Evaluable.of(
+                    new OpRevolution(
+                            c.getPorts().get("Generator").toEvaluable(),
+                            c.getFloatProperties().getOrDefault("O", 0.0f)
                     )
             ) : null,
             List.of(
@@ -286,12 +316,12 @@ public enum NodeTemplate {
     ),
     CONE(
             List.of(
-                    Property.builder().defaultValue((float) Math.toRadians(60.0)).type("float").name("angle").build(),
+                    Property.builder().defaultValue((float) Math.toRadians(30.0)).type("float").name("angle").build(),
                     Property.builder().defaultValue(1.0f).type("float").name("height").build()
             ),
             false,
             c -> cone(
-                    c.getFloatProperties().getOrDefault("angle", (float) Math.toRadians(60.0)),
+                    c.getFloatProperties().getOrDefault("angle", (float) Math.toRadians(30.0)),
                     c.getFloatProperties().getOrDefault("height", 1.0f)
             )
     ),
@@ -309,6 +339,21 @@ public enum NodeTemplate {
                             c.getFloatProperties().getOrDefault("ra", 0.5f),
                             c.getVec3Properties().getOrDefault("b", new Vector3f(0f, 1f, 0f)),
                             c.getFloatProperties().getOrDefault("rb", 0.25f)
+                    )
+            )
+    ),
+    CAPSULE_LINE(
+            List.of(
+                    Property.builder().defaultValue(new Vector3f(0f, 0f, 0f)).type("vec3").name("a").build(),
+                    Property.builder().defaultValue(new Vector3f(0f, 1f, 0f)).type("vec3").name("b").build(),
+                    Property.builder().defaultValue(0.5f).type("float").name("radius").build()
+            ),
+            false,
+            c -> Evaluable.of(
+                    new CapsuleLine(
+                            c.getVec3Properties().getOrDefault("a", new Vector3f(0f, 0f, 0f)),
+                            c.getVec3Properties().getOrDefault("b", new Vector3f(0f, 1f, 0f)),
+                            c.getFloatProperties().getOrDefault("radius", 0.5f)
                     )
             )
     ),

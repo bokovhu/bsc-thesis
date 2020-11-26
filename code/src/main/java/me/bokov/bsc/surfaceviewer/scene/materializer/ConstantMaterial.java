@@ -2,6 +2,7 @@ package me.bokov.bsc.surfaceviewer.scene.materializer;
 
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
 import me.bokov.bsc.surfaceviewer.scene.Materializer;
+import me.bokov.bsc.surfaceviewer.scene.SceneNode;
 import me.bokov.bsc.surfaceviewer.sdf.*;
 import org.joml.Vector3f;
 
@@ -14,7 +15,7 @@ public class ConstantMaterial implements Materializer {
 
     private final int id;
 
-    private final Evaluable<Float, CPUContext, GPUContext> boundary;
+    private final SceneNode boundary;
 
     private final Evaluable<Vector3f, CPUContext, GPUContext> diffuseColorEval = Evaluable.of(new ColorEvaluator());
     private final Evaluable<Float, CPUContext, GPUContext> shininessEval = Evaluable.of(new ShininessEvaluator());
@@ -24,7 +25,7 @@ public class ConstantMaterial implements Materializer {
 
     public ConstantMaterial(
             int id,
-            Evaluable<Float, CPUContext, GPUContext> boundary,
+            SceneNode boundary,
             Vector3f diffuse,
             float shininess
     ) {
@@ -40,7 +41,7 @@ public class ConstantMaterial implements Materializer {
     }
 
     @Override
-    public Evaluable<Float, CPUContext, GPUContext> getBoundary() {
+    public SceneNode getBoundary() {
         return boundary;
     }
 
@@ -52,6 +53,14 @@ public class ConstantMaterial implements Materializer {
     @Override
     public Evaluable<Float, CPUContext, GPUContext> getShininess() {
         return shininessEval;
+    }
+
+    public Vector3f diffuse() {
+        return diffuse;
+    }
+
+    public float shininess() {
+        return shininess;
     }
 
     final class ColorEvaluator implements Serializable,

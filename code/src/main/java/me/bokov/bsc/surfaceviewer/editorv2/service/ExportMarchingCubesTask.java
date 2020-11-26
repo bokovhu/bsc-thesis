@@ -5,6 +5,7 @@ import javafx.concurrent.Task;
 import lombok.Getter;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
 import me.bokov.bsc.surfaceviewer.mesh.mccpu.MarchingCubes;
+import me.bokov.bsc.surfaceviewer.render.Drawables;
 import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
@@ -14,11 +15,9 @@ import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGridVoxelizer;
 import org.joml.Vector3f;
 
 import java.io.File;
+import java.util.*;
 
-public class ExportMarchingCubesGLTFTask extends Task<File> {
-
-    @Getter
-    private final StringProperty outputPathProperty = new SimpleStringProperty();
+public class ExportMarchingCubesTask extends Task<List<Drawables.Face>> {
 
     @Getter
     private final ObjectProperty<World> worldProperty = new SimpleObjectProperty<>();
@@ -38,12 +37,10 @@ public class ExportMarchingCubesGLTFTask extends Task<File> {
     );
 
     @Getter
-    private final ObjectProperty<Vector3f> gridScaleProperty = new SimpleObjectProperty<>(
-            new Vector3f(4f, 4f, 4f)
-    );
+    private final FloatProperty gridScaleProperty = new SimpleFloatProperty(4f);
 
     @Override
-    protected File call() throws Exception {
+    protected List<Drawables.Face> call() throws Exception {
 
         World world = worldProperty.get();
 
@@ -55,27 +52,12 @@ public class ExportMarchingCubesGLTFTask extends Task<File> {
                 new MeshTransform(
                         gridOffsetProperty.get(),
                         new Vector3f(0f, 1f, 0f), 0f,
-                        Math.max(
-                                Math.max(
-                                        gridScaleProperty.get().x,
-                                        gridScaleProperty.get().y
-                                ),
-                                gridScaleProperty.get().z
-                        )
+                        gridScaleProperty.get()
                 ),
                 new CPUVoxelizationContext()
         );
         final var marchingCubes = new MarchingCubes(0.0f);
 
-        ExportGLTFTask exportGLTFTask = new ExportGLTFTask();
-
-        exportGLTFTask.getOutputPathProperty().bind(outputPathProperty);
-        exportGLTFTask.getTriangleListProperty().setValue(
-                marchingCubes.generateTriangles(voxelStorage)
-        );
-
-        exportGLTFTask.run();
-
-        return exportGLTFTask.get();
+        return marchingCubes.generateTriangles(voxelStorage);
     }
 }

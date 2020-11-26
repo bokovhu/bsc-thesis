@@ -1,9 +1,0 @@
-torus
-    AT ROTATE AROUND (1, 0, 0) BY 90 DEGREES
-    (radius: (1.0, 0.2))
-
-torus
-    AT ROTATE AROUND (0, 0, 1) BY 90 DEGREES
-    (radius: (1.0, 0.2))
-
-torus (radius: (1.0, 0.2))

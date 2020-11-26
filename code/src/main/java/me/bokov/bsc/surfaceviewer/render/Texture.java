@@ -1,11 +1,13 @@
 package me.bokov.bsc.surfaceviewer.render;
 
+import lombok.Getter;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+@Getter
 public class Texture {
 
     private int handle;
@@ -65,6 +67,10 @@ public class Texture {
                 throw new IllegalArgumentException("Unsupported format and data type combination!");
             }
 
+        } else if (format == GL46.GL_DEPTH_STENCIL) {
+            return GL46.GL_DEPTH24_STENCIL8;
+        } else if (format == GL46.GL_DEPTH_COMPONENT) {
+            return GL46.GL_DEPTH_COMPONENT32F;
         }
 
         throw new IllegalArgumentException("Unsupported format and data type combination!");

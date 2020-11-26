@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import lombok.Getter;
 import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.surfacelang.SurfaceLangExpression;
+import me.bokov.bsc.surfaceviewer.surfacelang.SurfaceLangFormatter;
 import me.bokov.bsc.surfaceviewer.util.FXMLUtil;
 
 import java.net.URL;
@@ -41,11 +42,15 @@ public class CodeEditor extends VBox implements Initializable {
 
         try {
 
+            final var formatter = new SurfaceLangFormatter(worldProperty.get());
+            final var code = formatter.format();
+
             final var expr = new SurfaceLangExpression();
-            expr.format(worldProperty.get());
+            expr.parse(code);
 
             expressionProperty.setValue(expr);
-            codeArea.setText(expressionProperty.get().getCode());
+            worldProperty.setValue(expr.getWorld());
+            codeArea.setText(code);
 
             errorsVBox.getChildren().clear();
 
@@ -69,9 +74,11 @@ public class CodeEditor extends VBox implements Initializable {
 
             final var expr = new SurfaceLangExpression();
             expr.parse(codeArea.getText());
+            final var formatter = new SurfaceLangFormatter(expr.getWorld());
 
             worldProperty.setValue(expr.getWorld());
             expressionProperty.setValue(expr);
+            codeArea.setText(formatter.format());
 
             errorsVBox.getChildren().clear();
 

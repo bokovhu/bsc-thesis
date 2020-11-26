@@ -94,6 +94,7 @@ public class VoxelizerComputeShaderGenerator {
 
             final var mBoundaryCtx = c.branch(m.getId() + "B");
             final var mBoundaryList = m.getBoundary()
+                    .toEvaluable()
                     .gpu().evaluate(mBoundaryCtx);
 
             final var mColorCtx = c.branch(m.getId() + "C");

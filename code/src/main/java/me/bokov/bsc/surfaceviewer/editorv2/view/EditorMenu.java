@@ -6,10 +6,14 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.MenuBar;
 import javafx.stage.FileChooser;
 import lombok.Getter;
-import me.bokov.bsc.surfaceviewer.editorv2.service.ExportMarchingCubesGLTFTask;
+import me.bokov.bsc.surfaceviewer.App;
+import me.bokov.bsc.surfaceviewer.editorv2.service.ExportTask;
 import me.bokov.bsc.surfaceviewer.editorv2.service.LoadSceneTask;
 import me.bokov.bsc.surfaceviewer.editorv2.service.SaveSceneTask;
 import me.bokov.bsc.surfaceviewer.scene.BaseWorld;
@@ -25,6 +29,9 @@ public class EditorMenu extends MenuBar implements Initializable {
 
     @Getter
     private ObjectProperty<World> worldProperty = new SimpleObjectProperty<>();
+
+    @Getter
+    private ObjectProperty<App> appProperty = new SimpleObjectProperty<>();
 
     @FXML
     private AddMeshMenu addMeshMenu;
@@ -45,10 +52,8 @@ public class EditorMenu extends MenuBar implements Initializable {
 
                     fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
                     fileChooser.setInitialFileName("Scene.surfacelang");
-                    fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter(
-                            "SurfaceLang code",
-                            "*.surfacelang"
-                    ));
+                    fileChooser.getExtensionFilters()
+                            .add(new FileChooser.ExtensionFilter("SurfaceLang files", "*.surfacelang"));
                     fileChooser.setTitle("Save scene");
 
                     final File outputFile = fileChooser.showSaveDialog(getScene().getWindow());
@@ -75,21 +80,27 @@ public class EditorMenu extends MenuBar implements Initializable {
         Platform.runLater(
                 () -> {
 
-                    FileChooser fileChooser = new FileChooser();
+                    final var task = new ExportTask();
+                    task.getWorldProperty().bind(worldProperty);
 
-                    fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-                    fileChooser.setInitialFileName("Scene.gltf");
-                    fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter(
-                            "GLTF",
-                            "*.gltf"
-                    ));
-                    fileChooser.setTitle("Save scene");
+                    task.setOnSucceeded(
+                            successEvent -> {
+                                final File result = (File) successEvent.getSource()
+                                        .getValue();
 
-                    final File outputFile = fileChooser.showSaveDialog(getScene().getWindow());
-
-                    ExportMarchingCubesGLTFTask task = new ExportMarchingCubesGLTFTask();
-                    task.getOutputPathProperty().setValue(outputFile.getAbsolutePath());
-                    task.getWorldProperty().setValue(IOUtil.serialize(worldProperty.get()));
+                                final var msg = new Alert(
+                                        Alert.AlertType.INFORMATION,
+                                        "Exported successfuly to " + result.getAbsolutePath()
+                                );
+                                msg.showAndWait();
+                            }
+                    );
+                    task.setOnFailed(
+                            failedEvent -> {
+                                final var msg = new Alert(Alert.AlertType.ERROR, "Export failed!");
+                                msg.showAndWait();
+                            }
+                    );
 
                     task.run();
 
@@ -107,12 +118,9 @@ public class EditorMenu extends MenuBar implements Initializable {
                     FileChooser fileChooser = new FileChooser();
 
                     fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-                    fileChooser.setInitialFileName("Scene.surfacelang");
-                    fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter(
-                            "SurfaceLang code",
-                            "*.surfacelang"
-                    ));
-                    fileChooser.setTitle("Save scene");
+                    fileChooser.getExtensionFilters()
+                            .add(new FileChooser.ExtensionFilter("SurfaceLang files", "*.surfacelang"));
+                    fileChooser.setTitle("Open scene");
 
                     final File outputFile = fileChooser.showOpenDialog(getScene().getWindow());
 
@@ -132,6 +140,27 @@ public class EditorMenu extends MenuBar implements Initializable {
     public void onNewScene(ActionEvent event) {
 
         worldProperty.setValue(new BaseWorld());
+
+    }
+
+    @FXML
+    public void onRenderScene(ActionEvent event) {
+
+        Dialog<String> dialog = new Dialog<>();
+        RenderDialog renderDialog = new RenderDialog();
+
+        renderDialog.getAppProperty().bind(appProperty);
+        dialog.getDialogPane()
+                .setContent(renderDialog);
+        dialog.getDialogPane()
+                .getButtonTypes()
+                .add(ButtonType.CLOSE);
+
+        dialog.setResizable(true);
+
+        dialog.setOnCloseRequest(ev -> dialog.close());
+
+        dialog.show();
 
     }
 

@@ -165,6 +165,9 @@ public class InputManager {
     }
 
     private void onGLFWWindowResized(long wnd, int w, int h) {
+
+        view.resize(w, h);
+
     }
 
     private void onKeyUp(int key, int mods) {

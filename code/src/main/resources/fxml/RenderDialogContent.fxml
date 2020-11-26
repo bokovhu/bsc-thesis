@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import me.bokov.bsc.surfaceviewer.editorv2.view.input.*?>
+
+<fx:root type="javafx.scene.layout.VBox" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+
+    <HBox>
+        <IntInput fx:id="renderWidthInput" />
+        <IntInput fx:id="renderHeightInput" />
+        <Button fx:id="renderButton" onAction="#onRender" text="Render" />
+    </HBox>
+
+    <TitledPane text="Preview">
+        <ImageView fx:id="renderPreviewImage" fitHeight="400.0" fitWidth="400.0" preserveRatio="true" />
+    </TitledPane>
+
+    <HBox alignment="CENTER_RIGHT">
+        <Button fx:id="saveButton" onAction="#onSave" text="Save" />
+    </HBox>
+
+</fx:root>

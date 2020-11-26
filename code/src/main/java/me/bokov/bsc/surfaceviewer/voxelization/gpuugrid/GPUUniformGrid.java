@@ -69,6 +69,10 @@ public class GPUUniformGrid implements GridVoxelStorage {
         colorShininessTexture.bind();
         colorBuffer.clear();
         GL46.glGetTexImage(GL46.GL_TEXTURE_3D, 0, GL46.GL_RGBA, GL46.GL_FLOAT, colorBuffer);
+
+
+        long fence = GL46.glFenceSync(GL46.GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+        GL46.glClientWaitSync(fence, 0, 100_000L);
     }
 
     public void downloadToCPUGrid() {
@@ -172,5 +176,24 @@ public class GPUUniformGrid implements GridVoxelStorage {
     @Override
     public int zVoxelCount() {
         return vDepth;
+    }
+
+    @Override
+    public void tearDown() {
+
+        if (positionAndValueTexture != null) {
+            positionAndValueTexture.tearDown();
+        }
+        if (normalTexture != null) {
+            normalTexture.tearDown();
+        }
+        if (colorShininessTexture != null) {
+            colorShininessTexture.tearDown();
+        }
+
+        if (tmpUniformGrid != null) {
+            tmpUniformGrid.tearDown();
+        }
+
     }
 }

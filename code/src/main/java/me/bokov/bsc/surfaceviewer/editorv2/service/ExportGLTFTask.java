@@ -207,7 +207,7 @@ public class ExportGLTFTask extends Task<File> {
         final var primitive = new GLTFPrimitive();
         primitive.getAttributes().put("POSITION", 0);
         primitive.getAttributes().put("NORMAL", 1);
-        primitive.getAttributes().put("COLOR0", 2);
+        primitive.getAttributes().put("COLOR_0", 2);
         primitive.setIndices(3);
         primitive.setMode(GL46.GL_TRIANGLES);
 

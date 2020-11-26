@@ -1,0 +1,26 @@
+light ambient {
+    energy: (0.2000, 0.2000, 0.2000)
+}
+
+light directional {
+    energy: (1.4000, 1.0000, 0.5000),
+    direction: (0.4575, 0.7625, -0.4575)
+}
+
+light directional {
+    energy: (0.6000, 1.2000, 1.7000),
+    direction: (-0.4082, 0.4082, -0.8165)
+}
+
+light directional {
+    energy: (0.4000, 0.8500, 0.9500),
+    direction: (0.4082, 0.4082, 0.8165)
+}
+
+material constant {
+    boundary: EVERYWHERE (),
+    diffuse: (0.5000, 0.5000, 0.5000),
+    shininess: 40.0000
+}
+
+TORUS ()

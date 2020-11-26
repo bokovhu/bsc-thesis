@@ -17,6 +17,7 @@ import org.joml.Vector4f;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.*;
 import java.util.stream.*;
 
 public class RendererProperties extends VBox {
@@ -24,6 +25,9 @@ public class RendererProperties extends VBox {
     private final InputFactory inputFactory = new InputFactory(this);
     @Getter
     private ObjectProperty<App> appProperty = new SimpleObjectProperty<>();
+
+    private ObjectProperty<Consumer<RendererConfig>> changeHandler = new SimpleObjectProperty<>(this::onFieldValuesChanged);
+
     private List<FieldHandler> fieldHandlers = new ArrayList<>();
 
     public RendererProperties() {
@@ -31,6 +35,7 @@ public class RendererProperties extends VBox {
         setAlignment(Pos.CENTER_LEFT);
 
     }
+
 
     private void onFieldValuesChanged(RendererConfig sendConfig) {
 
@@ -83,7 +88,7 @@ public class RendererProperties extends VBox {
             fh.inputField.collectValue();
         }
 
-        onFieldValuesChanged(config);
+        changeHandler.get().accept(config);
 
     }
 

@@ -1,0 +1,62 @@
+light ambient {
+    energy: (0.2000, 0.2000, 0.2000)
+}
+
+light directional {
+    energy: (1.0000, 1.0000, 1.0000),
+    direction: (0.4575, 0.7625, -0.4575)
+}
+
+material constant {
+    boundary: INTERSECT ()[
+        PLANE (h: 0.9900),
+        INFINITE_REPEAT (period: (0.5000, 0.5000, 10.0000)){
+            Generator: BOX  AT  position (0.1250, 0.0000, 0.0000)(bounds: (0.2500, 0.2500, 10.0000))
+        }
+        
+    ]
+    ,
+    diffuse: (0.2000, 0.2000, 0.5000),
+    shininess: 4.0000
+}
+
+material constant {
+    boundary: INTERSECT ()[
+        PLANE (h: 0.9900),
+        INFINITE_REPEAT (period: (0.5000, 0.5000, 10.0000)){
+            Generator: BOX  AT  position (-0.1250, 0.0000, 0.0000)(bounds: (0.2500, 0.2500, 10.0000))
+        }
+        
+    ]
+    ,
+    diffuse: (0.2000, 0.5000, 0.2000),
+    shininess: 160.0000
+}
+
+material constant {
+    boundary: EVERYWHERE (),
+    diffuse: (1.0000, 1.0000, 1.0000),
+    shininess: 80.0000
+}
+
+PLANE ()
+SUBTRACT (){
+    A: RADIAL_ARRAY  AT  position (0.0000, 4.0000, 0.0000)(count: 6){
+        Generator: ELONGATE (axis: (4.0000, 0.0000, 0.0000)){
+            Generator: INTERSECT ()[
+                SPHERE (),
+                BOX (bounds: (2.0000, 2.0000, 0.4000))
+            ]
+            
+        }
+        
+    }
+    ,
+    B: INFINITE_REPEAT (period: (1.0000, 1.0000, 1.0000)){
+        Generator: SYMZ (){
+            Generator: CONE  AT  rotate around (1.0000, 0.0000, 0.0000) by 90.0000 degrees()
+        }
+        
+    }
+    
+}

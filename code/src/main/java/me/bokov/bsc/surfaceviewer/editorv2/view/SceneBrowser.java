@@ -7,7 +7,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import lombok.Getter;
 import me.bokov.bsc.surfaceviewer.editorv2.event.OpenSceneNodeEditorEvent;
-import me.bokov.bsc.surfaceviewer.editorv2.model.SceneBrowserModel;
 import me.bokov.bsc.surfaceviewer.editorv2.service.SceneTreeBuilderTask;
 import me.bokov.bsc.surfaceviewer.scene.World;
 
@@ -16,7 +15,7 @@ public class SceneBrowser extends TreeView<Object> {
     @Getter
     private ObjectProperty<World> worldProperty = new SimpleObjectProperty<>();
 
-    private SceneBrowserModel model = new SceneBrowserModel();
+    private ObjectProperty<TreeItem<Object>> treeRootProperty = new SimpleObjectProperty<>(new TreeItem<>());
 
     public SceneBrowser() {
         super();
@@ -25,7 +24,7 @@ public class SceneBrowser extends TreeView<Object> {
                 (observable, oldValue, newValue) -> onWorldChanged(newValue)
         );
 
-        model.getTreeRootProperty()
+        treeRootProperty
                 .addListener(
                         (observable, oldValue, newValue) -> setRoot(newValue)
                 );
@@ -57,7 +56,7 @@ public class SceneBrowser extends TreeView<Object> {
                 .set(newWorld);
 
         builderTask.setOnSucceeded(
-                ev -> model.getTreeRootProperty()
+                ev -> treeRootProperty
                         .set((TreeItem<Object>) ev.getSource().getValue())
         );
         builderTask.run();

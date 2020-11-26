@@ -39,10 +39,11 @@ public class GPUMarchingCubes implements MeshGenerator {
 
             marchingCubesProgram.linkAndValidate();
 
-
+            IntBuffer vertexCountData = BufferUtils.createIntBuffer(1);
+            vertexCountData.put(0);
             vertexCountBuffer = new GPUBuffer().init()
                     .bind(GL46.GL_SHADER_STORAGE_BUFFER)
-                    .storage(4L, GL46.GL_MAP_READ_BIT | GL46.GL_MAP_WRITE_BIT);
+                    .upload(vertexCountData.flip(), GL46.GL_DYNAMIC_DRAW);
             outputDataBuffer = new GPUBuffer().init().bind(GL46.GL_SHADER_STORAGE_BUFFER)
                     .storage(
                             (3 + 3 + 4) * (5 * 3 * gpuGrid.xVoxelCount() * gpuGrid.yVoxelCount() * gpuGrid.zVoxelCount()) * Float.BYTES,
@@ -131,15 +132,24 @@ public class GPUMarchingCubes implements MeshGenerator {
         );
 
         GL46.glMemoryBarrier(GL46.GL_ALL_BARRIER_BITS);
+        long fence = GL46.glFenceSync(GL46.GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 
         GL46.glFlush();
         GL46.glFinish();
+        GL46.glClientWaitSync(fence, 0, 100_000L);
 
         long computeEnd = System.currentTimeMillis();
 
         vertexCountBuffer.bind(GL46.GL_SHADER_STORAGE_BUFFER);
         IntBuffer vertexCountContent = BufferUtils.createIntBuffer(1);
         GL46.glGetBufferSubData(GL46.GL_SHADER_STORAGE_BUFFER, 0L, vertexCountContent);
+
+        fence = GL46.glFenceSync(GL46.GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+
+        GL46.glFlush();
+        GL46.glFinish();
+        GL46.glClientWaitSync(fence, 0, 100_000L);
+
         final int vertexCount = vertexCountContent.get(0);
 
         Drawable drawable = Drawable.standard3D();
@@ -160,6 +170,12 @@ public class GPUMarchingCubes implements MeshGenerator {
                 0L,
                 Float.BYTES * (3 + 3 + 4) * vertexCount
         );
+
+        fence = GL46.glFenceSync(GL46.GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+        GL46.glFlush();
+        GL46.glFinish();
+        GL46.glClientWaitSync(fence, 0, 100_000L);
+
         drawable.configure(GL46.GL_TRIANGLES, vertexCount);
 
         long resultEnd = System.currentTimeMillis();

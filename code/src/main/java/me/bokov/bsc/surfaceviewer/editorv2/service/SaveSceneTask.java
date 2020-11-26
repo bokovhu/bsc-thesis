@@ -8,6 +8,7 @@ import javafx.concurrent.Task;
 import lombok.Getter;
 import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.surfacelang.SurfaceLangExpression;
+import me.bokov.bsc.surfaceviewer.surfacelang.SurfaceLangFormatter;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,10 +30,9 @@ public class SaveSceneTask extends Task<File> {
         try (FileOutputStream fos = new FileOutputStream(file);
              PrintWriter pw = new PrintWriter(fos)) {
 
-            final var expr = new SurfaceLangExpression();
-            expr.format(worldProperty.get());
+            final var formatter = new SurfaceLangFormatter(worldProperty.get());
 
-            pw.write(expr.getCode());
+            pw.write(formatter.format());
 
         }
 

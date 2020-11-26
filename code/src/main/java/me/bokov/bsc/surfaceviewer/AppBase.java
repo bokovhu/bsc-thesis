@@ -5,7 +5,9 @@ import me.bokov.bsc.surfaceviewer.view.RendererConfig;
 import me.bokov.bsc.surfaceviewer.view.ViewClient;
 import me.bokov.bsc.surfaceviewer.view.ViewConfiguration;
 
+import java.awt.image.BufferedImage;
 import java.util.concurrent.atomic.*;
+import java.util.function.*;
 
 public abstract class AppBase implements App, Runnable {
 
@@ -48,6 +50,13 @@ public abstract class AppBase implements App, Runnable {
         public synchronized RendererConfig reportRendererConfig() {
 
             return view.provideRendererConfig();
+
+        }
+
+        @Override
+        public synchronized void enqueueRender(int w, int h, Consumer<BufferedImage> callback) {
+
+            view.enqueueRender(w, h, callback);
 
         }
 

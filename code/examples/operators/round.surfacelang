@@ -1,0 +1,18 @@
+light ambient {
+    energy: (0.2000, 0.2000, 0.2000)
+}
+
+light directional {
+    energy: (1.0000, 1.0000, 1.0000),
+    direction: (0.4575, 0.7625, -0.4575)
+}
+
+material constant {
+    boundary: EVERYWHERE (),
+    diffuse: (1.0000, 1.0000, 1.0000),
+    shininess: 80.0000
+}
+
+ROUND (radius: 0.5000){
+    Generator: CYLINDER ()
+}

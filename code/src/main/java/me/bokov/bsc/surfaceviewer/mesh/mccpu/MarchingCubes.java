@@ -523,7 +523,7 @@ public class MarchingCubes implements MeshGenerator {
 
     @Override
     public Drawable generate(VoxelStorage voxelStorage) {
-        return Drawables.create(generateTriangles(voxelStorage));
+        return Drawables.createTriangle(generateTriangles(voxelStorage));
     }
 
     private final class Vertex {

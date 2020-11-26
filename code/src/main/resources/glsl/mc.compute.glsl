@@ -14,7 +14,7 @@ layout(std430, binding = 0) writeonly buffer out_output {
     OutputVertex[] out_vertices;
 };
 
-layout(std430, binding = 1) buffer out_vertexCountBuffer { uint out_vertexCount; };
+layout(std430, binding = 1) buffer out_vertexCountBuffer { int out_vertexCount; };
 
 uniform sampler3D in_positionAndValue;
 uniform sampler3D in_normal;
@@ -242,13 +242,7 @@ void executeLattice() {
 
         }
 
-        barrier();
-        memoryBarrier();
-
-        uint baseIndex = atomicAdd(out_vertexCount, uint(3 * triCount));
-
-        barrier();
-        memoryBarrier();
+        int baseIndex = atomicAdd(out_vertexCount, int(3 * triCount));
 
         for (uint i = 0; i < triCount; i++) {
             OutputVertex v1, v2, v3;
@@ -311,8 +305,5 @@ void main() {
     } else {
         executeVoxels();
     }
-
-    barrier();
-    memoryBarrier();
 
 }

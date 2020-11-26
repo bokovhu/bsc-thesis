@@ -113,6 +113,8 @@ public class EditorWindow extends AnchorPane implements Initializable, FXEditorA
 
         editorMenu.getWorldProperty()
                 .bindBidirectional(worldProperty);
+        editorMenu.getAppProperty()
+                .bind(appProperty);
 
         worldProperty.addListener(
                 (observable, oldValue, newValue) -> onWorldChanged(newValue)
@@ -145,6 +147,9 @@ public class EditorWindow extends AnchorPane implements Initializable, FXEditorA
                             exc.printStackTrace();
                         }
                 );
+            case "ProductionRenderComplete":
+
+                break;
         }
 
     }

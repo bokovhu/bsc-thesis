@@ -7,12 +7,19 @@ import me.bokov.bsc.surfaceviewer.util.IOUtil;
 import me.bokov.bsc.surfaceviewer.view.*;
 import me.bokov.bsc.surfaceviewer.view.renderer.RendererType;
 import org.joml.Vector3f;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL46;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
 
 import static org.lwjgl.system.MemoryUtil.*;
 
@@ -49,7 +56,9 @@ public class View implements Runnable {
     private float viewTime = 0.0f;
     @Getter
     private long glfwWindowHandle = NULL;
+    private int windowWidth, windowHeight;
     private RendererConfig nextRendererConfig = null;
+    private BlockingDeque<RenderProductionImageJob> renderJobs = new LinkedBlockingDeque<>();
 
     public View(App app) {
         this.app = app;
@@ -75,6 +84,9 @@ public class View implements Runnable {
                 .update((float) windowCreationWidth / (float) windowCreationHeight)
                 .lookAt(new Vector3f(5f, 5f, 5f), new Vector3f(0f, 0f, 0f), new Vector3f(0f, 1f, 0f))
                 .update();
+
+        this.windowWidth = windowCreationWidth;
+        this.windowHeight = windowCreationHeight;
 
         this.cameraManager = new CameraManager();
         this.cameraManager.install(this);
@@ -197,7 +209,15 @@ public class View implements Runnable {
 
     private void render() {
 
-        GL46.glClearColor(0f, 0f, 0f, 1f);
+        while (!renderJobs.isEmpty()) {
+
+            final var job = renderJobs.removeFirst();
+            final var result = renderProductionImage(job.w, job.h);
+            job.callback.accept(result);
+
+        }
+
+        GL46.glClearColor(0.2f, 0.3f, 0.38f, 1f);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
 
         if (this.renderer != null) {
@@ -253,6 +273,126 @@ public class View implements Runnable {
 
     }
 
+    public void resize(int w, int h) {
+
+        camera.update((float) w / (float) h);
+        GL46.glViewport(0, 0, w, h);
+
+        this.windowWidth = w;
+        this.windowHeight = h;
+
+    }
+
+    private BufferedImage renderProductionImage(int width, int height) {
+
+        int color0 = GL46.glGenTextures();
+        GL46.glBindTexture(GL46.GL_TEXTURE_2D, color0);
+        GL46.glTexImage2D(
+                GL46.GL_TEXTURE_2D,
+                0,
+                GL46.GL_RGBA,
+                width,
+                height,
+                0,
+                GL46.GL_RGBA,
+                GL46.GL_UNSIGNED_BYTE,
+                (ByteBuffer) null
+        );
+
+        int depth = GL46.glGenTextures();
+        GL46.glBindTexture(GL46.GL_TEXTURE_2D, depth);
+        GL46.glTexImage2D(
+                GL46.GL_TEXTURE_2D,
+                0,
+                GL46.GL_DEPTH_COMPONENT,
+                width,
+                height,
+                0,
+                GL46.GL_DEPTH_COMPONENT,
+                GL46.GL_UNSIGNED_BYTE,
+                (ByteBuffer) null
+        );
+
+        GL46.glBindTexture(GL46.GL_TEXTURE_2D, 0);
+
+        int fbo = GL46.glGenFramebuffers();
+        GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, fbo);
+        GL46.glFramebufferTexture2D(
+                GL46.GL_FRAMEBUFFER,
+                GL46.GL_COLOR_ATTACHMENT0,
+                GL46.GL_TEXTURE_2D,
+                color0,
+                0
+        );
+        GL46.glFramebufferTexture2D(
+                GL46.GL_FRAMEBUFFER,
+                GL46.GL_DEPTH_ATTACHMENT,
+                GL46.GL_TEXTURE_2D,
+                depth,
+                0
+        );
+
+
+        int fboStatus = GL46.glCheckFramebufferStatus(GL46.GL_FRAMEBUFFER);
+        if (fboStatus != GL46.GL_FRAMEBUFFER_COMPLETE) {
+            System.err.println("Framebuffer incomplete for production rendering!");
+        }
+
+
+        GL46.glViewport(0, 0, width, height);
+        GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
+
+        if (this.renderer != null) {
+            if (this.world != null || this.renderer.supportsNoWorldRendering()) {
+                this.renderer.render(this.world);
+            }
+        }
+
+        GL46.glFlush();
+        GL46.glFinish();
+
+        final IntBuffer pixelBuffer = BufferUtils.createIntBuffer(4 * width * height);
+
+        GL46.glReadPixels(0, 0, width, height, GL46.GL_RGBA, GL46.GL_UNSIGNED_INT, pixelBuffer);
+
+
+        GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, 0);
+        GL46.glDeleteFramebuffers(fbo);
+        /* fboTexture.tearDown();
+        fboDepthStencilTexture.tearDown(); */
+        GL46.glDeleteTextures(new int[]{color0, depth});
+
+
+        GL46.glViewport(0, 0, windowWidth, windowHeight);
+        GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
+
+
+        pixelBuffer.rewind();
+
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int r = pixelBuffer.get();
+                int g = pixelBuffer.get();
+                int b = pixelBuffer.get();
+                int a = pixelBuffer.get();
+
+                img.setRGB(x, height - y - 1, ((a & 0xFF) << 24) |
+                        ((r & 0xFF) << 16) |
+                        ((g & 0xFF) << 8)  |
+                        ((b & 0xFF)));
+            }
+        }
+
+
+        return img;
+
+    }
+
+    public void enqueueRender(int w, int h, Consumer<BufferedImage> callback) {
+        renderJobs.add(new RenderProductionImageJob(w, h, callback));
+    }
+
     @Override
     public void run() {
 
@@ -262,4 +402,17 @@ public class View implements Runnable {
         tearDown();
 
     }
+
+    static class RenderProductionImageJob {
+
+        final int w, h;
+        final Consumer<BufferedImage> callback;
+
+        RenderProductionImageJob(int w, int h, Consumer<BufferedImage> callback) {
+            this.w = w;
+            this.h = h;
+            this.callback = callback;
+        }
+    }
+
 }

@@ -452,7 +452,7 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
 
                 ConstantMaterial constantMaterial = new ConstantMaterial(
                         world.nextId(),
-                        expressionToSceneNode(boundaryContext).toEvaluable(),
+                        expressionToSceneNode(boundaryContext),
                         vec3Val(diffuseCtx),
                         floatVal(shininessCtx)
                 );
@@ -462,196 +462,6 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
             default:
                 throw new UnsupportedOperationException("Materializer type not supported: " + type);
         }
-
-    }
-
-    private String formatPropertyValue(NodeTemplate.Property p, NodeProperties props) {
-        switch (p.getType()) {
-            case "float":
-                return String.format(
-                        Locale.ENGLISH,
-                        "%.4f",
-                        props.getFloat(p.getName(), ((Number) p.getDefaultValue()).floatValue())
-                );
-            case "int":
-                return String.format(
-                        Locale.ENGLISH,
-                        "%d",
-                        props.getInt(p.getName(), ((Number) p.getDefaultValue()).intValue())
-                );
-            case "bool":
-                return props.getBool(p.getName(), Boolean.TRUE.equals(p.getDefaultValue())) ? "true" : "false";
-            case "vec2":
-                Vector2f v2 = props.getVec2(p.getName(), (Vector2f) p.getDefaultValue());
-                return String.format(
-                        Locale.ENGLISH,
-                        "(%.4f, %.4f)",
-                        v2.x, v2.y
-                );
-            case "vec3":
-                Vector3f v3 = props.getVec3(p.getName(), (Vector3f) p.getDefaultValue());
-                return String.format(
-                        Locale.ENGLISH,
-                        "(%.4f, %.4f, %.4f)",
-                        v3.x, v3.y, v3.z
-                );
-            case "vec4":
-                Vector4f v4 = props.getVec4(p.getName(), (Vector4f) p.getDefaultValue());
-                return String.format(
-                        Locale.ENGLISH,
-                        "(%.4f, %.4f, %.4f, %.4f)",
-                        v4.x, v4.y, v4.z, v4.w
-                );
-            case "mat2":
-                Matrix2f m2 = props.getMat2(p.getName(), (Matrix2f) p.getDefaultValue());
-                return String.format(
-                        Locale.ENGLISH,
-                        "((%.4f, %.4f), (%.4f, %.4f))",
-                        m2.m00, m2.m01,
-                        m2.m10, m2.m11
-                );
-
-            case "mat3":
-                Matrix3f m3 = props.getMat3(p.getName(), (Matrix3f) p.getDefaultValue());
-                return String.format(
-                        Locale.ENGLISH,
-                        "((%.4f, %.4f, %.4f), (%.4f, %.4f, %.4f), (%.4f, %.4f, %.4f))",
-                        m3.m00, m3.m01, m3.m02,
-                        m3.m10, m3.m11, m3.m12,
-                        m3.m20, m3.m21, m3.m22
-                );
-            case "mat4":
-                Matrix4f m4 = props.getMat4(p.getName(), (Matrix4f) p.getDefaultValue());
-                return String.format(
-                        Locale.ENGLISH,
-                        "((%.4f, %.4f, %.4f, %.4f), (%.4f, %.4f, %.4f, %.4f), (%.4f, %.4f, %.4f, %.4f), (%.4f, %.4f, %.4f, %.4f))",
-                        m4.m00(),
-                        m4.m01(),
-                        m4.m02(),
-                        m4.m03(),
-                        m4.m10(),
-                        m4.m11(),
-                        m4.m12(),
-                        m4.m13(),
-                        m4.m20(),
-                        m4.m21(),
-                        m4.m22(),
-                        m4.m23(),
-                        m4.m30(),
-                        m4.m31(),
-                        m4.m32(),
-                        m4.m33()
-                );
-            default:
-                return null;
-        }
-    }
-
-    private String formatNodeTransform(SceneNode node, int indentation) {
-        return String.format(
-                Locale.ENGLISH,
-                "AT POSITION (%.4f, %.4f, %.4f)\n" + "    ".repeat(indentation)
-                        + "SCALE %.4f\n" + "    ".repeat(indentation)
-                        + "ROTATE AROUND (%.4f, %.4f, %.4f) BY %.4f DEGREES",
-                node.localTransform().position().x,
-                node.localTransform().position().y,
-                node.localTransform().position().z,
-
-                node.localTransform().scale(),
-
-                node.localTransform().rotationAxis().x,
-                node.localTransform().rotationAxis().y,
-                node.localTransform().rotationAxis().z,
-
-                node.localTransform().rotationAngle()
-        ).trim();
-    }
-
-    private String formatNodeProperties(NodeProperties props, int indentation) {
-
-        if (props.getIncludedProperties().isEmpty()) {
-            return "";
-        }
-
-        StringBuilder sb = new StringBuilder();
-
-        List<NodeTemplate.Property> propertyList = new ArrayList<>(props.getIncludedProperties());
-        propertyList.sort(Comparator.comparing(NodeTemplate.Property::getName));
-
-        sb.append("(");
-        sb.append(
-                propertyList.stream().map(
-                        p -> p.getName() + ": " + formatPropertyValue(p, props)
-                ).collect(joining(", "))
-        );
-        sb.append(")");
-
-        return sb.toString().trim();
-
-    }
-
-    private String formatNodePorts(Map<String, SceneNode> portMap, int indentation) {
-
-        List<String> portKeyList = new ArrayList<>(portMap.keySet());
-        portKeyList.sort(Comparator.naturalOrder());
-
-        return portKeyList.stream()
-                .map(
-                        portKey -> "    ".repeat(indentation) + portKey + ": " + formatNode(
-                                portMap.get(portKey),
-                                indentation
-                        )
-                ).collect(joining(",\n")).stripTrailing();
-
-    }
-
-    private String formatNodeChildren(List<SceneNode> children, int indentation) {
-
-        return children.stream()
-                .map(
-                        node -> "    ".repeat(indentation) + formatNode(node, indentation)
-                ).collect(joining(",\n"));
-
-    }
-
-    private String formatNode(SceneNode node, int indentation) {
-
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(node.getTemplate())
-                .append(" ");
-
-        if (!node.getDisplay().getName().isBlank()) {
-            sb.append("\"")
-                    .append(node.getDisplay().getName())
-                    .append("\" ");
-        }
-
-        sb.append("\n").append("    ".repeat(indentation))
-                .append(formatNodeTransform(node, indentation));
-        sb.append(formatNodeProperties(node.properties(), indentation));
-
-        if (!node.pluggedPorts().keySet().isEmpty()) {
-
-            sb.append("{\n")
-                    .append(formatNodePorts(node.pluggedPorts(), indentation + 1))
-                    .append("\n")
-                    .append("    ".repeat(indentation))
-                    .append("}");
-
-        }
-
-        if (!node.children().isEmpty() && node.pluggedPorts().isEmpty()) {
-
-            sb.append("[\n")
-                    .append(formatNodeChildren(node.children(), indentation + 1))
-                    .append("\n")
-                    .append("    ".repeat(indentation))
-                    .append("]");
-
-        }
-
-        return sb.toString().trim();
 
     }
 
@@ -678,17 +488,6 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
         }
 
     }
-
-    public void format(World world) {
-
-        this.world = world;
-
-        this.code = this.world.roots()
-                .stream().map(node -> formatNode(node, 0))
-                .collect(joining("\n"));
-
-    }
-
 
     @Override
     public void exitWorld(SurfaceLangParser.WorldContext ctx) {
@@ -717,7 +516,7 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
             world.add(
                     new ConstantMaterial(
                             world.nextId(),
-                            Evaluable.of(new Everywhere()),
+                            new BaseSceneNode(world.nextId(), NodeTemplate.EVERYWHERE),
                             new Vector3f(1f),
                             80.0f
                     )

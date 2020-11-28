@@ -153,13 +153,13 @@ public class GPUUniformGrid implements GridVoxelStorage {
 
     @Override
     public GridVoxel at(int index) {
-        downloadToCPUGrid();
+        // downloadToCPUGrid();
         return tmpUniformGrid.at(index);
     }
 
     @Override
     public GridVoxel at(int x, int y, int z) {
-        downloadToCPUGrid();
+        // downloadToCPUGrid();
         return tmpUniformGrid.at(x, y, z);
     }
 

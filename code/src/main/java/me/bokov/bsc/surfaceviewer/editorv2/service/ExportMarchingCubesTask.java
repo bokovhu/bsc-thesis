@@ -45,7 +45,9 @@ public class ExportMarchingCubesTask extends Task<List<Drawables.Face>> {
         World world = worldProperty.get();
 
         UniformGridVoxelizer voxelizer = new UniformGridVoxelizer(
-                64, 64, 64
+                gridWidthProperty.get(),
+                gridHeightProperty.get(),
+                gridDepthProperty.get()
         );
         final var voxelStorage = voxelizer.voxelize(
                 world,

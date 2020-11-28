@@ -4,7 +4,7 @@ import me.bokov.bsc.surfaceviewer.view.Renderer;
 
 public enum RendererType {
 
-    UniformGridMarchingCubes(new MarchingCubesRenderer()),
+    UniformGridMarchingCubes(new MeshRenderer()),
     RayMarching(new RayMarchingRenderer());
 
     public final Renderer instance;

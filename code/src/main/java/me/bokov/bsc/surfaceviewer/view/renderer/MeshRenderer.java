@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import me.bokov.bsc.surfaceviewer.View;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
+import me.bokov.bsc.surfaceviewer.mesh.dccpu.GridDualContouring;
 import me.bokov.bsc.surfaceviewer.mesh.mccpu.MarchingCubes;
 import me.bokov.bsc.surfaceviewer.mesh.mcgpu.GPUMarchingCubes;
 import me.bokov.bsc.surfaceviewer.render.Drawable;
@@ -29,7 +30,7 @@ import org.joml.Vector3f;
 
 import java.util.*;
 
-public class MarchingCubesRenderer implements Renderer {
+public class MeshRenderer implements Renderer {
 
     private static final Matrix4f IDENTITY = new Matrix4f().identity();
 
@@ -44,6 +45,7 @@ public class MarchingCubesRenderer implements Renderer {
     private VoxelStorage marchingCubesInputStorage = null;
 
     private MarchingCubes marchingCubes;
+    private GridDualContouring gridDualContouring;
     private GPUMarchingCubes gpuMarchingCubes;
     private Drawable mesh;
     private ShaderProgram shaderProgram;
@@ -222,12 +224,33 @@ public class MarchingCubesRenderer implements Renderer {
 
     }
 
-    private void executeMarchingCubes() {
+    private void executeDualContouring() {
 
-        if (config.useGPUMeshGenerator) {
-            executeMarchingCubesGPU();
+        if (this.mesh != null) {
+            this.mesh.tearDown();
+            this.mesh = null;
+        }
+
+        if (this.marchingCubesInputStorage != null) {
+
+            this.gridDualContouring = new GridDualContouring();
+            this.mesh = this.gridDualContouring
+                    .generate(marchingCubesInputStorage);
+
+        }
+
+    }
+
+    private void generateMesh() {
+
+        if (config.useDualContouring) {
+            executeDualContouring();
         } else {
-            executeMarchingCubesCPU();
+            if (config.useGPUMeshGenerator) {
+                executeMarchingCubesGPU();
+            } else {
+                executeMarchingCubesCPU();
+            }
         }
 
     }
@@ -239,7 +262,7 @@ public class MarchingCubesRenderer implements Renderer {
 
             this.createShader(world);
             this.voxelizeScene(world);
-            this.executeMarchingCubes();
+            this.generateMesh();
 
         }
 
@@ -272,7 +295,7 @@ public class MarchingCubesRenderer implements Renderer {
 
     @Override
     public void configure(RendererConfig config) {
-        this.config = (MarchingCubesRenderer.Config) config;
+        this.config = (MeshRenderer.Config) config;
         this.view.getApp().onViewReport(
                 "RendererConfigured",
                 Map.of("config", IOUtil.serialize(this.getConfig()))
@@ -298,6 +321,7 @@ public class MarchingCubesRenderer implements Renderer {
 
         if (gpuVoxelStorage != null) { gpuVoxelStorage.tearDown(); }
 
+        if (gridDualContouring != null) { gridDualContouring.tearDown(); }
 
         this.voxelizer = null;
         this.voxelStorage = null;
@@ -307,6 +331,7 @@ public class MarchingCubesRenderer implements Renderer {
         this.gpuVoxelizer = null;
         this.gpuVoxelStorage = null;
         this.marchingCubesInputStorage = null;
+        this.gridDualContouring = null;
 
         this.view = null;
 
@@ -322,6 +347,7 @@ public class MarchingCubesRenderer implements Renderer {
         private Boolean dumpVoxels = false;
         private Boolean useGPUVoxelization = true;
         private Boolean useGPUMeshGenerator = true;
+        private Boolean useDualContouring = true;
 
     }
 

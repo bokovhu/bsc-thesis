@@ -1,0 +1,57 @@
+light ambient {
+    energy: (0.2000, 0.2000, 0.2000)
+}
+
+light directional {
+    energy: (1.4000, 1.0000, 0.5000),
+    direction: (0.4575, 0.7625, -0.4575)
+}
+
+light directional {
+    energy: (0.6000, 1.2000, 1.7000),
+    direction: (-0.4082, 0.4082, -0.8165)
+}
+
+light directional {
+    energy: (0.4000, 0.8500, 0.9500),
+    direction: (0.4082, 0.4082, 0.8165)
+}
+
+material constant {
+    boundary: PLANE (h: 5.0000,
+    normal: (0.0000, 1.0000, 0.0000)),
+    diffuse: (0.1000, 0.1000, 0.1000),
+    shininess: 2.0000
+}
+
+material constant {
+    boundary: EVERYWHERE (),
+    diffuse: (0.5000, 0.5000, 0.5000),
+    shininess: 40.0000
+}
+
+PLANE (h: 8.0000)
+REVOLUTION  AT  position (3.0000, 0.0000, -0.0000)(){
+    Generator: UNION ()[
+        BOX2D (bounds: (1.0000, 0.1000)),
+        BOX2D (bounds: (0.1000, 1.0000)),
+        DISK2D (radius: 0.5000)
+    ]
+    
+}
+
+INTERSECT ()[
+    PLANE (h: -0.1000,
+    normal: (0.0000, 0.0000, -1.0000)),
+    INTERSECT ()[
+        PLANE (h: 0.0000,
+        normal: (0.0000, 0.0000, 1.0000)),
+        UNION ()[
+            BOX2D (bounds: (1.0000, 0.1000)),
+            BOX2D (bounds: (0.1000, 1.0000)),
+            DISK2D (radius: 0.5000)
+        ]
+        
+    ]
+    
+]

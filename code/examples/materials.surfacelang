@@ -1,0 +1,77 @@
+light ambient {
+    energy: (0.2000, 0.2000, 0.2000)
+}
+
+light directional {
+    energy: (1.4000, 1.0000, 0.5000),
+    direction: (0.4575, 0.7625, -0.4575)
+}
+
+light directional {
+    energy: (0.6000, 1.2000, 1.7000),
+    direction: (-0.4082, 0.4082, -0.8165)
+}
+
+light directional {
+    energy: (0.4000, 0.8500, 0.9500),
+    direction: (0.4082, 0.4082, 0.8165)
+}
+
+material constant {
+    boundary: SPHERE  AT  position (1.2000, 0.0000, 0.0000)(radius: 0.6000),
+    diffuse: (0.5000, 0.5000, 0.0000),
+    shininess: 200.0000
+}
+
+material constant {
+    boundary: SPHERE  AT  position (1.0000, 0.0000, 0.0000)(radius: 0.8000),
+    diffuse: (0.5000, 0.0000, 0.0000),
+    shininess: 10.0000
+}
+
+material constant {
+    boundary: INFINITE_REPEAT (period: (0.2500, 0.2500, 0.2500)){
+        Generator: BOX (bounds: (0.0625, 0.0625, 0.0625))
+    }
+    ,
+    diffuse: (0.0500, 0.0500, 0.0500),
+    shininess: 150.0000
+}
+
+material constant {
+    boundary: INFINITE_REPEAT  AT  position (0.1250, 0.1250, 0.0000)(period: (0.2500, 0.2500, 0.2500)){
+        Generator: BOX (bounds: (0.0625, 0.0625, 0.0625))
+    }
+    ,
+    diffuse: (0.0500, 0.0500, 0.0500),
+    shininess: 150.0000
+}
+
+material constant {
+    boundary: INFINITE_REPEAT  AT  position (0.1250, 0.0000, 0.1250)(period: (0.2500, 0.2500, 0.2500)){
+        Generator: BOX (bounds: (0.0625, 0.0625, 0.0625))
+    }
+    ,
+    diffuse: (0.0500, 0.0500, 0.0500),
+    shininess: 150.0000
+}
+
+material constant {
+    boundary: INFINITE_REPEAT  AT  position (0.0000, 0.1250, 0.1250)(period: (0.2500, 0.2500, 0.2500)){
+        Generator: BOX (bounds: (0.0625, 0.0625, 0.0625))
+    }
+    ,
+    diffuse: (0.0500, 0.0500, 0.0500),
+    shininess: 150.0000
+}
+
+material constant {
+    boundary: EVERYWHERE (),
+    diffuse: (0.5000, 0.5000, 0.5000),
+    shininess: 17.0000
+}
+
+SUBTRACT (){
+    A: BOX (),
+    B: SPHERE  AT  position (1.0000, 1.0000, 0.0000)()
+}

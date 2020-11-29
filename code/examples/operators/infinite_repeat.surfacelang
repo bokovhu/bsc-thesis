@@ -1,0 +1,18 @@
+light ambient {
+    energy: (0.2000, 0.2000, 0.2000)
+}
+
+light directional {
+    energy: (1.0000, 1.0000, 1.0000),
+    direction: (0.4575, 0.7625, -0.4575)
+}
+
+material constant {
+    boundary: EVERYWHERE (),
+    diffuse: (0.6000, 0.6000, 0.6000),
+    shininess: 150.0000
+}
+
+INFINITE_REPEAT (period: (1.0000, 500.0000, 1.0000)){
+    Generator: SPHERE (radius: 0.1500)
+}

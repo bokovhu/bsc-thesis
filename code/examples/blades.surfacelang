@@ -1,0 +1,26 @@
+light ambient {
+    energy: (0.2000, 0.2000, 0.2000)
+}
+
+light directional {
+    energy: (1.0000, 1.0000, 1.0000),
+    direction: (0.4575, 0.7625, -0.4575)
+}
+
+material constant {
+    boundary: EVERYWHERE (),
+    diffuse: (0.6000, 0.6000, 0.6000),
+    shininess: 150.0000
+}
+
+BOX  AT  position (-1.0000, 0.0000, 0.0000) rotate around (1.0000, 0.0000, 0.0000) by 90.0000 degrees(bounds: (0.1000, 1.0000, 2.0000))
+BOX  AT  position (-0.8000, 0.0000, 0.0000) rotate around (1.0000, 0.0000, 0.0000) by 72.0000 degrees(bounds: (0.1000, 1.0000, 1.0000))
+BOX  AT  position (-0.6000, 0.0000, 0.0000) rotate around (1.0000, 0.0000, 0.0000) by 54.0000 degrees(bounds: (0.1000, 1.0000, 2.0000))
+BOX  AT  position (-0.4000, 0.0000, 0.0000) rotate around (1.0000, 0.0000, 0.0000) by 36.0000 degrees(bounds: (0.1000, 1.0000, 1.0000))
+BOX  AT  position (-0.2000, 0.0000, 0.0000) rotate around (1.0000, 0.0000, 0.0000) by 18.0000 degrees(bounds: (0.1000, 1.0000, 2.0000))
+BOX (bounds: (0.1000, 1.0000, 1.0000))
+BOX  AT  position (0.2000, 0.0000, 0.0000) rotate around (1.0000, 0.0000, 0.0000) by 18.0000 degrees(bounds: (0.1000, 1.0000, 2.0000))
+BOX  AT  position (0.4000, 0.0000, 0.0000) rotate around (1.0000, 0.0000, 0.0000) by 36.0000 degrees(bounds: (0.1000, 1.0000, 1.0000))
+BOX  AT  position (0.6000, 0.0000, 0.0000) rotate around (1.0000, 0.0000, 0.0000) by 54.0000 degrees(bounds: (0.1000, 1.0000, 2.0000))
+BOX  AT  position (0.8000, 0.0000, 0.0000) rotate around (1.0000, 0.0000, 0.0000) by 72.0000 degrees(bounds: (0.1000, 1.0000, 1.0000))
+BOX  AT  position (1.0000, 0.0000, 0.0000) rotate around (1.0000, 0.0000, 0.0000) by 90.0000 degrees(bounds: (0.1000, 1.0000, 2.0000))

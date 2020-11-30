@@ -6,20 +6,28 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
 import me.bokov.bsc.surfaceviewer.scene.World;
-import me.bokov.bsc.surfaceviewer.surfacelang.SurfaceLangExpression;
-import me.bokov.bsc.surfaceviewer.surfacelang.SurfaceLangFormatter;
+import me.bokov.bsc.surfaceviewer.surfacelang.*;
 import me.bokov.bsc.surfaceviewer.util.FXMLUtil;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ListTokenSource;
+import org.antlr.v4.runtime.Token;
+import org.fxmisc.richtext.CodeArea;
 
 import java.net.URL;
+import java.time.Duration;
 import java.util.*;
 
 public class CodeEditor extends VBox implements Initializable {
+
+    private static final Set<String> KEYWORDS = new HashSet<>(
+            List.of("object", "material", "light", "position", "rotate", "around", "at", "by", "degrees")
+    );
 
     @Getter
     private ObjectProperty<World> worldProperty = new SimpleObjectProperty<>();
@@ -28,7 +36,7 @@ public class CodeEditor extends VBox implements Initializable {
     private ObjectProperty<SurfaceLangExpression> expressionProperty = new SimpleObjectProperty<>(new SurfaceLangExpression());
 
     @FXML
-    private TextArea codeArea;
+    private CodeArea codeArea;
 
     @FXML
     private VBox errorsVBox;
@@ -50,7 +58,8 @@ public class CodeEditor extends VBox implements Initializable {
 
             expressionProperty.setValue(expr);
             worldProperty.setValue(expr.getWorld());
-            codeArea.setText(code);
+            codeArea.replaceText(code);
+            highlightCode();
 
             errorsVBox.getChildren().clear();
 
@@ -78,7 +87,8 @@ public class CodeEditor extends VBox implements Initializable {
 
             worldProperty.setValue(expr.getWorld());
             expressionProperty.setValue(expr);
-            codeArea.setText(formatter.format());
+            codeArea.replaceText(formatter.format());
+            highlightCode();
 
             errorsVBox.getChildren().clear();
 
@@ -90,6 +100,98 @@ public class CodeEditor extends VBox implements Initializable {
                             new Label("Error: " + exc.getMessage())
                     );
             exc.printStackTrace();
+
+        }
+
+    }
+
+    private void highlightCode() {
+
+        final String code = codeArea.getText();
+        codeArea.setStyle(0, code.length(), List.of("text"));
+
+        try {
+
+            final var lexer = new SurfaceLangLexer(CharStreams.fromString(code));
+            final var tokens = lexer.getAllTokens();
+
+            for (Token t : tokens) {
+                final String text = t.getText();
+                final int i = t.getStartIndex();
+                final int j = t.getStopIndex() + 1;
+                if (KEYWORDS.contains(text.toLowerCase())) {
+                    codeArea.setStyle(i, j, List.of("text", "keyword"));
+                }
+            }
+
+            final var parser = new SurfaceLangParser(new CommonTokenStream(new ListTokenSource(tokens)));
+            parser.addParseListener(
+                    new SurfaceLangBaseListener() {
+                        @Override
+                        public void exitNumberValue(SurfaceLangParser.NumberValueContext ctx) {
+                            super.exitNumberValue(ctx);
+                            codeArea.setStyle(
+                                    ctx.start.getStartIndex(),
+                                    ctx.stop.getStopIndex() + 1,
+                                    List.of("text", "number")
+                            );
+                        }
+
+                        @Override
+                        public void exitVec2Value(SurfaceLangParser.Vec2ValueContext ctx) {
+                            super.exitVec2Value(ctx);
+                            codeArea.setStyle(
+                                    ctx.start.getStartIndex(),
+                                    ctx.stop.getStopIndex() + 1,
+                                    List.of("text", "number")
+                            );
+                        }
+
+                        @Override
+                        public void exitVec3Value(SurfaceLangParser.Vec3ValueContext ctx) {
+                            super.exitVec3Value(ctx);
+                            codeArea.setStyle(
+                                    ctx.start.getStartIndex(),
+                                    ctx.stop.getStopIndex() + 1,
+                                    List.of("text", "number")
+                            );
+                        }
+
+                        @Override
+                        public void exitVec4Value(SurfaceLangParser.Vec4ValueContext ctx) {
+                            super.exitVec4Value(ctx);
+                            codeArea.setStyle(
+                                    ctx.start.getStartIndex(),
+                                    ctx.stop.getStopIndex() + 1,
+                                    List.of("text", "number")
+                            );
+                        }
+
+                        @Override
+                        public void exitExpressionAlias(SurfaceLangParser.ExpressionAliasContext ctx) {
+                            super.exitExpressionAlias(ctx);
+                            codeArea.setStyle(
+                                    ctx.start.getStartIndex(),
+                                    ctx.stop.getStopIndex() + 1,
+                                    List.of("text", "string")
+                            );
+                        }
+
+                        @Override
+                        public void exitExpressionName(SurfaceLangParser.ExpressionNameContext ctx) {
+                            super.exitExpressionName(ctx);
+                            codeArea.setStyle(
+                                    ctx.start.getStartIndex(),
+                                    ctx.stop.getStopIndex() + 1,
+                                    List.of("text", "type")
+                            );
+                        }
+                    }
+            );
+            final var ctx = parser.world();
+
+
+        } catch (Exception ignore) {
 
         }
 
@@ -117,6 +219,13 @@ public class CodeEditor extends VBox implements Initializable {
                     }
                 }
         );
+
+        codeArea.plainTextChanges()
+                .successionEnds(Duration.ofMillis(400L))
+                .feedTo(v -> highlightCode());
+
+        codeArea.getStylesheets()
+                .add(getClass().getResource("/css/code-highlight.css").toExternalForm());
 
     }
 }

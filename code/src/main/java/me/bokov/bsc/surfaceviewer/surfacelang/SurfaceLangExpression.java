@@ -3,15 +3,12 @@ package me.bokov.bsc.surfaceviewer.surfacelang;
 import lombok.Getter;
 import me.bokov.bsc.surfaceviewer.scene.*;
 import me.bokov.bsc.surfaceviewer.scene.materializer.ConstantMaterial;
-import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
-import me.bokov.bsc.surfaceviewer.sdf.threed.Everywhere;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.joml.*;
 
 import java.lang.Math;
-import java.util.*;
 
 import static java.util.stream.Collectors.*;
 
@@ -250,6 +247,21 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
 
     }
 
+    private void putDefaultPortBySpec(SurfaceLangParser.DefaultPortSpecContext spec, SceneNode node) {
+
+        if (node.getTemplate().ports.size() != 1) {
+            throw new IllegalArgumentException(node.getTemplate() + " has no default port!");
+        }
+
+        final var port = node.getTemplate().ports.get(0);
+        final String name = port.getName();
+        final SceneNode child = expressionToSceneNode(spec.expression());
+
+        node.add(child);
+        node.plug(name, child);
+
+    }
+
     private SceneNode expressionToSceneNode(SurfaceLangParser.ExpressionContext ctx) {
 
         final var nodeType = ctx.expressionName().IDENTIFIER().getText().toUpperCase();
@@ -287,11 +299,16 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
             }
 
             SurfaceLangParser.PortMapContext pMapCtx = ctx.expressionPorts().portMap();
+            SurfaceLangParser.DefaultPortSpecContext dPortSpecCtx = pMapCtx.defaultPortSpec();
 
             if (pMapCtx.portSpec() != null) {
                 pMapCtx.portSpec().forEach(
                         spec -> putPortBySpec(spec, node)
                 );
+            }
+
+            if (dPortSpecCtx != null) {
+                putDefaultPortBySpec(dPortSpecCtx, node);
             }
 
         }

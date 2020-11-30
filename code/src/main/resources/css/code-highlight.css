@@ -1,0 +1,21 @@
+.text {
+    font-family: "Source Code Pro", "Droid Sans Mono", monospace;
+    -fx-font-family: "Source Code Pro", "Droid Sans Mono", monospace;
+}
+
+.number {
+    -fx-fill: #1750eb;
+}
+
+.keyword {
+    -fx-font-weight: bold;
+    -fx-fill: #74118c;
+}
+
+.type {
+    -fx-fill: #871094;
+}
+
+.string {
+    -fx-fill: #067d17;
+}

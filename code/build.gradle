@@ -44,7 +44,7 @@ jar {
 
 javafx {
     version = "15.0.1"
-    modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.swing' ]
+    modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.swing', 'javafx.web' ]
 }
 
 dependencies {

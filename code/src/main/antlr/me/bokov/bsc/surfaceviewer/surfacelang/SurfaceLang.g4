@@ -130,6 +130,7 @@ propertyMap :
 
 portMap :
     (portSpec (COMMA portSpec)*)?
+    | (defaultPortSpec)?
     ;
 
 childList :
@@ -142,6 +143,10 @@ propertySpec :
 
 portSpec :
     IDENTIFIER COLON expression
+    ;
+
+defaultPortSpec :
+    expression
     ;
 
 propertyValue :

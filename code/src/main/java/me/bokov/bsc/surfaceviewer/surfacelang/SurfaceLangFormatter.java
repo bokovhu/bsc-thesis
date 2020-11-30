@@ -46,6 +46,15 @@ public class SurfaceLangFormatter {
 
     }
 
+    private void step(int increaseIndent) {
+
+        indentation += increaseIndent;
+        if (indentation < 0) {
+            indentation = 0;
+        }
+
+    }
+
     private void startBlock(String symbol) {
 
         append(symbol);
@@ -90,7 +99,11 @@ public class SurfaceLangFormatter {
                 break;
         }
 
-        lineBreak(-1);
+        if(!currentLine.toString().strip().isBlank()) {
+            lineBreak(-1);
+        } else {
+            step(-1);
+        }
         append(eblock);
         lineBreak(0);
 
@@ -152,7 +165,15 @@ public class SurfaceLangFormatter {
     }
 
     private void appendFloat(float val) {
-        append(String.format(Locale.ENGLISH, "%.4f", val));
+        String formatted = String.format(Locale.ENGLISH, "%.4f", val);
+        if (formatted.endsWith(".0000")) {
+            formatted = formatted.substring(0, formatted.length() - ".0000".length());
+        } else if (formatted.endsWith("000")) {
+            formatted = formatted.substring(0, formatted.length() - "000".length());
+        } else if (formatted.endsWith("00")) {
+            formatted = formatted.substring(0, formatted.length() - "00".length());
+        } else if (formatted.endsWith("0")) { formatted = formatted.substring(0, formatted.length() - "0".length()); }
+        append(formatted);
     }
 
     private void appendVec2(Vector2f val) {
@@ -257,24 +278,24 @@ public class SurfaceLangFormatter {
 
             if (T.position().lengthSquared() > 0.001f) {
 
-                append(" position ");
+                append(" POSITION ");
                 appendVec3(T.position());
 
             }
 
             if (!T.orientation().equals(Q_IDENT)) {
 
-                append(" rotate around ");
+                append(" ROTATE AROUND ");
                 appendVec3(T.rotationAxis());
-                append(" by ");
+                append(" BY ");
                 appendFloat(T.rotationAngle());
-                append(" degrees");
+                append(" DEGREES");
 
             }
 
             if (Math.abs(T.scale() - 1.0f) > 0.001f) {
 
-                append(" scale ");
+                append(" SCALE ");
                 appendFloat(T.scale());
 
             }
@@ -285,11 +306,16 @@ public class SurfaceLangFormatter {
 
     private void formatNodeParams(SceneNode node) {
 
-        startParen("(");
-
         if (!node.properties().getIncludedProperties().isEmpty()) {
 
+            startParen("(");
+
             List<NodeTemplate.Property> propertyList = new ArrayList<>(node.properties().getIncludedProperties());
+
+            if (propertyList.size() > 1) {
+                lineBreak(1);
+            }
+
             for (int i = 0; i < propertyList.size(); i++) {
 
                 final var prop = propertyList.get(i);
@@ -336,9 +362,13 @@ public class SurfaceLangFormatter {
 
             }
 
-        }
+            if (propertyList.size() > 1) {
+                lineBreak(-1);
+            }
 
-        endParen();
+            endParen();
+
+        }
 
     }
 
@@ -350,19 +380,26 @@ public class SurfaceLangFormatter {
 
             List<Map.Entry<String, SceneNode>> portEntries = new ArrayList<>(node.pluggedPorts().entrySet());
 
-            int mapValueIndent = indentation;
+            if (portEntries.size() == 1 && node.getTemplate().ports.size() == 1) {
 
-            for (int i = 0; i < portEntries.size(); i++) {
-
-                final var entry = portEntries.get(i);
-
-                append(entry.getKey());
-                append(": ");
+                final var entry = portEntries.get(0);
                 formatNode(entry.getValue());
 
-                if (i != portEntries.size() - 1) {
-                    append(",");
-                    lineBreak(0);
+            } else {
+
+                for (int i = 0; i < portEntries.size(); i++) {
+
+                    final var entry = portEntries.get(i);
+
+                    append(entry.getKey());
+                    append(": ");
+                    formatNode(entry.getValue());
+
+                    if (i != portEntries.size() - 1) {
+                        append(",");
+                        lineBreak(0);
+                    }
+
                 }
 
             }

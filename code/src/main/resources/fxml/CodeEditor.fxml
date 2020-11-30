@@ -3,34 +3,35 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import org.fxmisc.richtext.CodeArea?>
-<fx:root xmlns="http://javafx.com/javafx"
-         xmlns:fx="http://javafx.com/fxml"
-         type="javafx.scene.layout.VBox"
+<fx:root type="javafx.scene.layout.VBox"
+         xmlns="http://javafx.com/javafx/11.0.1"
+         xmlns:fx="http://javafx.com/fxml/1"
 >
 
     <VBox.vgrow>ALWAYS</VBox.vgrow>
 
     <HBox>
         <VBox.vgrow>NEVER</VBox.vgrow>
-        <Button text="Sync" onAction="#onSyncCode" />
-        <Button text="Compile" onAction="#onCompileCode" />
+        <Button onAction="#onSyncCode" text="Sync" />
+        <Button onAction="#onCompileCode" text="Compile" />
     </HBox>
 
-    <TitledPane text="Code">
+    <SplitPane dividerPositions="0.5, 0.5" orientation="VERTICAL" VBox.vgrow="ALWAYS">
+        <items>
 
-        <TextArea fx:id="codeArea"
-                  editable="true"
-                  prefRowCount="64"
-                  style="-fx-font-family: 'Source Code Pro', 'Droid Sans Mono', 'Courier New', monospace; -fx-font-size: 14px; -fx-font-weight: 800;"
+            <TitledPane collapsible="false" text="Code">
+                <CodeArea fx:id="codeArea"
+                          editable="true"
+                          prefHeight="1000"
+                />
+            </TitledPane>
 
-        >
-            <VBox.vgrow>ALWAYS</VBox.vgrow>
-        </TextArea>
-
-    </TitledPane>
-
-    <TitledPane text="Errors">
-        <VBox fx:id="errorsVBox"></VBox>
-    </TitledPane>
+            <TitledPane collapsible="false" text="Errors">
+                <ScrollPane>
+                    <VBox fx:id="errorsVBox" />
+                </ScrollPane>
+            </TitledPane>
+        </items>
+    </SplitPane>
 
 </fx:root>

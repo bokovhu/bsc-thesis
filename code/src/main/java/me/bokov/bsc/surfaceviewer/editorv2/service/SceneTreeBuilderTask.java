@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
 import javafx.scene.control.TreeItem;
 import lombok.Getter;
+import me.bokov.bsc.surfaceviewer.scene.LightSource;
 import me.bokov.bsc.surfaceviewer.scene.NodeTemplate;
 import me.bokov.bsc.surfaceviewer.scene.SceneNode;
 import me.bokov.bsc.surfaceviewer.scene.World;
@@ -68,6 +69,13 @@ public class SceneTreeBuilderTask extends Task<TreeItem<Object>> {
 
     }
 
+    private TreeItem<Object> lightSourceToTreeItem(LightSource lightSource) {
+
+        TreeItem<Object> item = new TreeItem<>(lightSource);
+        return item;
+
+    }
+
     @Override
     protected TreeItem<Object> call() throws Exception {
 
@@ -78,6 +86,10 @@ public class SceneTreeBuilderTask extends Task<TreeItem<Object>> {
         }
 
         TreeItem<Object> root = new TreeItem<>(world);
+
+        for (var ls : world.getLightSources()) {
+            root.getChildren().add(lightSourceToTreeItem(ls));
+        }
 
         for (var node : world.roots()) {
 

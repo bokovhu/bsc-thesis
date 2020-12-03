@@ -38,4 +38,7 @@ public interface SceneNode extends Serializable {
 
     NodeTemplate getTemplate();
 
+    Prefab getPrefab();
+    void setPrefab(Prefab prefab);
+
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import me.bokov.bsc.surfaceviewer.editorv2.view.input.ChoiceInput?>
+<?import me.bokov.bsc.surfaceviewer.editorv2.view.input.Vec3Input?>
+<fx:root xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml"
+         type="javafx.scene.layout.VBox"
+>
+
+    <ChoiceInput fx:id="lightTypeChoiceInput"></ChoiceInput>
+    <Vec3Input fx:id="energyInput"></Vec3Input>
+    <Vec3Input fx:id="directionInput"></Vec3Input>
+
+</fx:root>

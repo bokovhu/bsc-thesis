@@ -38,4 +38,10 @@ public interface World extends Serializable {
     void remove(Materializer materializer);
     void removeMaterializer(int id);
 
+    List<Prefab> getPrefabs();
+    void add(Prefab ... args);
+    void remove(Prefab prefab);
+    void removePrefab(int id);
+    Optional<Prefab> findPrefabByName(String name);
+
 }

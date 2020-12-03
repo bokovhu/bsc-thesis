@@ -11,7 +11,7 @@ import javafx.scene.layout.AnchorPane;
 import lombok.Getter;
 import lombok.extern.java.Log;
 import me.bokov.bsc.surfaceviewer.App;
-import me.bokov.bsc.surfaceviewer.editorv2.event.OpenSceneNodeEditorEvent;
+import me.bokov.bsc.surfaceviewer.editorv2.event.OpenEditorTabEvent;
 import me.bokov.bsc.surfaceviewer.editorv2.service.UpdateViewTask;
 import me.bokov.bsc.surfaceviewer.editorv2.view.*;
 import me.bokov.bsc.surfaceviewer.run.FXEditorApp;
@@ -98,12 +98,51 @@ public class EditorWindow extends AnchorPane implements Initializable, FXEditorA
 
     }
 
+    private void onOpenLightEditorRequested(int lightId) {
+
+        Optional<Tab> openedTab = editorTabs.getTabs()
+                .stream()
+                .filter(
+                        tab -> ("light-source-" + lightId).equals(tab.idProperty().get())
+                )
+                .findFirst();
+
+
+        if (openedTab.isPresent()) {
+            editorTabs.getSelectionModel()
+                    .select(openedTab.get());
+        } else {
+
+            final var editor = new LightEditor();
+            final var light = worldProperty.get()
+                    .getLightSources().stream().filter(l -> l.getId() == lightId)
+                    .findFirst().orElseThrow();
+            editor.getLightSourceProperty()
+                    .setValue(light);
+            editor.getWorldProperty()
+                    .bindBidirectional(worldProperty);
+
+            Tab newEditorTab = new Tab(
+                    light.getClass().getSimpleName() + ": " + light.getId(),
+                    editor
+            );
+            newEditorTab.setClosable(true);
+            newEditorTab.idProperty()
+                    .setValue("light-source-" + light.getId());
+            editorTabs.getTabs().add(newEditorTab);
+        }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
         sceneBrowser.addEventHandler(
-                OpenSceneNodeEditorEvent.OPEN_SCENE_NODE_EDITOR,
-                event -> onOpenSceneEditorRequested(event.getSceneNodeId())
+                OpenEditorTabEvent.OPEN_SCENE_NODE_EDITOR,
+                event -> onOpenSceneEditorRequested(event.getTargetId())
+        );
+        sceneBrowser.addEventHandler(
+                OpenEditorTabEvent.OPEN_LIGHT_EDITOR,
+                event -> onOpenLightEditorRequested(event.getTargetId())
         );
 
         sceneBrowser.getWorldProperty()

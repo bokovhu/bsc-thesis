@@ -37,7 +37,7 @@ public class OpRotate implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<G
     @Override
     public List<GLSLStatement> evaluate(GPUContext context) {
         final GPUContext generatorContext = context.branch("0")
-                .transform("Rotated");
+                .transform("R");
         final List<GLSLStatement> generated = generator.gpu()
                 .evaluate(generatorContext);
 

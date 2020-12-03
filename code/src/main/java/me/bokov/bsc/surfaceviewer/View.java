@@ -47,6 +47,9 @@ public class View implements Runnable {
     private Renderer renderer = null;
     @Getter
     private Camera camera = null;
+    @Getter
+    private VoxelManager voxelManager = null;
+    
     private int windowCreationWidth = 0, windowCreationHeight = 0;
     @Getter
     private float deltaTime = 0.0f;
@@ -59,6 +62,8 @@ public class View implements Runnable {
     private int windowWidth, windowHeight;
     private RendererConfig nextRendererConfig = null;
     private BlockingDeque<RenderProductionImageJob> renderJobs = new LinkedBlockingDeque<>();
+
+    private FrameTimer frameTimer = new FrameTimer("Frame timer"), renderTimer = new FrameTimer("Render timer");
 
     public View(App app) {
         this.app = app;
@@ -90,6 +95,9 @@ public class View implements Runnable {
 
         this.cameraManager = new CameraManager();
         this.cameraManager.install(this);
+
+        this.voxelManager = new VoxelManager();
+        this.voxelManager.install(this);
 
         this.nextRendererType = RendererType.UniformGridMarchingCubes;
 
@@ -130,6 +138,7 @@ public class View implements Runnable {
 
         GLFW.glfwMakeContextCurrent(this.glfwWindowHandle);
         GL.createCapabilities();
+        // GLFW.glfwSwapInterval(0);
 
         GL46.glEnable(GL46.GL_DEPTH_TEST);
         GL46.glEnable(GL46.GL_BLEND);
@@ -142,6 +151,8 @@ public class View implements Runnable {
 
         while (shouldLoop) {
 
+            frameTimer.update();
+
             try {
 
                 update();
@@ -152,10 +163,25 @@ public class View implements Runnable {
             }
 
             GLFW.glfwSwapBuffers(this.glfwWindowHandle);
+
+            renderTimer.update();
+
             GLFW.glfwPollEvents();
 
             shouldLoop &= !GLFW.glfwWindowShouldClose(this.glfwWindowHandle) && !this.app.shouldQuit();
         }
+
+    }
+
+    private void postWorldChanged() {
+
+    }
+
+    private void postRendererChanged() {
+
+    }
+
+    private void postRendererConfigChanged() {
 
     }
 
@@ -216,6 +242,8 @@ public class View implements Runnable {
             job.callback.accept(result);
 
         }
+
+        renderTimer.catchUp();
 
         GL46.glClearColor(0.2f, 0.3f, 0.38f, 1f);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);

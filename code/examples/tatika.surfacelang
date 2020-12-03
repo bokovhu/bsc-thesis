@@ -1,38 +1,35 @@
 light ambient {
-    energy: (0.2000, 0.2000, 0.2000)
+    energy: (0.2, 0.2, 0.2)
 }
 
 light directional {
-    energy: (1.4000, 1.0000, 0.5000),
+    energy: (1.4, 1, 0.5),
     direction: (0.4575, 0.7625, -0.4575)
 }
 
 light directional {
-    energy: (0.6000, 1.2000, 1.7000),
+    energy: (0.6, 1.2, 1.7),
     direction: (-0.4082, 0.4082, -0.8165)
 }
 
 light directional {
-    energy: (0.4000, 0.8500, 0.9500),
+    energy: (0.4, 0.85, 0.95),
     direction: (0.4082, 0.4082, 0.8165)
 }
 
 material constant {
-    boundary: EVERYWHERE (),
-    diffuse: (0.5000, 0.5000, 0.5000),
-    shininess: 40.0000
+    boundary: EVERYWHERE ,
+    diffuse: (0.5, 0.5, 0.5),
+    shininess: 40
 }
 
-SYMY (){
-    Generator: SYMZ (){
-        Generator: SYMX (){
-            Generator: INTERSECT ()[
-                BOX  AT  position (1.0000, 1.0000, 1.0000)(),
-                BOX  AT  position (1.0000, 1.0000, 1.0000) rotate around (1.0000, 1.0000, 1.0000) by 45.0000 degrees()
+SYMY {
+    SYMZ {
+        SYMX {
+            INTERSECT [
+                BOX  AT  POSITION (1, 1, 1)(bounds: (2, 2, 2)),
+                BOX  AT  POSITION (1, 1, 1) ROTATE AROUND (1, 1, 1) BY 45 DEGREES(bounds: (2, 2, 2))
             ]
-            
         }
-        
     }
-    
 }

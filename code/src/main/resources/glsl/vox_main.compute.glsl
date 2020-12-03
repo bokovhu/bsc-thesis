@@ -1,12 +1,11 @@
 void main() {
 
-    ivec3 pInvocationSpace = ivec3(gl_GlobalInvocationID);
-    ivec3 outputSize = imageSize(u_positionAndValueOutput);
+    ivec3 pInvocationSpace = ivec3(gl_GlobalInvocationID) + u_voxelOffset;
 
     vec3 pTextureSpace = vec3(
-    float(pInvocationSpace.x) / float(outputSize.x),
-    float(pInvocationSpace.y) / float(outputSize.y),
-    float(pInvocationSpace.z) / float(outputSize.z)
+    float(pInvocationSpace.x) * u_voxelSize.x,
+    float(pInvocationSpace.y) * u_voxelSize.y,
+    float(pInvocationSpace.z) * u_voxelSize.z
     );
 
     vec3 pWorldSpace = (u_transform * vec4(pTextureSpace, 1.0)).xyz;
@@ -33,5 +32,7 @@ void main() {
     pInvocationSpace,
     vec4(calculatedDiffuse, calculatedShininess / 200.0)
     );
+
+    memoryBarrierImage();
 
 }

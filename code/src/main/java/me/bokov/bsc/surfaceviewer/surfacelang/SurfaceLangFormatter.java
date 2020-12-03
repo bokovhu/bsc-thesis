@@ -99,7 +99,7 @@ public class SurfaceLangFormatter {
                 break;
         }
 
-        if(!currentLine.toString().strip().isBlank()) {
+        if (!currentLine.toString().strip().isBlank()) {
             lineBreak(-1);
         } else {
             step(-1);
@@ -443,7 +443,11 @@ public class SurfaceLangFormatter {
 
     private void formatNode(SceneNode node) {
 
-        append(node.getTemplate().name());
+        if(node.getPrefab() != null) {
+            append(node.getPrefab().getName());
+        } else {
+            append(node.getTemplate().name());
+        }
         space();
 
         if (!"".equals(node.getDisplay().getName().strip())
@@ -527,6 +531,16 @@ public class SurfaceLangFormatter {
 
     }
 
+    private void formatPrefab(Prefab prefab) {
+
+        append("prefab ");
+        append(prefab.getName());
+        startBlock("{");
+        formatNode(prefab.getNode());
+        endBlock();
+
+    }
+
     public String format() {
 
         reset();
@@ -537,6 +551,10 @@ public class SurfaceLangFormatter {
         });
         this.world.getMaterializers().forEach(m -> {
             this.formatMaterial(m);
+            lineBreak(0);
+        });
+        this.world.getPrefabs().forEach(p -> {
+            this.formatPrefab(p);
             lineBreak(0);
         });
         this.world.roots().forEach(n -> {

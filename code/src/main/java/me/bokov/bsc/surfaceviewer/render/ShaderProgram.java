@@ -6,7 +6,7 @@ import java.util.*;
 
 public class ShaderProgram extends BaseProgram {
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private final List<Integer> shaderHandles = new ArrayList<>();
     private String vertexShaderSourceCode = null;

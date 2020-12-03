@@ -5,7 +5,7 @@ grammar SurfaceLang;
 }
 
 world :
-    (expression | material | light)+
+    (expression | material | light | prefab)+
     ;
 
 light :
@@ -81,6 +81,14 @@ materialParam :
     ;
 
 materialParamName :
+    IDENTIFIER
+    ;
+
+prefab :
+    KW_PREFAB prefabName LCURLY expression RCURLY
+    ;
+
+prefabName :
     IDENTIFIER
     ;
 
@@ -207,6 +215,7 @@ KW_MATERIAL : 'MATERIAL' | 'material';
 KW_LIGHT : 'LIGHT' | 'light';
 KW_OBJECT : 'OBJECT' | 'object';
 KW_NORM : 'NORM' | 'norm';
+KW_PREFAB : 'PREFAB' | 'prefab';
 
 NUMBER : SUB? [0-9]+(('.')?[0-9]+)?;
 IDENTIFIER : [a-zA-Z]([a-zA-Z0-9_]*);

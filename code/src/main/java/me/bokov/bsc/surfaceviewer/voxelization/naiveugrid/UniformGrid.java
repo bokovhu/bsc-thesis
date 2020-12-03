@@ -3,6 +3,7 @@ package me.bokov.bsc.surfaceviewer.voxelization.naiveugrid;
 import me.bokov.bsc.surfaceviewer.voxelization.GridVoxel;
 import me.bokov.bsc.surfaceviewer.voxelization.GridVoxelStorage;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
+import me.bokov.bsc.surfaceviewer.voxelization.VoxelData;
 import org.joml.Vector3f;
 
 import java.io.Serializable;
@@ -103,6 +104,11 @@ public class UniformGrid implements GridVoxelStorage, Serializable {
                         (int) Math.floor(pTransformed.z)
                 )
                 ];
+    }
+
+    @Override
+    public VoxelData toVoxelData() {
+        return new VoxelData(this.positionDistanceBuffer, this.normalBuffer, this.colorBuffer, this.width, this.height, this.depth);
     }
 
     @Override

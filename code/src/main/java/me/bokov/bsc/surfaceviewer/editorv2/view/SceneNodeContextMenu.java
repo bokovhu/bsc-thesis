@@ -8,7 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ContextMenu;
 import lombok.Getter;
 import me.bokov.bsc.surfaceviewer.editorv2.event.EditSceneNodeNameEvent;
-import me.bokov.bsc.surfaceviewer.editorv2.event.OpenSceneNodeEditorEvent;
+import me.bokov.bsc.surfaceviewer.editorv2.event.OpenEditorTabEvent;
 import me.bokov.bsc.surfaceviewer.scene.SceneNode;
 import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.util.FXMLUtil;
@@ -48,7 +48,7 @@ public class SceneNodeContextMenu extends ContextMenu implements Initializable {
     public void onEditSceneNode(ActionEvent event) {
 
         fireEvent(
-                new OpenSceneNodeEditorEvent(
+                new OpenEditorTabEvent(
                         sceneNodeProperty.get().getId()
                 )
         );

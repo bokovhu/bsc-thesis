@@ -2,6 +2,7 @@ package me.bokov.bsc.surfaceviewer.editorv2.view;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -44,6 +45,8 @@ public class SceneNodeEditor extends VBox implements Initializable {
     @FXML
     private FloatInput rotationAngleInput;
 
+    private final ChangeListener<World> worldChangeListener = (observable, oldValue, newValue) -> onWorldChanged(newValue);
+
     public SceneNodeEditor() {
         FXMLUtil.loadForComponent("/fxml/SceneNodeEditor.fxml", this);
     }
@@ -79,9 +82,7 @@ public class SceneNodeEditor extends VBox implements Initializable {
         sceneNodeProperty.addListener(
                 (observable, oldValue, newValue) -> onSceneNodeChanged(newValue)
         );
-        worldProperty.addListener(
-                (observable, oldValue, newValue) -> onWorldChanged(newValue)
-        );
+        worldProperty.addListener(worldChangeListener);
 
     }
 
@@ -91,13 +92,18 @@ public class SceneNodeEditor extends VBox implements Initializable {
     }
 
     private void onWorldChanged(World world) {
-        sceneNodeProperty.setValue(
-                world.findById(
-                        sceneNodeProperty.get().getId()
-                ).get()
+        final var node = world.findById(
+                sceneNodeProperty.get().getId()
         );
-        makeSceneNodeSettings();
-        generateGLSL();
+        if (node.isEmpty()) {
+            worldProperty.removeListener(worldChangeListener);
+        } else {
+            sceneNodeProperty.setValue(
+                    node.get()
+            );
+            makeSceneNodeSettings();
+            generateGLSL();
+        }
     }
 
     private void onNodeTransformChanged() {

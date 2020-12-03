@@ -24,6 +24,7 @@ public class BaseSceneNode implements SceneNode {
     private final Matrix4f worldTransformMatrix = new Matrix4f();
     private final NodeProperties properties = new NodeProperties();
     private SceneNode parentNode = null;
+    private Prefab prefab = null;
 
     private NodeTemplate template;
     private NodeDisplay display = new NodeDisplay().setName("Unnamed node");
@@ -141,11 +142,15 @@ public class BaseSceneNode implements SceneNode {
     @Override
     public Evaluable<Float, CPUContext, GPUContext> toEvaluable() {
 
+        update();
+
+        if (prefab != null) {
+            return transform(localTransform, prefab.getNode().toEvaluable());
+        }
+
         if (template == null) {
             throw new IllegalStateException("Cannot create evaluable");
         }
-
-        update();
 
         final var requestBuilder = SurfaceFactoryRequest.builder()
                 .children(this.children)
@@ -179,11 +184,27 @@ public class BaseSceneNode implements SceneNode {
             child.update();
         }
 
+        if (getPrefab() != null) {
+            getPrefab().getNode()
+                    .moveTo(this);
+            getPrefab().getNode().update();
+        }
+
     }
 
     @Override
     public NodeTemplate getTemplate() {
         return template;
+    }
+
+    @Override
+    public Prefab getPrefab() {
+        return prefab;
+    }
+
+    @Override
+    public void setPrefab(Prefab prefab) {
+        this.prefab = prefab;
     }
 
     @Override

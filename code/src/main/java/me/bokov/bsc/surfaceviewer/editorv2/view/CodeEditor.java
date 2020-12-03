@@ -26,7 +26,7 @@ import java.util.*;
 public class CodeEditor extends VBox implements Initializable {
 
     private static final Set<String> KEYWORDS = new HashSet<>(
-            List.of("object", "material", "light", "position", "rotate", "around", "at", "by", "degrees")
+            List.of("object", "material", "light", "position", "rotate", "around", "at", "by", "degrees", "prefab")
     );
 
     @Getter
@@ -108,7 +108,7 @@ public class CodeEditor extends VBox implements Initializable {
     private void highlightCode() {
 
         final String code = codeArea.getText();
-        codeArea.setStyle(0, code.length(), List.of("text"));
+        codeArea.clearStyle(0, code.length());
 
         try {
 
@@ -141,8 +141,8 @@ public class CodeEditor extends VBox implements Initializable {
                         public void exitVec2Value(SurfaceLangParser.Vec2ValueContext ctx) {
                             super.exitVec2Value(ctx);
                             codeArea.setStyle(
-                                    ctx.start.getStartIndex(),
-                                    ctx.stop.getStopIndex() + 1,
+                                    ctx.start.getStartIndex() + 1,
+                                    ctx.stop.getStopIndex(),
                                     List.of("text", "number")
                             );
                         }
@@ -151,8 +151,8 @@ public class CodeEditor extends VBox implements Initializable {
                         public void exitVec3Value(SurfaceLangParser.Vec3ValueContext ctx) {
                             super.exitVec3Value(ctx);
                             codeArea.setStyle(
-                                    ctx.start.getStartIndex(),
-                                    ctx.stop.getStopIndex() + 1,
+                                    ctx.start.getStartIndex() + 1,
+                                    ctx.stop.getStopIndex(),
                                     List.of("text", "number")
                             );
                         }
@@ -161,8 +161,8 @@ public class CodeEditor extends VBox implements Initializable {
                         public void exitVec4Value(SurfaceLangParser.Vec4ValueContext ctx) {
                             super.exitVec4Value(ctx);
                             codeArea.setStyle(
-                                    ctx.start.getStartIndex(),
-                                    ctx.stop.getStopIndex() + 1,
+                                    ctx.start.getStartIndex() + 1,
+                                    ctx.stop.getStopIndex(),
                                     List.of("text", "number")
                             );
                         }
@@ -192,7 +192,7 @@ public class CodeEditor extends VBox implements Initializable {
 
 
         } catch (Exception ignore) {
-
+            ignore.printStackTrace();
         }
 
     }

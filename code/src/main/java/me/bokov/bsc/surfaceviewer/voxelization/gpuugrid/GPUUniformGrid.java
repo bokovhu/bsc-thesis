@@ -4,6 +4,7 @@ import me.bokov.bsc.surfaceviewer.render.Texture;
 import me.bokov.bsc.surfaceviewer.voxelization.GridVoxel;
 import me.bokov.bsc.surfaceviewer.voxelization.GridVoxelStorage;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
+import me.bokov.bsc.surfaceviewer.voxelization.VoxelData;
 import me.bokov.bsc.surfaceviewer.voxelization.naiveugrid.UniformGrid;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -54,25 +55,32 @@ public class GPUUniformGrid implements GridVoxelStorage {
 
         GL46.glFlush();
         GL46.glFinish();
-        GL46.glMemoryBarrier(GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-        positionAndValueTexture.bind();
+        System.out.println("downloadToRamImage() after flush-finish 0");
+
+        positionAndValueTexture.bind(0);
         positionAndValueBuffer.clear();
         GL46.glGetTexImage(GL46.GL_TEXTURE_3D, 0, GL46.GL_RGBA, GL46.GL_FLOAT, positionAndValueBuffer);
+        GL46.glBindTexture(GL46.GL_TEXTURE_3D, 0);
 
 
-        normalTexture.bind();
+        normalTexture.bind(1);
         normalBuffer.clear();
         GL46.glGetTexImage(GL46.GL_TEXTURE_3D, 0, GL46.GL_RGB, GL46.GL_FLOAT, normalBuffer);
+        GL46.glBindTexture(GL46.GL_TEXTURE_3D, 0);
 
 
-        colorShininessTexture.bind();
+        colorShininessTexture.bind(2);
         colorBuffer.clear();
         GL46.glGetTexImage(GL46.GL_TEXTURE_3D, 0, GL46.GL_RGBA, GL46.GL_FLOAT, colorBuffer);
+        GL46.glBindTexture(GL46.GL_TEXTURE_3D, 0);
 
+        System.out.println("downloadToRamImage() before flush-finish");
 
-        long fence = GL46.glFenceSync(GL46.GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-        GL46.glClientWaitSync(fence, 0, 100_000L);
+        GL46.glFlush();
+        GL46.glFinish();
+
+        System.out.println("downloadToRamImage() after flush-finish");
     }
 
     public void downloadToCPUGrid() {
@@ -85,6 +93,8 @@ public class GPUUniformGrid implements GridVoxelStorage {
                 normalBuffer,
                 colorBuffer
         );
+
+        System.out.println("downloadToCPUGrid() done");
 
     }
 
@@ -137,6 +147,12 @@ public class GPUUniformGrid implements GridVoxelStorage {
     public Voxel closestVoxel(Vector3f p) {
         downloadToCPUGrid();
         return tmpUniformGrid.closestVoxel(p);
+    }
+
+    @Override
+    public VoxelData toVoxelData() {
+        downloadToCPUGrid();
+        return tmpUniformGrid.toVoxelData();
     }
 
     public Texture getPositionAndValueTexture() {

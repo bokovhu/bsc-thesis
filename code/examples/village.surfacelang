@@ -1,0 +1,147 @@
+light ambient {
+    energy: (0.2, 0.2, 0.2)
+}
+
+light directional {
+    energy: (1.4, 1, 0.5),
+    direction: (0.4575, 0.7625, -0.4575)
+}
+
+light directional {
+    energy: (1, 1.2, 1.7),
+    direction: (-0.4082, 0.4082, -0.8165)
+}
+
+light directional {
+    energy: (0.8, 1, 0.95),
+    direction: (0.4082, 0.4082, 0.8165)
+}
+
+material constant {
+    boundary: INTERSECT [
+        PLANE (
+            h: -0.3,
+            normal: (0, -1, 0)
+        ),
+        BOX  AT  POSITION (-2.1, 0, -2)(bounds: (8.1, 8, 8))
+    ]
+    ,
+    diffuse: (0.1, 0.1, 0.4),
+    shininess: 200
+}
+
+material constant {
+    boundary: PLANE (
+        h: -0.3,
+        normal: (0, -1, 0)
+    ),
+    diffuse: (0.1, 0.4, 0.1),
+    shininess: 12
+}
+
+material constant {
+    boundary: PLANE (
+        h: -0.4,
+        normal: (0, -1, 0)
+    ),
+    diffuse: (0.4, 0.1, 0.1),
+    shininess: 150
+}
+
+material constant {
+    boundary: EVERYWHERE ,
+    diffuse: (0.2, 0.2, 0.2),
+    shininess: 14
+}
+
+prefab roof1x1{
+    INTERSECT [
+        BOX  AT  ROTATE AROUND (0, 0, 1) BY 45 DEGREES(bounds: (0.707, 0.707, 1)),
+        PLANE (
+            h: 0,
+            normal: (0, -1, 0)
+        )
+    ]
+}
+
+prefab house1x1{
+    SMOOTH_UNION (k: 0.01){
+        A: BOX ,
+        B: roof1x1  AT  POSITION (0, 0.5, 0)
+    }
+}
+
+prefab house2x4{
+    SMOOTH_UNION (k: 0.05){
+        A: BOX (bounds: (2, 2, 1)),
+        B: BOX  AT  POSITION (0, 2, 0)(bounds: (2, 2, 1))
+    }
+}
+
+prefab house4x3{
+    SMOOTH_UNION (k: 0.05){
+        A: BOX (bounds: (4, 1.5, 1)),
+        B: BOX  AT  POSITION (0, 1.5, 0)(bounds: (4, 1.5, 1))
+    }
+}
+
+prefab streetx{
+    BOX (bounds: (4, 0.2, 1))
+}
+
+prefab streety{
+    BOX (bounds: (1, 0.2, 4))
+}
+
+prefab houses{
+    UNION [
+        INFINITE_REPEAT (period: (8, 64, 8)){
+            house1x1
+        }
+        ,
+        INFINITE_REPEAT  AT  POSITION (6, 0, 0)(period: (8, 64, 8)){
+            house1x1
+        }
+        ,
+        INFINITE_REPEAT  AT  POSITION (3, 0, 0)(period: (8, 64, 8)){
+            house1x1
+        }
+        ,
+        INFINITE_REPEAT  AT  POSITION (0, 0, 3)(period: (8, 64, 8)){
+            house2x4
+        }
+        ,
+        INFINITE_REPEAT  AT  POSITION (4, 0, 3)(period: (8, 64, 8)){
+            house4x3
+        }
+    ]
+}
+
+prefab houseGate{
+    UNION [
+        INFINITE_REPEAT  AT  POSITION (5, 0, 5)(period: (16, 16, 16)){
+            BOX (bounds: (9, 9, 9))
+        }
+        ,
+        INFINITE_REPEAT  AT  POSITION (13, 0, 13)(period: (16, 16, 32)){
+            BOX (bounds: (9, 9, 9))
+        }
+    ]
+}
+
+UNION [
+    SUBTRACT {
+        A: houses ,
+        B: houseGate
+    }
+    ,
+    INFINITE_REPEAT  AT  POSITION (0, -0.5, 1.5)(period: (4, 64, 8)){
+        streetx
+    }
+    ,
+    INFINITE_REPEAT  AT  POSITION (1.5, -0.5, 0)(period: (8, 64, 4)){
+        streety
+    }
+    ,
+    PLANE (h: 0.5)
+]

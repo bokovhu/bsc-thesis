@@ -44,7 +44,7 @@ public class OpInifiniteRepetition implements CPUEvaluator<Float, CPUContext>,
     public List<GLSLStatement> evaluate(GPUContext context) {
 
         final GPUContext generatorContext = context.branch("0")
-                .transform("InfinitelyRepeated");
+                .transform("Inf");
         final List<GLSLStatement> generated = generator.gpu()
                 .evaluate(generatorContext);
 

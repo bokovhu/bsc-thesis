@@ -8,7 +8,7 @@ import org.lwjgl.glfw.GLFW;
 
 public class CameraManager {
 
-    public static final float MOUSE_SENTITIVITY = 0.01f;
+    public static final float MOUSE_SENTITIVITY = 0.0067f;
     private static final InputManager.MouseShortcut SHORTCUT_ROTATE = InputManager
             .mNoMods(GLFW.GLFW_MOUSE_BUTTON_3);
     private static final InputManager.MouseShortcut SHORTCUT_ZOOM = InputManager
@@ -19,6 +19,7 @@ public class CameraManager {
     private final Vector3f rotationStartPoint = new Vector3f();
     private final Vector3f rotationStartUp = new Vector3f();
     private final Vector3f zoomStartPoint = new Vector3f();
+    private final Vector3f zoomStartOrigin = new Vector3f();
     private final Vector3f panStartPoint = new Vector3f();
     private final Vector2f panDistance = new Vector2f();
     private final Vector3f panStartOrigin = new Vector3f();
@@ -68,6 +69,7 @@ public class CameraManager {
                             this.state = CameraManager.State.Zooming;
                             this.zoomDistance = 0.0f;
                             this.zoomStartPoint.set(view.getCamera().eye());
+                            this.zoomStartOrigin.set(origin);
                         }
                 )
                 .mouseDown(
@@ -113,6 +115,8 @@ public class CameraManager {
             tmpNewEye.set(zoomStartPoint).add(
                     tmpDir.set(camera.forward()).mul(zoomDistance)
             );
+            origin.set(tmpNewOrigin.set(zoomStartOrigin).add(tmpNewEye).sub(zoomStartPoint));
+
             camera.lookAt(
                     tmpNewEye,
                     tmpNewTarget.set(tmpNewEye).add(camera.forward()),
@@ -125,8 +129,9 @@ public class CameraManager {
             tmpRotation.identity()
                     .rotateY(rotationYaw)
                     .rotateX(rotationPitch);
-            tmpNewEye.set(rotationStartPoint)
-                    .rotate(tmpRotation);
+            tmpNewEye.set(rotationStartPoint).sub(origin)
+                    .rotate(tmpRotation)
+                    .add(origin);
             camera.lookAt(
                     tmpNewEye,
                     origin,

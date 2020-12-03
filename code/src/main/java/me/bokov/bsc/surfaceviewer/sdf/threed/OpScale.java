@@ -27,7 +27,7 @@ public class OpScale implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GP
     @Override
     public List<GLSLStatement> evaluate(GPUContext context) {
         final GPUContext generatorContext = context.branch("0")
-                .transform("Scaled");
+                .transform("S");
         final List<GLSLStatement> generated = generator.gpu()
                 .evaluate(generatorContext);
 

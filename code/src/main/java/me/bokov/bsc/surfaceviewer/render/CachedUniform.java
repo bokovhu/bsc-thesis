@@ -24,6 +24,42 @@ public class CachedUniform {
         }
     }
 
+    public void i2(int i, int j) {
+        if (valid) {
+            GL46.glUniform2i(location, i, j);
+        }
+    }
+
+    public void i2(Vector2i v) {
+        if (valid) {
+            GL46.glUniform2i(location, v.x, v.y);
+        }
+    }
+
+    public void i3(int i, int j, int k) {
+        if (valid) {
+            GL46.glUniform3i(location, i, j, k);
+        }
+    }
+
+    public void i3(Vector3i v) {
+        if (valid) {
+            GL46.glUniform3i(location, v.x, v.y, v.z);
+        }
+    }
+
+    public void i4(int i, int j, int k, int l) {
+        if (valid) {
+            GL46.glUniform4i(location, i, j, k, l);
+        }
+    }
+
+    public void i4(Vector4i v) {
+        if (valid) {
+            GL46.glUniform4i(location, v.x, v.y, v.z, v.w);
+        }
+    }
+
     public void f1(float v) {
         if (valid) {
             GL46.glUniform1f(location, v);

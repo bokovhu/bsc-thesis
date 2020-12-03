@@ -4,16 +4,15 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.*;
 import javafx.util.StringConverter;
 import lombok.Getter;
 import me.bokov.bsc.surfaceviewer.editorv2.event.EditSceneNodeNameEvent;
-import me.bokov.bsc.surfaceviewer.editorv2.event.OpenSceneNodeEditorEvent;
-import me.bokov.bsc.surfaceviewer.scene.NodeTemplate;
-import me.bokov.bsc.surfaceviewer.scene.SceneNode;
-import me.bokov.bsc.surfaceviewer.scene.World;
+import me.bokov.bsc.surfaceviewer.editorv2.event.OpenEditorTabEvent;
+import me.bokov.bsc.surfaceviewer.scene.*;
 import me.bokov.bsc.surfaceviewer.util.IOUtil;
 
 import java.util.*;
@@ -22,6 +21,9 @@ public class SceneTreeCell extends TextFieldTreeCell<Object> {
 
     @Getter
     private ObjectProperty<SceneNode> sceneNodeProperty = new SimpleObjectProperty<>();
+
+    @Getter
+    private ObjectProperty<LightSource> lightSourceProperty = new SimpleObjectProperty<>();
 
     @Getter
     private ObjectProperty<World> worldProperty = new SimpleObjectProperty<>();
@@ -39,11 +41,13 @@ public class SceneTreeCell extends TextFieldTreeCell<Object> {
                     @Override
                     public Object fromString(String string) {
                         final var world = IOUtil.serialize(worldProperty.get());
-                        final var node = world.findById(sceneNodeProperty.get().getId()).get();
-                        node.getDisplay()
-                                .setName(string);
+                        final var node = world.findById(sceneNodeProperty.get().getId());
+                        if (node.isPresent()) {
+                            node.get().getDisplay()
+                                    .setName(string);
 
-                        worldProperty.setValue(world);
+                            worldProperty.setValue(world);
+                        }
 
                         return node;
                     }
@@ -61,6 +65,10 @@ public class SceneTreeCell extends TextFieldTreeCell<Object> {
 
     private boolean isPortCell(Object value) {
         return value instanceof NodeTemplate.Port;
+    }
+
+    private boolean isLightSourceCell(Object value) {
+        return value instanceof DirectionalLight || value instanceof AmbientLight;
     }
 
     private void onSceneNodeItemDragged(MouseEvent event) {
@@ -147,7 +155,7 @@ public class SceneTreeCell extends TextFieldTreeCell<Object> {
                 .bindBidirectional(sceneNodeProperty);
         contextMenu.getWorldProperty()
                 .bindBidirectional(worldProperty);
-        contextMenu.addEventHandler(OpenSceneNodeEditorEvent.OPEN_SCENE_NODE_EDITOR, this::fireEvent);
+        contextMenu.addEventHandler(OpenEditorTabEvent.OPEN_SCENE_NODE_EDITOR, this::fireEvent);
         contextMenu.addEventFilter(
                 EditSceneNodeNameEvent.EDIT_SCENE_NODE_NAME,
                 event -> startEdit()
@@ -219,6 +227,24 @@ public class SceneTreeCell extends TextFieldTreeCell<Object> {
 
     }
 
+    private void updateLightItem(LightSource lightSource) {
+
+        setEditable(true);
+
+        lightSourceProperty.setValue(lightSource);
+
+        setText(lightSource.getClass().getSimpleName() + ": " + lightSource.getId());
+
+        final var editItem = new MenuItem("Edit");
+        editItem.setOnAction(
+                event -> fireEvent(new OpenEditorTabEvent(OpenEditorTabEvent.OPEN_LIGHT_EDITOR, lightSource.getId()))
+        );
+        final var contextMenu = new ContextMenu(editItem);
+
+        setContextMenu(contextMenu);
+
+    }
+
     @Override
     public void updateItem(Object item, boolean empty) {
         super.updateItem(item, empty);
@@ -229,6 +255,8 @@ public class SceneTreeCell extends TextFieldTreeCell<Object> {
             updateWorldItem((World) item);
         } else if (isPortCell(item)) {
             updatePortItem((NodeTemplate.Port) item);
+        } else if (isLightSourceCell(item)) {
+            updateLightItem((LightSource) item);
         }
 
     }

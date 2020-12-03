@@ -39,7 +39,7 @@ public class OpTranslateTo implements CPUEvaluator<Float, CPUContext>, GPUEvalua
     public List<GLSLStatement> evaluate(GPUContext context) {
 
         final GPUContext generatorContext = context.branch("0")
-                .transform("Translated");
+                .transform("T");
         final List<GLSLStatement> generated = generator.gpu()
                 .evaluate(generatorContext);
 

@@ -10,6 +10,8 @@ public interface VoxelStorage {
 
     Voxel closestVoxel(Vector3f p);
 
+    VoxelData toVoxelData();
+
     default Vector3f globalToLocal(Vector3f global) {
         return new Vector3f(global);
     }

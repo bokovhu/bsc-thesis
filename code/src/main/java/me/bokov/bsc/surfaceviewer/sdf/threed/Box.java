@@ -22,7 +22,7 @@ public class Box implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPUCon
     private final Vector3f v3Zero = new Vector3f(0f, 0f, 0f);
 
     public Box(Vector3f dims) {
-        this.dimensions = new Vector3f(dims);
+        this.dimensions = new Vector3f(dims).mul(0.5f);
     }
 
     @Override

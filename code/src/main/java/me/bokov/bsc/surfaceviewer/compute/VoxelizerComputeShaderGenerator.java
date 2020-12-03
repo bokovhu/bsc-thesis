@@ -29,6 +29,8 @@ public class VoxelizerComputeShaderGenerator {
                 new GLSLRawStatement("layout(rgba32f, binding = 2) uniform image3D u_colorShininessOutput;"),
                 new GLSLUniformStatement("mat4", "u_transform", null)
         );
+        prog.add(new GLSLUniformStatement("ivec3", "u_voxelOffset", null));
+        prog.add(new GLSLUniformStatement("vec3", "u_voxelSize", null));
 
         prog.include("glsl/rm_sdfOp.glsl")
                 .include("glsl/rm_noise.glsl");

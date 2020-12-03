@@ -1,12 +1,9 @@
 package me.bokov.bsc.surfaceviewer.scene;
 
-import me.bokov.bsc.surfaceviewer.scene.materializer.ConstantMaterial;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluables;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
-import me.bokov.bsc.surfaceviewer.sdf.threed.Everywhere;
-import me.bokov.bsc.surfaceviewer.sdf.threed.Sphere;
 import org.joml.Vector3f;
 
 import java.util.*;
@@ -20,6 +17,7 @@ public class BaseWorld implements World {
     private List<SceneNode> rootNodes = new ArrayList<>();
     private List<LightSource> lightSources = new ArrayList<>();
     private List<Materializer> materializers = new ArrayList<>();
+    private List<Prefab> prefabs = new ArrayList<>();
 
     @Override
     public List<SceneNode> roots() {
@@ -166,6 +164,33 @@ public class BaseWorld implements World {
     @Override
     public void removeMaterializer(int id) {
         materializers.removeIf(m -> m.getId() == id);
+    }
+
+    @Override
+    public List<Prefab> getPrefabs() {
+        return prefabs;
+    }
+
+    @Override
+    public void add(Prefab... args) {
+        for (Prefab p : args) {
+            prefabs.add(p);
+        }
+    }
+
+    @Override
+    public void remove(Prefab prefab) {
+        prefabs.removeIf(p -> p.getId() == prefab.getId());
+    }
+
+    @Override
+    public void removePrefab(int id) {
+        prefabs.removeIf(p -> p.getId() == id);
+    }
+
+    @Override
+    public Optional<Prefab> findPrefabByName(String name) {
+        return prefabs.stream().filter(p -> p.getName().equalsIgnoreCase(name)).findFirst();
     }
 
     @Override

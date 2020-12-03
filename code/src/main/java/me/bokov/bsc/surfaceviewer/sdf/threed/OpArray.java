@@ -75,7 +75,7 @@ public class OpArray implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GP
                 for (int x = 0; x < countX; x++) {
 
                     final var generatorContext = context.branch("Z" + z + "Y" + y + "X" + x)
-                            .transform("Offset");
+                            .transform("Off");
                     contexts.add(generatorContext);
                     final var pointVariable = var("vec3", generatorContext.getPointVariable(), vec3(
                             opPlus(ref(context.getPointVariable(), "x"), opMul(literal((float) x), literal(offset.x))),

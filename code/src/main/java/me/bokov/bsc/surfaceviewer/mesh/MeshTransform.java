@@ -76,7 +76,7 @@ public class MeshTransform implements Serializable {
     }
 
     public MeshTransform applyScale(float scale) {
-        this.scale = 1f;
+        this.scale = scale;
         update();
         return this;
     }

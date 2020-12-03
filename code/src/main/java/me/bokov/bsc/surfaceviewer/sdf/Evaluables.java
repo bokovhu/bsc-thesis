@@ -8,9 +8,10 @@ import org.joml.Vector3f;
 
 import java.util.*;
 
-import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.*;
-
 public final class Evaluables {
+
+    static final Quaternionf QUAT_IDENT = new Quaternionf().identity();
+    static final Vector3f V_IDENT = new Vector3f(0f);
 
     private Evaluables() {
     }
@@ -164,10 +165,11 @@ public final class Evaluables {
 
     public static Evaluable<Float, CPUContext, GPUContext> gate(
             Evaluable<Float, CPUContext, GPUContext> boundary,
-            Evaluable<Float, CPUContext, GPUContext> generator
+            Evaluable<Float, CPUContext, GPUContext> generator,
+            float threshold
     ) {
         return Evaluable.of(
-                new OpGate(boundary, generator)
+                new OpGate(boundary, generator, threshold)
         );
     }
 
@@ -175,22 +177,25 @@ public final class Evaluables {
             MeshTransform M,
             Evaluable<Float, CPUContext, GPUContext> generator
     ) {
-        return Evaluable.of(
-                new OpTranslateTo(
-                        M.position(),
-                        Evaluable.of(
-                                new OpScale(
-                                        M.scale(),
-                                        Evaluable.of(
-                                                new OpRotate(
-                                                        M.orientation(),
-                                                        generator
-                                                )
-                                        )
-                                )
-                        )
-                )
-        );
+
+        var eval = generator;
+        if (!M.orientation().equals(QUAT_IDENT)) {
+            eval = Evaluable.of(
+                    new OpRotate(M.orientation(), eval)
+            );
+        }
+        if (Math.abs(M.scale() - 1.0f) > 0.001f) {
+            eval = Evaluable.of(
+                    new OpScale(M.scale(), eval)
+            );
+        }
+        if (!M.position().equals(V_IDENT)) {
+            eval = Evaluable.of(
+                    new OpTranslateTo(M.position(), eval)
+            );
+        }
+
+        return eval;
     }
 
 }

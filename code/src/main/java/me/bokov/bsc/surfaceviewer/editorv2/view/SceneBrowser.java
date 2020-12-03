@@ -6,7 +6,7 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import lombok.Getter;
-import me.bokov.bsc.surfaceviewer.editorv2.event.OpenSceneNodeEditorEvent;
+import me.bokov.bsc.surfaceviewer.editorv2.event.OpenEditorTabEvent;
 import me.bokov.bsc.surfaceviewer.editorv2.service.SceneTreeBuilderTask;
 import me.bokov.bsc.surfaceviewer.scene.World;
 
@@ -40,7 +40,7 @@ public class SceneBrowser extends TreeView<Object> {
 
         SceneTreeCell cell = new SceneTreeCell();
 
-        cell.addEventHandler(OpenSceneNodeEditorEvent.OPEN_SCENE_NODE_EDITOR, this::fireEvent);
+        cell.addEventHandler(OpenEditorTabEvent.OPEN_SCENE_NODE_EDITOR, this::fireEvent);
 
         cell.getWorldProperty()
                 .bindBidirectional(worldProperty);

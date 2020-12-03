@@ -3,9 +3,8 @@ package me.bokov.bsc.surfaceviewer.mesh.dccpu;
 import me.bokov.bsc.surfaceviewer.mesh.MeshGenerator;
 import me.bokov.bsc.surfaceviewer.render.Drawable;
 import me.bokov.bsc.surfaceviewer.render.Drawables;
+import me.bokov.bsc.surfaceviewer.util.MetricsLogger;
 import me.bokov.bsc.surfaceviewer.voxelization.*;
-import org.apache.commons.math3.linear.*;
-import org.joml.Planef;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -395,6 +394,8 @@ public class GridDualContouring implements MeshGenerator {
 
     public List<Drawables.Face> generateTriangles(GridVoxelStorage voxelStorage) {
 
+        long start = System.currentTimeMillis();
+
         final List<Drawables.Face> generatedTriangles = new ArrayList<>();
 
         final Vector3f tmp = new Vector3f();
@@ -418,6 +419,10 @@ public class GridDualContouring implements MeshGenerator {
                 ];
 
         final var unusedVoxelIterator = voxelStorage.voxelIterator();
+
+        long obtainVoxelIteratorEnd = System.currentTimeMillis();
+
+        long lastLayerEnd = System.currentTimeMillis();
 
         for (int z = 0; z < voxelStorage.zVoxelCount(); z++) {
             for (int y = 0; y < voxelStorage.yVoxelCount(); y++) {
@@ -448,10 +453,10 @@ public class GridDualContouring implements MeshGenerator {
                         }
                     }
 
-                    if(intersectedEdges.size() >= 2) {
+                    if (intersectedEdges.size() >= 2) {
 
                         Vector3f avg = new Vector3f();
-                        for(Edge edge : intersectedEdges) {
+                        for (Edge edge : intersectedEdges) {
                             avg.add(
                                     interpolate(edge.x1, edge.v1, edge.x2, edge.v2, 0.0f),
                                     interpolate(edge.y1, edge.v1, edge.y2, edge.v2, 0.0f),
@@ -477,7 +482,7 @@ public class GridDualContouring implements MeshGenerator {
                     points[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage.xVoxelCount() + x]
                             = new Vector3f(tmp);
                     normals[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage.xVoxelCount() + x]
-                            = new Vector3f(tmpN);
+                            = tmpN;
 
                     colors[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage.xVoxelCount() + x]
                             = interpMaterial(voxel, fractX, fractY, fractZ);
@@ -487,7 +492,13 @@ public class GridDualContouring implements MeshGenerator {
 
             }
 
+            long doneTime = System.currentTimeMillis();
+            System.out.println(z + " layer done in " + (doneTime - lastLayerEnd) + " ms");
+            lastLayerEnd = doneTime;
+
         }
+
+        long placePointsEnd = System.currentTimeMillis();
 
         for (int z = 0; z < voxelStorage.zVoxelCount() - 1; z++) {
             for (int y = 0; y < voxelStorage.yVoxelCount() - 1; y++) {
@@ -659,6 +670,19 @@ public class GridDualContouring implements MeshGenerator {
                 }
             }
         }
+
+        long end = System.currentTimeMillis();
+
+        MetricsLogger.logMetrics(
+                "Dual Contouring (CPU)",
+                Map.of(
+                        "Total runtime", (end - start) + " ms",
+                        "Voxel iterator obtain time", (obtainVoxelIteratorEnd - start) + " ms",
+                        "Point placement time", (placePointsEnd - obtainVoxelIteratorEnd) + " ms",
+                        "Generate triangles time", (end - placePointsEnd) + " ms",
+                        "Generated triangle count", generatedTriangles.size()
+                )
+        );
 
         return generatedTriangles;
 

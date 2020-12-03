@@ -261,14 +261,19 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
         node.plug(name, child);
 
     }
-
     private SceneNode expressionToSceneNode(SurfaceLangParser.ExpressionContext ctx) {
 
         final var nodeType = ctx.expressionName().IDENTIFIER().getText().toUpperCase();
+        NodeTemplate nodeTemplate = NodeTemplate.IDENTITY;
+
+        final var prefab = world.findPrefabByName(nodeType);
+        if(prefab.isEmpty()) {
+            nodeTemplate = NodeTemplate.valueOf(nodeType);
+        }
 
         SceneNode node = new BaseSceneNode(
                 lastId++,
-                NodeTemplate.valueOf(nodeType)
+                nodeTemplate
         );
 
         if (ctx.expressionAlias() != null && ctx.expressionAlias().IDENTIFIER() != null && ctx.expressionAlias()
@@ -279,52 +284,58 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
             );
         }
 
-        if (ctx.expressionProperties() != null && ctx.expressionProperties().propertyMap() != null) {
+        if (prefab.isPresent()) {
+            node.setPrefab(prefab.get());
+        } else {
 
-            SurfaceLangParser.PropertyMapContext pMapCtx = ctx.expressionProperties().propertyMap();
+            if (ctx.expressionProperties() != null && ctx.expressionProperties().propertyMap() != null) {
 
-            if (pMapCtx.propertySpec() != null) {
-                pMapCtx.propertySpec()
-                        .forEach(
-                                spec -> putPropBySpec(spec, node)
-                        );
+                SurfaceLangParser.PropertyMapContext pMapCtx = ctx.expressionProperties().propertyMap();
+
+                if (pMapCtx.propertySpec() != null) {
+                    pMapCtx.propertySpec()
+                            .forEach(
+                                    spec -> putPropBySpec(spec, node)
+                            );
+                }
+
             }
 
-        }
+            if (ctx.expressionPorts() != null && ctx.expressionPorts().portMap() != null) {
 
-        if (ctx.expressionPorts() != null && ctx.expressionPorts().portMap() != null) {
+                if (!node.getTemplate().supportsChildren || node.getTemplate().ports.isEmpty()) {
+                    throw new IllegalArgumentException(node.getTemplate() + " does not support ports!");
+                }
 
-            if (!node.getTemplate().supportsChildren || node.getTemplate().ports.isEmpty()) {
-                throw new IllegalArgumentException(node.getTemplate() + " does not support ports!");
+                SurfaceLangParser.PortMapContext pMapCtx = ctx.expressionPorts().portMap();
+                SurfaceLangParser.DefaultPortSpecContext dPortSpecCtx = pMapCtx.defaultPortSpec();
+
+                if (pMapCtx.portSpec() != null) {
+                    pMapCtx.portSpec().forEach(
+                            spec -> putPortBySpec(spec, node)
+                    );
+                }
+
+                if (dPortSpecCtx != null) {
+                    putDefaultPortBySpec(dPortSpecCtx, node);
+                }
+
             }
 
-            SurfaceLangParser.PortMapContext pMapCtx = ctx.expressionPorts().portMap();
-            SurfaceLangParser.DefaultPortSpecContext dPortSpecCtx = pMapCtx.defaultPortSpec();
+            if (ctx.expressionChildren() != null && ctx.expressionChildren().childList() != null) {
 
-            if (pMapCtx.portSpec() != null) {
-                pMapCtx.portSpec().forEach(
-                        spec -> putPortBySpec(spec, node)
-                );
-            }
+                if (!node.getTemplate().supportsChildren || !node.getTemplate().ports.isEmpty()) {
+                    throw new IllegalArgumentException(node.getTemplate() + " does not support children list!");
+                }
 
-            if (dPortSpecCtx != null) {
-                putDefaultPortBySpec(dPortSpecCtx, node);
-            }
+                SurfaceLangParser.ChildListContext cListCtx = ctx.expressionChildren().childList();
 
-        }
+                if (cListCtx.expression() != null) {
+                    cListCtx.expression().forEach(
+                            e -> node.add(expressionToSceneNode(e))
+                    );
+                }
 
-        if (ctx.expressionChildren() != null && ctx.expressionChildren().childList() != null) {
-
-            if (!node.getTemplate().supportsChildren || !node.getTemplate().ports.isEmpty()) {
-                throw new IllegalArgumentException(node.getTemplate() + " does not support children list!");
-            }
-
-            SurfaceLangParser.ChildListContext cListCtx = ctx.expressionChildren().childList();
-
-            if (cListCtx.expression() != null) {
-                cListCtx.expression().forEach(
-                        e -> node.add(expressionToSceneNode(e))
-                );
             }
 
         }
@@ -506,12 +517,25 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
 
     }
 
+    private Prefab parsePrefab(SurfaceLangParser.PrefabContext ctx) {
+
+        final var prefab = new BasePrefab(world.nextId());
+        prefab.setName(ctx.prefabName().IDENTIFIER().getText());
+        prefab.setNode(expressionToSceneNode(ctx.expression()));
+
+        return prefab;
+
+    }
+
     @Override
     public void exitWorld(SurfaceLangParser.WorldContext ctx) {
         super.exitWorld(ctx);
 
         world = new BaseWorld();
         world.getLightSources().clear();
+        ctx.prefab().forEach(
+                pref -> world.add(parsePrefab(pref))
+        );
         ctx.expression().forEach(
                 expr -> world.add(expressionToSceneNode(expr))
         );

@@ -20,6 +20,13 @@ import static me.bokov.bsc.surfaceviewer.sdf.Evaluables.*;
 
 public enum NodeTemplate {
 
+    IDENTITY(
+            true,
+            c -> c.getPorts().containsKey("Generator") ? c.getPorts().get("Generator").toEvaluable() : null,
+            List.of(
+                    Port.builder().color("#000000").name("Generator").build()
+            )
+    ),
     EVERYWHERE(
             false,
             c -> Evaluable.of(new Everywhere())
@@ -46,12 +53,15 @@ public enum NodeTemplate {
             c -> intersect(c.getChildren().stream().map(SceneNode::toEvaluable).collect(Collectors.toList()))
     ),
     GATE(
-            List.of(),
+            List.of(
+                    Property.builder().type("float").name("threshold").defaultValue(1.0f).build()
+            ),
             true,
             c -> c.getPorts().containsKey("Boundary") && c.getPorts().containsKey("Generator") ? Evaluable.of(
                     new OpGate(
                             c.getPorts().get("Boundary").toEvaluable(),
-                            c.getPorts().get("Generator").toEvaluable()
+                            c.getPorts().get("Generator").toEvaluable(),
+                            c.getFloatProperties().getOrDefault("threshold", 1.0f)
                     )
             ) : null,
             List.of(

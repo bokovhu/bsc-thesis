@@ -14,15 +14,17 @@ public class OpGate implements CPUEvaluator<Float, CPUContext>, GPUEvaluator<GPU
         Serializable {
 
     private final Evaluable<Float, CPUContext, GPUContext> boundary;
-    private final float threshold = 0.1f;
+    private final float threshold;
     private final Evaluable<Float, CPUContext, GPUContext> generator;
 
     public OpGate(
             Evaluable<Float, CPUContext, GPUContext> boundary,
-            Evaluable<Float, CPUContext, GPUContext> generator
+            Evaluable<Float, CPUContext, GPUContext> generator,
+            float threshold
     ) {
         this.boundary = boundary;
         this.generator = generator;
+        this.threshold = threshold;
     }
 
     @Override

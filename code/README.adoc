@@ -23,22 +23,28 @@ There are many example scenes in the `example` directory, that can be opened by 
 ## Screenshots
 
 .The editor when opening a scene. On the right side, different functions of the editor will be available on different tabs. On the first tab (Renderer settings), you can change the renderer to the ray marcher, or change the voxelization and mesh generation parameters of the default fixed function pipeline renderer.
-image::../docs/screenshots/editor-1.png[]
+image::./screenshots/editor-1.png[]
 
 .You can change the SurfaceLang code of the scene on the Code editor tab. By clicking the Sync button, you can synchronize changes done outside the code editor, and by clicking Compile, or pressing Ctrl+Enter, you can compile the code currently in the editor.
-image::../docs/screenshots/editor-2.png[]
+image::./screenshots/editor-2.png[]
 
 .By chosing the Edit option in the context menu of a tree node in the scene browser on the left, you can open the scene node editor tab for a given scene node. In this editor tab, you can set the transformation properties, and the surface generator's properties associated with the given node.
-image::../docs/screenshots/editor-3.png[]
+image::./screenshots/editor-3.png[]
 
 .You can interact with the scene nodes in the left part of the editor window, the Scene Browser. This component displays the scene in a tree, supports drag n' drop between different nodes, and the right click context menu.
-image::../docs/screenshots/editor-4.png[]
+image::./screenshots/editor-4.png[]
 
 .You may save the current scene, open an existing, export it as a 3D model file, or make a higher resolution render of it using the File menu.
-image::../docs/screenshots/editor-5.png[]
+image::./screenshots/editor-5.png[]
 
 .The render dialog.
-image::../docs/screenshots/editor-6.png[]
+image::./screenshots/editor-6.png[]
 
 .The export dialog.
-image::../docs/screenshots/editor-7.png[]
+image::./screenshots/editor-7.png[]
+
+.A scene, displayed using the fixed function mesh rendering pipeline.
+image::./screenshots/viewer-1.png[]
+
+.A scene, displayed using the realtime ray marcher.
+image::./screenshots/viewer-2.png[]

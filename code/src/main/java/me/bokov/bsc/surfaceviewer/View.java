@@ -108,7 +108,7 @@ public class View implements Runnable {
         GLFW.glfwDefaultWindowHints();
 
         GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
-        GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_FALSE);
+        GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE);
 
         final long monitor = MONITOR != 0L
                 ? MONITOR
@@ -372,6 +372,7 @@ public class View implements Runnable {
 
         if (this.renderer != null) {
             if (this.world != null || this.renderer.supportsNoWorldRendering()) {
+                this.camera.update((float) width / (float) height);
                 this.renderer.render(this.world);
             }
         }
@@ -392,6 +393,7 @@ public class View implements Runnable {
 
 
         GL46.glViewport(0, 0, windowWidth, windowHeight);
+        this.camera.update((float) windowWidth / (float) windowHeight);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
 
 

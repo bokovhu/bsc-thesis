@@ -1,0 +1,176 @@
+light ambient {
+    energy: (0.1, 0.2, 0.4)
+}
+
+light directional {
+    energy: (1.1, 1.1, 1.8),
+    direction: (0.4575, 0.7625, 0.4575)
+}
+
+light directional {
+    energy: (0.9, 0.6, 0.6),
+    direction: (0.4575, 0.7625, -0.4575)
+}
+
+material constant {
+    boundary: PLANE (
+        normal: (0, 1, 0),
+        h: -0.001
+    ),
+    diffuse: (0.1, 0.4, 0.13),
+    shininess: 10
+}
+
+material constant {
+    boundary: EVERYWHERE ,
+    diffuse: (0.6, 0.1, 0.12),
+    shininess: 80
+}
+
+prefab roof1x1_classic_A{
+    INTERSECT [
+        BOX  AT  ROTATE AROUND (1, 0, 0) BY 45 DEGREES(bounds: (1, 0.707, 0.707)),
+        BOX (bounds: (1, 1, 1))
+    ]
+}
+
+prefab roof1x1_classic_B{
+    INTERSECT [
+        BOX  AT  ROTATE AROUND (0, 0, 1) BY 45 DEGREES(bounds: (0.707, 0.707, 1)),
+        BOX (bounds: (1, 1, 1))
+    ]
+}
+
+prefab roof1x1_pyramid{
+    INTERSECT [
+        BOX  AT  ROTATE AROUND (1, 0, 0) BY 45 DEGREES(bounds: (1, 1, 1)),
+        BOX  AT  ROTATE AROUND (0, 0, 1) BY 45 DEGREES(bounds: (1, 1, 1))
+    ]
+}
+
+prefab roof1x1_neoclassic{
+    UNION [
+        roof1x1_classic_A ,
+        roof1x1_classic_B
+    ]
+}
+
+prefab roof2x2_classic{
+    INTERSECT [
+        BOX  AT  ROTATE AROUND (1, 0, 0) BY 45 DEGREES(bounds: (2, 1.414, 1.414)),
+        BOX  AT  POSITION (0, 1, 0)(bounds: (2, 2, 2))
+    ]
+}
+
+prefab roof2x2_pyramid{
+    INTERSECT [
+        BOX  AT  ROTATE AROUND (1, 0, 0) BY 45 DEGREES(bounds: (2, 2, 2)),
+        BOX  AT  ROTATE AROUND (0, 0, 1) BY 45 DEGREES(bounds: (2, 2, 2))
+    ]
+}
+
+prefab roof2x1{
+    INTERSECT [
+        BOX  AT  ROTATE AROUND (1, 0, 0) BY 45 DEGREES(bounds: (2, 0.707, 0.707)),
+        BOX  AT  POSITION (0, 1, 0)(bounds: (2, 2, 1))
+    ]
+}
+
+prefab house1x1x1_A{
+    UNION [
+        BOX  AT  POSITION (0.5, 0.5, 0.5)(bounds: (1, 1, 1)),
+        roof1x1_classic_A  AT  POSITION (0.5, 1, 0.5)
+    ]
+}
+
+prefab house1x1x1_B{
+    UNION [
+        BOX  AT  POSITION (0.5, 0.5, 0.5)(bounds: (1, 1, 1)),
+        roof1x1_classic_B  AT  POSITION (0.5, 1, 0.5)
+    ]
+}
+
+prefab house1x1x1_P{
+    UNION [
+        BOX  AT  POSITION (0.5, 0.5, 0.5)(bounds: (1, 1, 1)),
+        roof1x1_pyramid  AT  POSITION (0.5, 1, 0.5)
+    ]
+}
+
+prefab house1x1x1_N{
+    UNION [
+        BOX  AT  POSITION (0.5, 0.5, 0.5)(bounds: (1, 1, 1)),
+        roof1x1_neoclassic  AT  POSITION (0.5, 1, 0.5)
+    ]
+}
+
+prefab house1x2x1{
+    UNION [
+        BOX  AT  POSITION (0.5, 1, 0.5)(bounds: (1, 2, 1)),
+        roof1x1_classic_A  AT  POSITION (0.5, 2, 0.5)
+    ]
+}
+
+prefab house1x3x1{
+    UNION [
+        BOX  AT  POSITION (0.5, 1.5, 0.5)(bounds: (1, 3, 1)),
+        roof1x1_classic_A  AT  POSITION (0.5, 3, 0.5)
+    ]
+}
+
+prefab house1x4x1{
+    UNION [
+        BOX  AT  POSITION (0.5, 2, 0.5)(bounds: (1, 4, 1)),
+        roof1x1_classic_A  AT  POSITION (0.5, 4, 0.5)
+    ]
+}
+
+prefab house2x1x1{
+    UNION [
+        BOX  AT  POSITION (1, 0.5, 0.5)(bounds: (2, 1, 1)),
+        roof2x1  AT  POSITION (1, 1, 0.5)
+    ]
+}
+
+prefab house2x2x1{
+    UNION [
+        BOX  AT  POSITION (1, 1, 0.5)(bounds: (2, 2, 1)),
+        roof2x1  AT  POSITION (1, 2, 0.5)
+    ]
+}
+
+prefab house2x3x1{
+    UNION [
+        BOX  AT  POSITION (1, 1.5, 0.5)(bounds: (2, 3, 1)),
+        roof2x1  AT  POSITION (1, 3, 0.5)
+    ]
+}
+
+prefab house2x4x1{
+    UNION [
+        BOX  AT  POSITION (1, 2, 0.5)(bounds: (2, 4, 1)),
+        roof2x1  AT  POSITION (1, 4, 0.5)
+    ]
+}
+
+prefab house2x2x2{
+    UNION [
+        BOX  AT  POSITION (1, 1, 1)(bounds: (2, 2, 2)),
+        roof2x2_pyramid  AT  POSITION (1, 2, 1)
+    ]
+}
+
+PLANE (h: 0)
+house1x1x1_A
+house1x1x1_B  AT  POSITION (0, 0, -2)
+house1x1x1_P  AT  POSITION (0, 0, -4)
+house1x1x1_N  AT  POSITION (0, 0, -6)
+house1x2x1  AT  POSITION (0, 0, 2)
+house1x3x1  AT  POSITION (0, 0, 4)
+house1x4x1  AT  POSITION (0, 0, 6)
+SPHERE (radius: 0.5)
+house2x1x1  AT  POSITION (2, 0, 0)
+house2x2x1  AT  POSITION (2, 0, 2)
+house2x3x1  AT  POSITION (2, 0, 4)
+house2x4x1  AT  POSITION (2, 0, 6)
+house2x2x2  AT  POSITION (5, 0, 5)

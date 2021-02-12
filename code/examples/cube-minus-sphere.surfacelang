@@ -1,19 +1,19 @@
 light ambient {
-    energy: (0.2000, 0.2000, 0.2000)
+    energy: (0.2, 0.2, 0.2)
 }
 
 light directional {
-    energy: (1.0000, 1.0000, 1.0000),
+    energy: (1, 1, 1),
     direction: (0.4575, 0.7625, -0.4575)
 }
 
 material constant {
-    boundary: EVERYWHERE (),
-    diffuse: (1.0000, 1.0000, 1.0000),
-    shininess: 80.0000
+    boundary: EVERYWHERE ,
+    diffuse: (1, 1, 1),
+    shininess: 80
 }
 
-SUBTRACT (){
-    A: BOX (),
-    B: SPHERE (radius: 1.2500)
+SUBTRACT {
+    A: BOX ,
+    B: SPHERE (radius: 0.6)
 }

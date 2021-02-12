@@ -74,14 +74,14 @@ public class EditorMenu extends MenuBar implements Initializable {
         onSaveScene(event);
     }
 
-    @FXML
-    public void onExportGLTF(ActionEvent event) {
+    private void doExport(boolean mc) {
 
         Platform.runLater(
                 () -> {
 
                     final var task = new ExportTask();
                     task.getWorldProperty().bind(worldProperty);
+                    task.getUseMarchingCubesProperty().setValue(mc);
 
                     task.setOnSucceeded(
                             successEvent -> {
@@ -106,6 +106,20 @@ public class EditorMenu extends MenuBar implements Initializable {
 
                 }
         );
+
+    }
+
+    @FXML
+    public void onExportMarchingCubes(ActionEvent event) {
+
+        doExport(true);
+
+    }
+
+    @FXML
+    public void onExportDualContouring(ActionEvent event) {
+
+        doExport(false);
 
     }
 

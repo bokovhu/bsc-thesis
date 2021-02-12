@@ -2,6 +2,8 @@ package me.bokov.bsc.surfaceviewer.editorv2.view;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -34,6 +36,9 @@ public class CodeEditor extends VBox implements Initializable {
 
     @Getter
     private ObjectProperty<SurfaceLangExpression> expressionProperty = new SimpleObjectProperty<>(new SurfaceLangExpression());
+
+    @Getter
+    private StringProperty sourceCodeProperty = new SimpleStringProperty("");
 
     @FXML
     private CodeArea codeArea;

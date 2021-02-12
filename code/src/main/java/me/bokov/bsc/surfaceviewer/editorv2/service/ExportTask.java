@@ -1,6 +1,8 @@
 package me.bokov.bsc.surfaceviewer.editorv2.service;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
 import javafx.scene.control.ButtonType;
@@ -10,6 +12,8 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import me.bokov.bsc.surfaceviewer.App;
 import me.bokov.bsc.surfaceviewer.editorv2.view.ExportConfigDialog;
+import me.bokov.bsc.surfaceviewer.render.Drawable;
+import me.bokov.bsc.surfaceviewer.render.Drawables;
 import me.bokov.bsc.surfaceviewer.scene.World;
 import org.joml.Vector3f;
 
@@ -23,6 +27,9 @@ public class ExportTask extends Task<File> {
     private final ObjectProperty<App> appProperty = new SimpleObjectProperty<>();
     @Getter
     private final ObjectProperty<World> worldProperty = new SimpleObjectProperty<>();
+
+    @Getter
+    private final BooleanProperty useMarchingCubesProperty = new SimpleBooleanProperty(true);
 
     @Override
     protected File call() throws Exception {
@@ -67,16 +74,37 @@ public class ExportTask extends Task<File> {
             return null;
         }
 
-        final var marchingCubesTask = new ExportMarchingCubesTask();
-        marchingCubesTask.getGridWidthProperty().setValue(config.get().getGridWidth());
-        marchingCubesTask.getGridHeightProperty().setValue(config.get().getGridHeight());
-        marchingCubesTask.getGridDepthProperty().setValue(config.get().getGridDepth());
-        marchingCubesTask.getGridOffsetProperty().setValue(config.get().getGridOffset());
-        marchingCubesTask.getGridScaleProperty().setValue(config.get().getGridScale());
-        marchingCubesTask.getWorldProperty().setValue(worldProperty.get());
+        List<Drawables.Face> faceList = new ArrayList<>();
 
-        marchingCubesTask.run();
-        final var faceList = marchingCubesTask.get();
+        if (useMarchingCubesProperty.get()) {
+
+            final var marchingCubesTask = new ExportMarchingCubesTask();
+            marchingCubesTask.getGridWidthProperty().setValue(config.get().getGridWidth());
+            marchingCubesTask.getGridHeightProperty().setValue(config.get().getGridHeight());
+            marchingCubesTask.getGridDepthProperty().setValue(config.get().getGridDepth());
+            marchingCubesTask.getGridOffsetProperty().setValue(config.get().getGridOffset());
+            marchingCubesTask.getGridScaleProperty().setValue(config.get().getGridScale());
+            marchingCubesTask.getWorldProperty().setValue(worldProperty.get());
+
+            marchingCubesTask.run();
+
+            faceList.addAll(marchingCubesTask.get());
+
+        } else {
+
+            final var dualContouringTask = new ExportDualContouringTask();
+            dualContouringTask.getGridWidthProperty().setValue(config.get().getGridWidth());
+            dualContouringTask.getGridHeightProperty().setValue(config.get().getGridHeight());
+            dualContouringTask.getGridDepthProperty().setValue(config.get().getGridDepth());
+            dualContouringTask.getGridOffsetProperty().setValue(config.get().getGridOffset());
+            dualContouringTask.getGridScaleProperty().setValue(config.get().getGridScale());
+            dualContouringTask.getWorldProperty().setValue(worldProperty.get());
+
+            dualContouringTask.run();
+
+            faceList.addAll(dualContouringTask.get());
+
+        }
 
         switch (exportType) {
             case OBJ:

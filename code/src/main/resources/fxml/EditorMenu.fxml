@@ -16,7 +16,8 @@
                 <MenuItem mnemonicParsing="false" onAction="#onNewScene" text="New scene" />
                 <MenuItem mnemonicParsing="false" onAction="#onOpenScene" text="Open scene ..." />
                 <MenuItem mnemonicParsing="false" onAction="#onSaveScene" text="Save scene ..." />
-                <MenuItem onAction="#onExportGLTF" text="Export ..." />
+                <MenuItem onAction="#onExportMarchingCubes" text="Export - MC ..." />
+                <MenuItem onAction="#onExportDualContouring" text="Export - DC ..." />
                 <MenuItem onAction="#onRenderScene" text="Render ..." />
             </items>
         </Menu>

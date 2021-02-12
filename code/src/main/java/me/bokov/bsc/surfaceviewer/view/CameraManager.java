@@ -115,7 +115,7 @@ public class CameraManager {
             tmpNewEye.set(zoomStartPoint).add(
                     tmpDir.set(camera.forward()).mul(zoomDistance)
             );
-            origin.set(tmpNewOrigin.set(zoomStartOrigin).add(tmpNewEye).sub(zoomStartPoint));
+            // origin.set(tmpNewOrigin.set(zoomStartOrigin).add(tmpNewEye).sub(zoomStartPoint));
 
             camera.lookAt(
                     tmpNewEye,

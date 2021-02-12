@@ -1,0 +1,61 @@
+light ambient {
+    energy: (0.2, 0.2, 0.2)
+}
+
+light directional {
+    energy: (1, 1, 1),
+    direction: (0.4575, 0.7625, 0.4575)
+}
+
+light directional {
+    energy: (1, 1, 1),
+    direction: (0, 1, 0)
+}
+
+light directional {
+    energy: (0.8, 1, 0.95),
+    direction: (0.4082, 0.4082, 0.8165)
+}
+
+material constant {
+    boundary: UNION  AT  POSITION (0, 0.1, 0)[
+        CYLINDER  AT  POSITION (-0.15, 0, 0.4) ROTATE AROUND (1, 0, 0) BY 90 DEGREES(
+            radius: 0.08,
+            height: 0.2
+        ),
+        CYLINDER  AT  POSITION (0.15, 0, 0.4) ROTATE AROUND (1, 0, 0) BY 90 DEGREES(
+            radius: 0.08,
+            height: 0.2
+        ),
+        half_torus  AT  POSITION (0, -0.2, 0.4)
+    ]
+    ,
+    diffuse: (0.1, 0.1, 0.1),
+    shininess: 50
+}
+
+material constant {
+    boundary: EVERYWHERE ,
+    diffuse: (0.5, 0.1, 0.1),
+    shininess: 14
+}
+
+prefab half_torus{
+    SUBTRACT {
+        A: TORUS  AT  ROTATE AROUND (1, 0, 0) BY 90 DEGREES(radius: (0.15, 0.05)),
+        B: BOX  AT  POSITION (0, 0.5, 0)
+    }
+}
+
+SUBTRACT {
+    A: ONION (radius: 0.01){
+        CYLINDER (height: 0.5)
+    }
+    ,
+    B: BOX  AT  POSITION (0, 0.8, 0)(bounds: (4, 1, 4))
+}
+
+SUBTRACT {
+    A: TORUS  AT  POSITION (-0.4, 0, 0) ROTATE AROUND (1, 0, 0) BY 90 DEGREES(radius: (0.2, 0.05)),
+    B: CYLINDER
+}

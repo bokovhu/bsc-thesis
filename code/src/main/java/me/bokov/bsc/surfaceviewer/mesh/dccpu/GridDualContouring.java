@@ -468,11 +468,11 @@ public class GridDualContouring implements MeshGenerator {
 
                     }
 
-                    tmp.set(
+                    /* tmp.set(
                             clamp(tmp.x, voxel.x000(), voxel.x100()),
                             clamp(tmp.y, voxel.y000(), voxel.y010()),
                             clamp(tmp.z, voxel.z000(), voxel.z001())
-                    );
+                    ); */
 
                     float fractX = clamp((1.0f / cellSize) * (tmp.x - voxel.x000()), 0, 1);
                     float fractY = clamp((1.0f / cellSize) * (tmp.y - voxel.y000()), 0, 1);

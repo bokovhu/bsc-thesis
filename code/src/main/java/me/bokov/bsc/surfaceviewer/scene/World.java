@@ -44,4 +44,10 @@ public interface World extends Serializable {
     void removePrefab(int id);
     Optional<Prefab> findPrefabByName(String name);
 
+    List<ResourceTexture> getResourceTextures();
+    void add(ResourceTexture... args);
+    void remove(ResourceTexture resource);
+    void removeResourceTexture(int id);
+    Optional<ResourceTexture> findResourceTextureByName(String name);
+
 }

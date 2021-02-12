@@ -117,18 +117,6 @@ public final class VoxelManager {
                 e.printStackTrace();
             }
 
-            try (FileOutputStream fos = new FileOutputStream(new File(outputDir, "color.bin"))) {
-
-                final var buf = BufferUtils.createByteBuffer(Float.BYTES * data.getColorAndShininessBuffer().limit());
-                for (int i = 0; i < data.getColorAndShininessBuffer().limit(); i++) {
-                    buf.putFloat(data.getColorAndShininessBuffer().get(i));
-                }
-                fos.getChannel().write(buf);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
             try (FileOutputStream fos = new FileOutputStream(new File(outputDir, "meta.bin"))) {
 
                 final var buf = BufferUtils.createByteBuffer(Integer.BYTES * 3);
@@ -216,7 +204,7 @@ public final class VoxelManager {
         }
 
         releaseVoxelStorage();
-        voxelStorage = new UniformGrid(w, h, d, posvBuf, normalBuf, colorBuf);
+        voxelStorage = new UniformGrid(w, h, d, posvBuf, normalBuf);
 
     }
 

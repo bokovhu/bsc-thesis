@@ -63,9 +63,6 @@ public class GPUUniformGridVoxelizer implements Voxelizer3D<GPUUniformGrid> {
         result.getNormalTexture()
                 .bind(1)
                 .bindImage(1, false, true);
-        result.getColorShininessTexture()
-                .bind(2)
-                .bindImage(2, false, true);
 
         voxelizerProgram.uniform("u_transform")
                 .mat4(transform.M());
@@ -75,13 +72,6 @@ public class GPUUniformGridVoxelizer implements Voxelizer3D<GPUUniformGrid> {
 
         GL46.glDispatchCompute(width, height, depth);
         GL46.glMemoryBarrier(GL46.GL_ALL_BARRIER_BITS);
-
-//        GL46.glActiveTexture(GL46.GL_TEXTURE0);
-//        GL46.glBindTexture(GL46.GL_TEXTURE_3D, 0);
-//        GL46.glActiveTexture(GL46.GL_TEXTURE1);
-//        GL46.glBindTexture(GL46.GL_TEXTURE_3D, 0);
-//        GL46.glActiveTexture(GL46.GL_TEXTURE2);
-//        GL46.glBindTexture(GL46.GL_TEXTURE_3D, 0);
 
         GL46.glUseProgram(0);
 
@@ -153,9 +143,6 @@ public class GPUUniformGridVoxelizer implements Voxelizer3D<GPUUniformGrid> {
         result.getNormalTexture()
                 .bind(1)
                 .bindImage(1, false, true);
-        result.getColorShininessTexture()
-                .bind(2)
-                .bindImage(2, false, true);
 
         voxelizerProgram.uniform("u_transform")
                 .mat4(transform.M());

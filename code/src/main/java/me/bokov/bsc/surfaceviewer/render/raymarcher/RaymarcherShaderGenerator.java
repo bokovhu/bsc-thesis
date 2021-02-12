@@ -4,7 +4,9 @@ import me.bokov.bsc.surfaceviewer.glsl.*;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLFunctionStatement.GLSLFunctionParameterStatement;
 import me.bokov.bsc.surfaceviewer.scene.LightSource;
 import me.bokov.bsc.surfaceviewer.scene.Materializer;
+import me.bokov.bsc.surfaceviewer.scene.ResourceTexture;
 import me.bokov.bsc.surfaceviewer.scene.World;
+import me.bokov.bsc.surfaceviewer.sdf.threed.ColorGPUEvaluationContext;
 import me.bokov.bsc.surfaceviewer.sdf.threed.GPUEvaluationContext;
 
 import java.util.*;
@@ -46,6 +48,12 @@ public class RaymarcherShaderGenerator {
         prog.add(
                 new GLSLOutStatement("vec4", "out_finalColor")
         );
+
+        for(ResourceTexture resourceTexture : world.getResourceTextures()) {
+            prog.add(
+                    new GLSLUniformStatement("sampler2D", resourceTexture.name(), null)
+            );
+        }
 
     }
 
@@ -125,12 +133,12 @@ public class RaymarcherShaderGenerator {
 
     private void addCSGColorAndShininess(GLSLProgram prog) {
 
-
         final GLSLFunctionStatement fColor = new GLSLFunctionStatement(
                 "vec3",
                 "csgColor",
                 List.of(
-                        new GLSLFunctionStatement.GLSLFunctionParameterStatement("in", "vec3", "P")
+                        new GLSLFunctionStatement.GLSLFunctionParameterStatement("in", "vec3", "P"),
+                        new GLSLFunctionStatement.GLSLFunctionParameterStatement("in", "vec3", "N")
                 ),
                 new ArrayList<>()
         );
@@ -138,13 +146,16 @@ public class RaymarcherShaderGenerator {
                 "float",
                 "csgShininess",
                 List.of(
-                        new GLSLFunctionStatement.GLSLFunctionParameterStatement("in", "vec3", "P")
+                        new GLSLFunctionStatement.GLSLFunctionParameterStatement("in", "vec3", "P"),
+                        new GLSLFunctionStatement.GLSLFunctionParameterStatement("in", "vec3", "N")
                 ),
                 new ArrayList<>()
         );
 
-        final var c = new GPUEvaluationContext()
-                .setContextId("Color").setPointVariable("P");
+        final var c = new ColorGPUEvaluationContext()
+                .setNormalVariable("N");
+        c.setContextId("Color")
+                .setPointVariable("P");
 
         for (Materializer m : world.getMaterializers()) {
 

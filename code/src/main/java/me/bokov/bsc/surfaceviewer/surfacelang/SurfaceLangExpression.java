@@ -3,12 +3,15 @@ package me.bokov.bsc.surfaceviewer.surfacelang;
 import lombok.Getter;
 import me.bokov.bsc.surfaceviewer.scene.*;
 import me.bokov.bsc.surfaceviewer.scene.materializer.ConstantMaterial;
+import me.bokov.bsc.surfaceviewer.scene.materializer.TriplanarMaterial;
+import me.bokov.bsc.surfaceviewer.scene.resource.BaseResourceTexture;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.joml.*;
 
 import java.lang.Math;
+import java.util.function.*;
 
 import static java.util.stream.Collectors.*;
 
@@ -74,11 +77,19 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
 
     }
 
+    private String stringVal(SurfaceLangParser.StringValueContext ctx) {
+
+        final var text = ctx.STRING()
+                .getText();
+        return text.substring(1, text.length() - 1);
+
+    }
+
     private void putPropBySpec(SurfaceLangParser.PropertySpecContext ctx, SceneNode node) {
 
         final var name = ctx.IDENTIFIER().getText();
         final var prop = node.getTemplate()
-                .properties
+                .getProperties()
                 .stream().filter(p -> p.getName().equalsIgnoreCase(name))
                 .findFirst().orElse(null);
 
@@ -109,10 +120,7 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
                 }
                 node.properties().include(
                         prop,
-                        new Vector2f(
-                                Float.parseFloat(ctx.propertyValue().vec2Value().x.getText()),
-                                Float.parseFloat(ctx.propertyValue().vec2Value().y.getText())
-                        )
+                        vec2Val(ctx.propertyValue().vec2Value())
                 );
                 break;
             case "vec3":
@@ -122,11 +130,7 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
                 }
                 node.properties().include(
                         prop,
-                        new Vector3f(
-                                Float.parseFloat(ctx.propertyValue().vec3Value().x.getText()),
-                                Float.parseFloat(ctx.propertyValue().vec3Value().y.getText()),
-                                Float.parseFloat(ctx.propertyValue().vec3Value().z.getText())
-                        )
+                        vec3Val(ctx.propertyValue().vec3Value())
                 );
                 break;
             case "vec4":
@@ -136,12 +140,7 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
                 }
                 node.properties().include(
                         prop,
-                        new Vector4f(
-                                Float.parseFloat(ctx.propertyValue().vec4Value().x.getText()),
-                                Float.parseFloat(ctx.propertyValue().vec4Value().y.getText()),
-                                Float.parseFloat(ctx.propertyValue().vec4Value().z.getText()),
-                                Float.parseFloat(ctx.propertyValue().vec4Value().w.getText())
-                        )
+                        vec4Val(ctx.propertyValue().vec4Value())
                 );
                 break;
             case "mat2":
@@ -152,14 +151,8 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
                 node.properties().include(
                         prop,
                         new Matrix2f(
-                                new Vector2f(
-                                        Float.parseFloat(ctx.propertyValue().mat2Value().col0.x.getText()),
-                                        Float.parseFloat(ctx.propertyValue().mat2Value().col0.y.getText())
-                                ),
-                                new Vector2f(
-                                        Float.parseFloat(ctx.propertyValue().mat2Value().col1.x.getText()),
-                                        Float.parseFloat(ctx.propertyValue().mat2Value().col1.y.getText())
-                                )
+                                vec2Val(ctx.propertyValue().mat2Value().col0),
+                                vec2Val(ctx.propertyValue().mat2Value().col1)
                         )
                 );
                 break;
@@ -171,21 +164,9 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
                 node.properties().include(
                         prop,
                         new Matrix3f(
-                                new Vector3f(
-                                        Float.parseFloat(ctx.propertyValue().mat3Value().col0.x.getText()),
-                                        Float.parseFloat(ctx.propertyValue().mat3Value().col0.y.getText()),
-                                        Float.parseFloat(ctx.propertyValue().mat3Value().col0.z.getText())
-                                ),
-                                new Vector3f(
-                                        Float.parseFloat(ctx.propertyValue().mat3Value().col1.x.getText()),
-                                        Float.parseFloat(ctx.propertyValue().mat3Value().col1.y.getText()),
-                                        Float.parseFloat(ctx.propertyValue().mat3Value().col1.z.getText())
-                                ),
-                                new Vector3f(
-                                        Float.parseFloat(ctx.propertyValue().mat3Value().col2.x.getText()),
-                                        Float.parseFloat(ctx.propertyValue().mat3Value().col2.y.getText()),
-                                        Float.parseFloat(ctx.propertyValue().mat3Value().col2.z.getText())
-                                )
+                                vec3Val(ctx.propertyValue().mat3Value().col0),
+                                vec3Val(ctx.propertyValue().mat3Value().col1),
+                                vec3Val(ctx.propertyValue().mat3Value().col2)
                         )
                 );
                 break;
@@ -197,30 +178,10 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
                 node.properties().include(
                         prop,
                         new Matrix4f(
-                                new Vector4f(
-                                        Float.parseFloat(ctx.propertyValue().mat4Value().col0.x.getText()),
-                                        Float.parseFloat(ctx.propertyValue().mat4Value().col0.y.getText()),
-                                        Float.parseFloat(ctx.propertyValue().mat4Value().col0.z.getText()),
-                                        Float.parseFloat(ctx.propertyValue().mat4Value().col0.w.getText())
-                                ),
-                                new Vector4f(
-                                        Float.parseFloat(ctx.propertyValue().mat4Value().col1.x.getText()),
-                                        Float.parseFloat(ctx.propertyValue().mat4Value().col1.y.getText()),
-                                        Float.parseFloat(ctx.propertyValue().mat4Value().col1.z.getText()),
-                                        Float.parseFloat(ctx.propertyValue().mat4Value().col1.w.getText())
-                                ),
-                                new Vector4f(
-                                        Float.parseFloat(ctx.propertyValue().mat4Value().col2.x.getText()),
-                                        Float.parseFloat(ctx.propertyValue().mat4Value().col2.y.getText()),
-                                        Float.parseFloat(ctx.propertyValue().mat4Value().col2.z.getText()),
-                                        Float.parseFloat(ctx.propertyValue().mat4Value().col2.w.getText())
-                                ),
-                                new Vector4f(
-                                        Float.parseFloat(ctx.propertyValue().mat4Value().col3.x.getText()),
-                                        Float.parseFloat(ctx.propertyValue().mat4Value().col3.y.getText()),
-                                        Float.parseFloat(ctx.propertyValue().mat4Value().col3.z.getText()),
-                                        Float.parseFloat(ctx.propertyValue().mat4Value().col3.w.getText())
-                                )
+                                vec4Val(ctx.propertyValue().mat4Value().col0),
+                                vec4Val(ctx.propertyValue().mat4Value().col1),
+                                vec4Val(ctx.propertyValue().mat4Value().col2),
+                                vec4Val(ctx.propertyValue().mat4Value().col3)
                         )
                 );
                 break;
@@ -233,6 +194,14 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
                         ctx.propertyValue().boolValue().KW_TRUE() != null
                 );
                 break;
+            case "string":
+                if (ctx.propertyValue().stringValue() == null) {
+                    throw new IllegalArgumentException(name + " requires a string argument!");
+                }
+                node.properties().include(
+                        prop,
+                        stringVal(ctx.propertyValue().stringValue())
+                );
         }
 
     }
@@ -249,11 +218,11 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
 
     private void putDefaultPortBySpec(SurfaceLangParser.DefaultPortSpecContext spec, SceneNode node) {
 
-        if (node.getTemplate().ports.size() != 1) {
+        if (node.getTemplate().getPorts().size() != 1) {
             throw new IllegalArgumentException(node.getTemplate() + " has no default port!");
         }
 
-        final var port = node.getTemplate().ports.get(0);
+        final var port = node.getTemplate().getPorts().get(0);
         final String name = port.getName();
         final SceneNode child = expressionToSceneNode(spec.expression());
 
@@ -264,11 +233,11 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
     private SceneNode expressionToSceneNode(SurfaceLangParser.ExpressionContext ctx) {
 
         final var nodeType = ctx.expressionName().IDENTIFIER().getText().toUpperCase();
-        NodeTemplate nodeTemplate = NodeTemplate.IDENTITY;
+        NodeTemplate nodeTemplate = NodeTemplate.forName("IDENTITY");
 
         final var prefab = world.findPrefabByName(nodeType);
         if(prefab.isEmpty()) {
-            nodeTemplate = NodeTemplate.valueOf(nodeType);
+            nodeTemplate = NodeTemplate.forName(nodeType);
         }
 
         SceneNode node = new BaseSceneNode(
@@ -303,7 +272,7 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
 
             if (ctx.expressionPorts() != null && ctx.expressionPorts().portMap() != null) {
 
-                if (!node.getTemplate().supportsChildren || node.getTemplate().ports.isEmpty()) {
+                if (!node.getTemplate().isSupportsChildren() || node.getTemplate().getPorts().isEmpty()) {
                     throw new IllegalArgumentException(node.getTemplate() + " does not support ports!");
                 }
 
@@ -324,7 +293,7 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
 
             if (ctx.expressionChildren() != null && ctx.expressionChildren().childList() != null) {
 
-                if (!node.getTemplate().supportsChildren || !node.getTemplate().ports.isEmpty()) {
+                if (!node.getTemplate().isSupportsChildren() || !node.getTemplate().getPorts().isEmpty()) {
                     throw new IllegalArgumentException(node.getTemplate() + " does not support children list!");
                 }
 
@@ -347,11 +316,7 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
             if (tCtx.positionTransform() != null && tCtx.positionTransform().position != null) {
 
                 node.localTransform().applyPosition(
-                        new Vector3f(
-                                Float.parseFloat(tCtx.positionTransform().position.x.getText()),
-                                Float.parseFloat(tCtx.positionTransform().position.y.getText()),
-                                Float.parseFloat(tCtx.positionTransform().position.z.getText())
-                        )
+                        vec3Val(tCtx.positionTransform().position)
                 );
 
             }
@@ -368,11 +333,7 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
                     .vec3Value() != null && tCtx.rotationTransform().numberValue() != null) {
 
                 node.localTransform().applyRotation(
-                        new Vector3f(
-                                Float.parseFloat(tCtx.rotationTransform().vec3Value().x.getText()),
-                                Float.parseFloat(tCtx.rotationTransform().vec3Value().y.getText()),
-                                Float.parseFloat(tCtx.rotationTransform().vec3Value().z.getText())
-                        ),
+                        vec3Val(tCtx.rotationTransform().vec3Value()),
                         tCtx.rotationTransform().KW_DEGREES() != null
                                 ? Float.parseFloat(tCtx.rotationTransform().numberValue().getText())
                                 : (float) Math.toDegrees(Float.parseFloat(tCtx.rotationTransform()
@@ -436,56 +397,118 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
 
     }
 
+    private <T> T findMaterialParam(
+            SurfaceLangParser.MaterialDefContext def,
+            String name,
+            Predicate<SurfaceLangParser.MaterialParamContext> filter,
+            Function<SurfaceLangParser.MaterialParamContext, T> mapper
+    ) {
+        return def.materialParamList()
+                .materialParam()
+                .stream()
+                .filter(mp -> mp.materialParamName()
+                        .IDENTIFIER()
+                        .getText()
+                        .equals(name) && filter.test(mp))
+                .map(mapper)
+                .findFirst()
+                .orElseThrow();
+    }
+
+    private <T> T findMaterialParamOpt(
+            SurfaceLangParser.MaterialDefContext def,
+            String name,
+            Predicate<SurfaceLangParser.MaterialParamContext> filter,
+            Function<SurfaceLangParser.MaterialParamContext, T> mapper
+    ) {
+        return def.materialParamList()
+                .materialParam()
+                .stream()
+                .filter(mp -> mp.materialParamName()
+                        .IDENTIFIER()
+                        .getText()
+                        .equals(name) && filter.test(mp))
+                .map(mapper)
+                .findFirst()
+                .orElse(null);
+    }
+
     private Materializer parseMaterial(SurfaceLangParser.MaterialContext ctx) {
 
         final var type = ctx.materialType().IDENTIFIER().getText();
 
-        final SurfaceLangParser.ExpressionContext boundaryContext = ctx.materialDef()
-                .materialParamList()
-                .materialParam()
-                .stream()
-                .filter(mp -> mp.expression() != null && mp.materialParamName()
-                        .IDENTIFIER()
-                        .getText()
-                        .equals("boundary"))
-                .map(SurfaceLangParser.MaterialParamContext::expression)
-                .findFirst()
-                .orElseThrow();
+        final SurfaceLangParser.ExpressionContext boundaryContext = findMaterialParam(
+                ctx.materialDef(), "boundary",
+                mp -> mp.expression() != null,
+                SurfaceLangParser.MaterialParamContext::expression
+        );
 
         switch (type.toLowerCase()) {
             case "constant":
 
-                final SurfaceLangParser.Vec3ValueContext diffuseCtx = ctx.materialDef()
-                        .materialParamList()
-                        .materialParam()
-                        .stream()
-                        .filter(mp -> mp.materialParamName()
-                                .IDENTIFIER()
-                                .getText()
-                                .equals("diffuse") && mp.vec3Value() != null)
-                        .map(SurfaceLangParser.MaterialParamContext::vec3Value)
-                        .findFirst()
-                        .orElseThrow();
-                final SurfaceLangParser.NumberValueContext shininessCtx = ctx.materialDef()
-                        .materialParamList()
-                        .materialParam()
-                        .stream()
-                        .filter(mp -> mp.materialParamName()
-                                .IDENTIFIER()
-                                .getText()
-                                .equals("shininess") && mp.numberValue() != null)
-                        .map(SurfaceLangParser.MaterialParamContext::numberValue)
-                        .findFirst()
-                        .orElseThrow();
+                final SurfaceLangParser.Vec3ValueContext constantDiffuseCtx = findMaterialParam(
+                        ctx.materialDef(), "diffuse",
+                        mp -> mp.vec3Value() != null,
+                        SurfaceLangParser.MaterialParamContext::vec3Value
+                );
+                final SurfaceLangParser.NumberValueContext constantShininessCtx = findMaterialParam(
+                        ctx.materialDef(), "shininess",
+                        mp -> mp.numberValue() != null,
+                        SurfaceLangParser.MaterialParamContext::numberValue
+                );
 
                 ConstantMaterial constantMaterial = new ConstantMaterial(
                         world.nextId(),
                         expressionToSceneNode(boundaryContext),
-                        vec3Val(diffuseCtx),
-                        floatVal(shininessCtx)
+                        vec3Val(constantDiffuseCtx),
+                        floatVal(constantShininessCtx)
                 );
 
                 return constantMaterial;
+
+            case "triplanar":
+
+                final SurfaceLangParser.Vec3ValueContext triplanarDiffuseCtx = findMaterialParamOpt(
+                        ctx.materialDef(), "diffuse",
+                        mp -> mp.vec3Value() != null,
+                        SurfaceLangParser.MaterialParamContext::vec3Value
+                );
+                final SurfaceLangParser.StringValueContext triplanarDiffuseMapCtx = findMaterialParamOpt(
+                        ctx.materialDef(), "diffuseMap",
+                        mp -> mp.stringValue() != null,
+                        SurfaceLangParser.MaterialParamContext::stringValue
+                );
+                final SurfaceLangParser.NumberValueContext triplanarShininessCtx = findMaterialParamOpt(
+                        ctx.materialDef(), "shininess",
+                        mp -> mp.numberValue() != null,
+                        SurfaceLangParser.MaterialParamContext::numberValue
+                );
+                final SurfaceLangParser.StringValueContext triplanarShininessMapCtx = findMaterialParamOpt(
+                        ctx.materialDef(), "shininessMap",
+                        mp -> mp.stringValue() != null,
+                        SurfaceLangParser.MaterialParamContext::stringValue
+                );
+
+                TriplanarMaterial triplanarMaterial = new TriplanarMaterial(
+                        world.nextId(),
+                        expressionToSceneNode(boundaryContext),
+                        triplanarDiffuseMapCtx != null ? stringVal(triplanarDiffuseMapCtx) : null,
+                        triplanarDiffuseCtx != null ? vec3Val(triplanarDiffuseCtx) : null,
+                        triplanarShininessMapCtx != null ? stringVal(triplanarShininessMapCtx) : null,
+                        triplanarShininessCtx != null ? floatVal(triplanarShininessCtx) : null
+                );
+
+                SurfaceLangParser.NumberValueContext triplanarScaleCtx = findMaterialParamOpt(
+                        ctx.materialDef(), "textureScale",
+                        mp -> mp.numberValue() != null,
+                        SurfaceLangParser.MaterialParamContext::numberValue
+                );
+
+                if(triplanarScaleCtx != null) {
+                    triplanarMaterial.scale(floatVal(triplanarScaleCtx));
+                }
+
+                return triplanarMaterial;
 
             default:
                 throw new UnsupportedOperationException("Materializer type not supported: " + type);
@@ -527,12 +550,27 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
 
     }
 
+    private ResourceTexture parseResourceTexture(SurfaceLangParser.ResourceTextureContext ctx) {
+
+        final String name = ctx.resourceTextureName().IDENTIFIER().getText();
+        final String location = stringVal(ctx.resourceTextureLocation().stringValue());
+
+        return new BaseResourceTexture(
+                world.nextId(),
+                name, location
+        );
+
+    }
+
     @Override
     public void exitWorld(SurfaceLangParser.WorldContext ctx) {
         super.exitWorld(ctx);
 
         world = new BaseWorld();
         world.getLightSources().clear();
+        ctx.resourceTexture().forEach(
+                tex -> world.add(parseResourceTexture(tex))
+        );
         ctx.prefab().forEach(
                 pref -> world.add(parsePrefab(pref))
         );
@@ -557,7 +595,7 @@ public class SurfaceLangExpression extends SurfaceLangBaseListener {
             world.add(
                     new ConstantMaterial(
                             world.nextId(),
-                            new BaseSceneNode(world.nextId(), NodeTemplate.EVERYWHERE),
+                            new BaseSceneNode(world.nextId(), NodeTemplate.forName("EVERYWHERE")),
                             new Vector3f(1f),
                             80.0f
                     )

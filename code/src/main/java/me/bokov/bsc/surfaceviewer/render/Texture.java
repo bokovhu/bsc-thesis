@@ -1,8 +1,18 @@
 package me.bokov.bsc.surfaceviewer.render;
 
+import lombok.Builder;
 import lombok.Getter;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL46;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -44,9 +54,9 @@ public class Texture {
         } else if (format == GL46.GL_RGB) {
 
             if (dataType == GL46.GL_UNSIGNED_BYTE) {
-                return GL46.GL_RGB8UI;
+                return GL46.GL_RGB;
             } else if (dataType == GL46.GL_UNSIGNED_INT) {
-                return GL46.GL_RGB32UI;
+                return GL46.GL_RGB;
             } else if (dataType == GL46.GL_FLOAT) {
                 return GL46.GL_FLOAT;
             } else {
@@ -58,7 +68,7 @@ public class Texture {
             if (dataType == GL46.GL_UNSIGNED_BYTE) {
                 return GL46.GL_RGBA8UI;
             } else if (dataType == GL46.GL_UNSIGNED_INT) {
-                return GL46.GL_RGBA32UI;
+                return GL46.GL_RGBA;
             } else if (dataType == GL46.GL_INT) {
                 return GL46.GL_RGBA32I;
             } else if (dataType == GL46.GL_FLOAT) {
@@ -74,6 +84,97 @@ public class Texture {
         }
 
         throw new IllegalArgumentException("Unsupported format and data type combination!");
+
+    }
+
+    private static ByteBuffer loadDataFromBufferedImage(BufferedImage image) {
+
+        final var buffer = BufferUtils.createByteBuffer(4 * image.getWidth() * image.getHeight());
+        final int[] pixelData = image.getRGB(
+                0, 0,
+                image.getWidth(), image.getHeight(),
+                null,
+                0,
+                image.getWidth()
+        );
+        final int w = image.getWidth();
+        final int h = image.getHeight();
+
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
+                int rgb = pixelData[y * w + x];
+                final Color color = new Color(rgb);
+                buffer.put((byte) color.getRed());
+                buffer.put((byte) color.getGreen());
+                buffer.put((byte) color.getBlue());
+                buffer.put((byte) color.getAlpha());
+            }
+        }
+
+        return buffer.flip();
+
+    }
+
+    private static LoadedTexture loadDataFromFile(File file) {
+
+        if (!file.exists()) {
+            throw new IllegalArgumentException(file + " does not exist!");
+        }
+
+        try {
+            final var loadedImage = ImageIO.read(file);
+            return LoadedTexture.builder()
+                    .width(loadedImage.getWidth())
+                    .height(loadedImage.getHeight())
+                    .rgbData(loadDataFromBufferedImage(loadedImage))
+                    .build();
+        } catch (IOException ex) {
+            throw new IllegalStateException(file + " failed to load!", ex);
+        }
+
+    }
+
+    private static LoadedTexture loadDataFromInputStream(InputStream inputStream, String path) {
+
+        try {
+            final var loadedImage = ImageIO.read(inputStream);
+            return LoadedTexture.builder()
+                    .width(loadedImage.getWidth())
+                    .height(loadedImage.getHeight())
+                    .rgbData(loadDataFromBufferedImage(loadedImage))
+                    .build();
+        } catch (IOException ex) {
+            throw new IllegalStateException(path + " failed to load!", ex);
+        }
+
+    }
+
+    public static Texture load(String path) {
+
+        final File currentDir = new File(System.getProperty("user.dir"));
+
+        final File fileInCurrentDir = new File(currentDir, path);
+        if (fileInCurrentDir.exists() && fileInCurrentDir.canRead()) {
+            return loadDataFromFile(fileInCurrentDir)
+                    .createTexture();
+        }
+
+        final URL urlOnClasspath = Texture.class.getResource(path);
+        if (urlOnClasspath != null) {
+            try {
+                return loadDataFromInputStream(
+                        urlOnClasspath.openStream(),
+                        path
+                ).createTexture();
+            } catch (IOException ex) {
+                throw new IllegalStateException(
+                        "Tried to load " + path + " from the classpath, but git an IO Exception!",
+                        ex
+                );
+            }
+        }
+
+        throw new IllegalArgumentException("Cannot find texture " + path);
 
     }
 
@@ -495,6 +596,66 @@ public class Texture {
 
         return this;
 
+    }
+
+    @Getter
+    @Builder
+    private static class LoadedTexture {
+        private final int width;
+        private final int height;
+        private final ByteBuffer rgbData;
+
+        public Texture createTexture() {
+
+            Texture texture = new Texture();
+
+            GL46.glActiveTexture(GL46.GL_TEXTURE4);
+
+            texture.init()
+                    .configure(
+                            GL46.GL_TEXTURE_2D,
+                            GL46.GL_RGBA,
+                            GL46.GL_UNSIGNED_BYTE
+                    )
+                    .resize(width, height);
+
+            int error = GL46.glGetError();
+
+            if (error != GL46.GL_NO_ERROR) {
+                System.out.println("GL Error after configuring texture: " + error);
+            }
+
+            texture.bind();
+            GL46.glTexImage2D(
+                    GL46.GL_TEXTURE_2D,
+                    0,
+                    GL46.GL_RGBA,
+                    width, height, 0,
+                    GL46.GL_RGBA,
+                    GL46.GL_UNSIGNED_BYTE,
+                    rgbData
+            );
+
+            error = GL46.glGetError();
+
+            if (error != GL46.GL_NO_ERROR) {
+                System.out.println("GL Error after loading texture data: " + error);
+            }
+
+            texture.setupSampling(
+                            GL46.GL_REPEAT, GL46.GL_REPEAT,
+                            GL46.GL_NEAREST, GL46.GL_NEAREST
+                    );
+
+            error = GL46.glGetError();
+
+            if (error != GL46.GL_NO_ERROR) {
+                System.out.println("GL Error after apply texture sampling: " + error);
+            }
+
+            return texture;
+
+        }
     }
 
 }

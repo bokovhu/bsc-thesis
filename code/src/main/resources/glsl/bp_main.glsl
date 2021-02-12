@@ -4,8 +4,8 @@ void main() {
     hit.c = 1;
     hit.P = v_worldPosition;
     hit.N = v_normal;
-    hit.C = vec3(v_color.xyz);
-    hit.S = v_color.w * 200.0;
+    hit.C = csgColor(hit.P, hit.N);
+    hit.S = csgShininess(hit.P, hit.N);
 
     out_finalColor = vec4(toneMap(illuminate(hit)), 1.0);
 

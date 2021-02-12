@@ -17,8 +17,8 @@ public class ConstantMaterial implements Materializer {
 
     private final SceneNode boundary;
 
-    private final Evaluable<Vector3f, CPUContext, GPUContext> diffuseColorEval = Evaluable.of(new ColorEvaluator());
-    private final Evaluable<Float, CPUContext, GPUContext> shininessEval = Evaluable.of(new ShininessEvaluator());
+    private final Evaluable<Vector3f, ColorCPUContext, ColorGPUContext> diffuseColorEval = Evaluable.of(new ColorEvaluator());
+    private final Evaluable<Float, ColorCPUContext, ColorGPUContext> shininessEval = Evaluable.of(new ShininessEvaluator());
 
     private final Vector3f diffuse;
     private final float shininess;
@@ -46,12 +46,12 @@ public class ConstantMaterial implements Materializer {
     }
 
     @Override
-    public Evaluable<Vector3f, CPUContext, GPUContext> getDiffuseColor() {
+    public Evaluable<Vector3f, ColorCPUContext, ColorGPUContext> getDiffuseColor() {
         return diffuseColorEval;
     }
 
     @Override
-    public Evaluable<Float, CPUContext, GPUContext> getShininess() {
+    public Evaluable<Float, ColorCPUContext, ColorGPUContext> getShininess() {
         return shininessEval;
     }
 
@@ -64,16 +64,16 @@ public class ConstantMaterial implements Materializer {
     }
 
     final class ColorEvaluator implements Serializable,
-            CPUEvaluator<Vector3f, CPUContext>,
-            GPUEvaluator<GPUContext> {
+            CPUEvaluator<Vector3f, ColorCPUContext>,
+            GPUEvaluator<ColorGPUContext> {
 
         @Override
-        public Vector3f evaluate(CPUContext context) {
+        public Vector3f evaluate(ColorCPUContext context) {
             return diffuse;
         }
 
         @Override
-        public List<GLSLStatement> evaluate(GPUContext context) {
+        public List<GLSLStatement> evaluate(ColorGPUContext context) {
             return List.of(
                     var("vec3", context.getResult(), vec3(diffuse))
             );
@@ -81,16 +81,16 @@ public class ConstantMaterial implements Materializer {
     }
 
     final class ShininessEvaluator implements Serializable,
-            CPUEvaluator<Float, CPUContext>,
-            GPUEvaluator<GPUContext> {
+            CPUEvaluator<Float, ColorCPUContext>,
+            GPUEvaluator<ColorGPUContext> {
 
         @Override
-        public Float evaluate(CPUContext context) {
+        public Float evaluate(ColorCPUContext context) {
             return shininess;
         }
 
         @Override
-        public List<GLSLStatement> evaluate(GPUContext context) {
+        public List<GLSLStatement> evaluate(ColorGPUContext context) {
             return List.of(
                     resultVar(context, literal(shininess))
             );

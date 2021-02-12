@@ -30,5 +30,7 @@ public class SurfaceFactoryRequest {
     private Map<String, Integer> intProperties = new HashMap<>();
     @Builder.Default
     private Map<String, Boolean> booleanProperties = new HashMap<>();
+    @Builder.Default
+    private Map<String, String> stringProperties = new HashMap<>();
 
 }

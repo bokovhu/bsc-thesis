@@ -158,7 +158,7 @@ public class BaseSceneNode implements SceneNode {
 
         properties.apply(requestBuilder);
 
-        final var evaluable = template.factory.apply(requestBuilder.build());
+        final var evaluable = template.getFactory().apply(requestBuilder.build());
         if (evaluable == null) {
             return null;
         }

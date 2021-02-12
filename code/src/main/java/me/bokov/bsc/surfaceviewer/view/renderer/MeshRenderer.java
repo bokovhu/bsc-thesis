@@ -15,6 +15,7 @@ import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.util.IOUtil;
 import me.bokov.bsc.surfaceviewer.util.ResourceUtil;
 import me.bokov.bsc.surfaceviewer.util.Resources;
+import me.bokov.bsc.surfaceviewer.view.BaseRenderer;
 import me.bokov.bsc.surfaceviewer.view.Renderer;
 import me.bokov.bsc.surfaceviewer.view.RendererConfig;
 import me.bokov.bsc.surfaceviewer.voxelization.CPUVoxelizationContext;
@@ -30,11 +31,9 @@ import org.joml.Vector3f;
 
 import java.util.*;
 
-public class MeshRenderer implements Renderer {
+public class MeshRenderer extends BaseRenderer {
 
     private static final Matrix4f IDENTITY = new Matrix4f().identity();
-
-    private View view = null;
 
     private Voxelizer3D<UniformGrid> voxelizer;
     private Voxelizer3D<GPUUniformGrid> gpuVoxelizer;
@@ -130,29 +129,6 @@ public class MeshRenderer implements Renderer {
                     ), new CPUVoxelizationContext()
             );
             this.marchingCubesInputStorage = this.voxelStorage;
-            if (config.dumpVoxels) {
-
-                Iterator<Voxel> voxelIterator = this.voxelStorage.voxelIterator();
-
-                while (voxelIterator.hasNext()) {
-                    final Voxel voxel = voxelIterator.next();
-                    if (voxel == null) {
-                        System.out.println("NULL Voxel\n");
-                    } else {
-                        System.out.println("Voxel \n" +
-                                "  000: " + voxel.x000() + ", " + voxel.y000() + ", " + voxel.z000() + ", " + voxel.v000() + "\n" +
-                                "  001: " + voxel.x001() + ", " + voxel.y001() + ", " + voxel.z001() + ", " + voxel.v001() + "\n" +
-                                "  010: " + voxel.x010() + ", " + voxel.y010() + ", " + voxel.z010() + ", " + voxel.v010() + "\n" +
-                                "  011: " + voxel.x011() + ", " + voxel.y011() + ", " + voxel.z011() + ", " + voxel.v011() + "\n" +
-                                "  100: " + voxel.x100() + ", " + voxel.y100() + ", " + voxel.z100() + ", " + voxel.v100() + "\n" +
-                                "  101: " + voxel.x101() + ", " + voxel.y101() + ", " + voxel.z101() + ", " + voxel.v101() + "\n" +
-                                "  110: " + voxel.x110() + ", " + voxel.y110() + ", " + voxel.z110() + ", " + voxel.v110() + "\n" +
-                                "  111: " + voxel.x111() + ", " + voxel.y111() + ", " + voxel.z111() + ", " + voxel.v111() + "\n"
-                        );
-                    }
-                }
-
-            }
         }
     }
 
@@ -274,22 +250,13 @@ public class MeshRenderer implements Renderer {
             this.shaderProgram.uniform("u_M").mat4(IDENTITY);
             this.shaderProgram.uniform("u_MVP").mat4(this.view.getCamera().VP());
 
+            applyWorldResourcesToProgram(this.shaderProgram, world);
+
             this.mesh.draw();
 
         }
 
         // this.mesh = null;
-
-    }
-
-    @Override
-    public void install(View parent) {
-        this.view = parent;
-
-        this.view.getApp().onViewReport(
-                "RendererInstalled",
-                Map.of("config", IOUtil.serialize(this.getConfig()))
-        );
 
     }
 
@@ -305,7 +272,7 @@ public class MeshRenderer implements Renderer {
     }
 
     @Override
-    public void uninstall() {
+    public void tearDown() {
 
         if (marchingCubes != null) { marchingCubes.tearDown(); }
 
@@ -332,8 +299,6 @@ public class MeshRenderer implements Renderer {
         this.gpuVoxelStorage = null;
         this.marchingCubesInputStorage = null;
         this.gridDualContouring = null;
-
-        this.view = null;
 
     }
 

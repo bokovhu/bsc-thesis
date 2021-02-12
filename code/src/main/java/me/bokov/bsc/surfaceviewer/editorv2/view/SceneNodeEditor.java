@@ -167,7 +167,7 @@ public class SceneNodeEditor extends VBox implements Initializable {
 
         final var node = sceneNodeProperty.get();
 
-        for (NodeTemplate.Property nodeProperty : node.getTemplate().properties) {
+        for (NodeTemplate.Property nodeProperty : node.getTemplate().getProperties()) {
 
             var propertyInput = inputForProperty(nodeProperty, node.properties());
             if (propertyInput == null) {

@@ -10,14 +10,8 @@ public interface GPUContext {
 
     String getResult();
 
-    Texture getTexture(String name);
-
-    String getTextureUniformName(String textureName);
-
     GPUContext branch(String branchName);
 
     GPUContext transform(String transformationName);
-
-    GPUContext withTexture(String name, Texture texture);
 
 }

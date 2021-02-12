@@ -14,23 +14,23 @@ import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
 import me.bokov.bsc.surfaceviewer.util.IOUtil;
 import me.bokov.bsc.surfaceviewer.util.ResourceUtil;
+import me.bokov.bsc.surfaceviewer.view.BaseRenderer;
 import me.bokov.bsc.surfaceviewer.view.Renderer;
 import me.bokov.bsc.surfaceviewer.view.RendererConfig;
 import org.joml.Vector3f;
 
 import java.util.*;
 
-public class RayMarchingRenderer implements Renderer {
+public class RayMarchingRenderer extends BaseRenderer {
 
     private ShaderProgram rayMarchingProgram = null;
     private RaymarcherShaderGenerator shaderGenerator = null;
     private Drawable fullScreenQuad = null;
     @Getter
     private Config config = new Config();
-    private View view = null;
 
     @Override
-    public void uninstall() {
+    public void tearDown() {
 
         if (this.rayMarchingProgram != null) { this.rayMarchingProgram.tearDown(); }
 
@@ -41,15 +41,8 @@ public class RayMarchingRenderer implements Renderer {
 
     @Override
     public void install(View view) {
-
-        this.view = view;
-
+        super.install(view);
         fullScreenQuad = Drawables.fullScreenQuad();
-
-        this.view.getApp().onViewReport(
-                "RendererInstalled",
-                Map.of("config", IOUtil.serialize(this.getConfig()))
-        );
 
     }
 
@@ -104,6 +97,8 @@ public class RayMarchingRenderer implements Renderer {
             this.rayMarchingProgram.uniform("u_up").vec3(view.getCamera().up());
             this.rayMarchingProgram.uniform("u_aspect").f1(view.getCamera().aspectRatio());
             this.rayMarchingProgram.uniform("u_fovy").f1(view.getCamera().fovTan());
+
+            applyWorldResourcesToProgram(this.rayMarchingProgram, world);
 
             this.fullScreenQuad.draw();
 

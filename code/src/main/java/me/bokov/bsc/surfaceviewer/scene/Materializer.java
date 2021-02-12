@@ -1,8 +1,6 @@
 package me.bokov.bsc.surfaceviewer.scene;
 
-import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
-import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
-import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
+import me.bokov.bsc.surfaceviewer.sdf.*;
 import org.joml.Vector3f;
 
 import java.io.Serializable;
@@ -12,7 +10,7 @@ public interface Materializer extends Serializable {
     int getId();
 
     SceneNode getBoundary();
-    Evaluable<Vector3f, CPUContext, GPUContext> getDiffuseColor();
-    Evaluable<Float, CPUContext, GPUContext> getShininess();
+    Evaluable<Vector3f, ColorCPUContext, ColorGPUContext> getDiffuseColor();
+    Evaluable<Float, ColorCPUContext, ColorGPUContext> getShininess();
 
 }

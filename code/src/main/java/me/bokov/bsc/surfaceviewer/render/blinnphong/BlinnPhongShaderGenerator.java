@@ -2,7 +2,11 @@ package me.bokov.bsc.surfaceviewer.render.blinnphong;
 
 import me.bokov.bsc.surfaceviewer.glsl.*;
 import me.bokov.bsc.surfaceviewer.scene.LightSource;
+import me.bokov.bsc.surfaceviewer.scene.Materializer;
+import me.bokov.bsc.surfaceviewer.scene.ResourceTexture;
 import me.bokov.bsc.surfaceviewer.scene.World;
+import me.bokov.bsc.surfaceviewer.sdf.threed.ColorGPUEvaluationContext;
+import me.bokov.bsc.surfaceviewer.sdf.threed.GPUEvaluationContext;
 
 import java.util.*;
 
@@ -22,8 +26,7 @@ public class BlinnPhongShaderGenerator {
 
         prog.add(
                 new GLSLLayoutStatement(0, "in", "vec3", "v_worldPosition"),
-                new GLSLLayoutStatement(1, "in", "vec3", "v_normal"),
-                new GLSLLayoutStatement(2, "in", "vec4", "v_color")
+                new GLSLLayoutStatement(1, "in", "vec3", "v_normal")
         );
 
         prog.add(
@@ -34,6 +37,12 @@ public class BlinnPhongShaderGenerator {
         prog.add(
                 new GLSLOutStatement("vec4", "out_finalColor")
         );
+
+        for(ResourceTexture resourceTexture : world.getResourceTextures()) {
+            prog.add(
+                    new GLSLUniformStatement("sampler2D", resourceTexture.name(), null)
+            );
+        }
 
     }
 
@@ -86,6 +95,92 @@ public class BlinnPhongShaderGenerator {
 
     }
 
+    private void addCSGColorAndShininess(GLSLProgram prog) {
+
+        final GLSLFunctionStatement fColor = new GLSLFunctionStatement(
+                "vec3",
+                "csgColor",
+                List.of(
+                        new GLSLFunctionStatement.GLSLFunctionParameterStatement("in", "vec3", "P"),
+                        new GLSLFunctionStatement.GLSLFunctionParameterStatement("in", "vec3", "N")
+                ),
+                new ArrayList<>()
+        );
+        final GLSLFunctionStatement fShininess = new GLSLFunctionStatement(
+                "float",
+                "csgShininess",
+                List.of(
+                        new GLSLFunctionStatement.GLSLFunctionParameterStatement("in", "vec3", "P"),
+                        new GLSLFunctionStatement.GLSLFunctionParameterStatement("in", "vec3", "N")
+                ),
+                new ArrayList<>()
+        );
+
+        final var c = new ColorGPUEvaluationContext()
+                .setNormalVariable("N");
+        c.setContextId("Color")
+                .setPointVariable("P");
+
+        for (Materializer m : world.getMaterializers()) {
+
+            final var mBoundaryCtx = c.branch(m.getId() + "B");
+            final var mBoundaryList = m.getBoundary()
+                    .toEvaluable()
+                    .gpu().evaluate(mBoundaryCtx);
+
+            final var mColorCtx = c.branch(m.getId() + "C");
+            final var mShininessCtx = c.branch(m.getId() + "S");
+
+            final var mColorList = m.getDiffuseColor().gpu().evaluate(mColorCtx);
+            final var mShininessList = m.getShininess().gpu().evaluate(mShininessCtx);
+
+            final List<GLSLStatement> colorIfBody = new ArrayList<>();
+            final List<GLSLStatement> shininessIfBody = new ArrayList<>();
+
+            colorIfBody.addAll(mColorList);
+            colorIfBody.add(
+                    new GLSLReturnStatement(ref(mColorCtx.getResult()))
+            );
+
+            shininessIfBody.addAll(mShininessList);
+            shininessIfBody.add(
+                    new GLSLReturnStatement(ref(mShininessCtx.getResult()))
+            );
+
+            final var colorIf = new GLSLIfStatement(
+                    new GLSLBinaryExpressionStatement(
+                            ref(mBoundaryCtx.getResult()),
+                            literal(0.0f),
+                            "<"
+                    ),
+                    colorIfBody,
+                    null
+            );
+            final var shininessIf = new GLSLIfStatement(
+                    new GLSLBinaryExpressionStatement(
+                            ref(mBoundaryCtx.getResult()),
+                            literal(0.0f),
+                            "<"
+                    ),
+                    shininessIfBody,
+                    null
+            );
+
+            mBoundaryList.forEach(fColor::body);
+            fColor.body(colorIf);
+
+            mBoundaryList.forEach(fShininess::body);
+            fShininess.body(shininessIf);
+
+        }
+
+        fColor.body(new GLSLReturnStatement(vec3(0f, 0f, 0f)));
+        fShininess.body(new GLSLReturnStatement(literal(0.0f)));
+
+        prog.add(fColor, fShininess);
+
+    }
+
     public String generateFragmentSource() {
 
         GLSLProgram prog = new GLSLProgram();
@@ -98,6 +193,7 @@ public class BlinnPhongShaderGenerator {
                 .include("glsl/bp_shadowScene.glsl");
 
         addCalculateLighting(prog);
+        addCSGColorAndShininess(prog);
 
         prog.include("glsl/illuminate.common.glsl")
                 .include("glsl/bp_main.glsl");

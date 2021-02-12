@@ -4,32 +4,17 @@ import me.bokov.bsc.surfaceviewer.mesh.MeshGenerator;
 import me.bokov.bsc.surfaceviewer.render.Drawable;
 import me.bokov.bsc.surfaceviewer.render.Drawables;
 import me.bokov.bsc.surfaceviewer.util.MetricsLogger;
-import me.bokov.bsc.surfaceviewer.voxelization.*;
+import me.bokov.bsc.surfaceviewer.voxelization.GridVoxel;
+import me.bokov.bsc.surfaceviewer.voxelization.GridVoxelStorage;
+import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorage;
+import me.bokov.bsc.surfaceviewer.voxelization.VoxelWithNormal;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 import java.util.*;
 
 import static me.bokov.bsc.surfaceviewer.util.MathUtil.*;
 
 public class GridDualContouring implements MeshGenerator {
-
-    private final Vector4f tmp000 = new Vector4f();
-    private final Vector4f tmp001 = new Vector4f();
-    private final Vector4f tmp010 = new Vector4f();
-    private final Vector4f tmp011 = new Vector4f();
-    private final Vector4f tmp100 = new Vector4f();
-    private final Vector4f tmp101 = new Vector4f();
-    private final Vector4f tmp110 = new Vector4f();
-    private final Vector4f tmp111 = new Vector4f();
-
-    private final Vector4f tmp00 = new Vector4f();
-    private final Vector4f tmp01 = new Vector4f();
-    private final Vector4f tmp10 = new Vector4f();
-    private final Vector4f tmp11 = new Vector4f();
-
-    private final Vector4f tmp0 = new Vector4f();
-    private final Vector4f tmp1 = new Vector4f();
 
 
     private final Vector3f ntmp000 = new Vector3f();
@@ -48,29 +33,6 @@ public class GridDualContouring implements MeshGenerator {
 
     private final Vector3f ntmp0 = new Vector3f();
     private final Vector3f ntmp1 = new Vector3f();
-
-    private Vector4f interpMaterial(VoxelWithColor voxel, float fx, float fy, float fz) {
-
-        final Vector4f c000 = tmp000.set(voxel.r000(), voxel.g000(), voxel.b000(), voxel.s000());
-        final Vector4f c001 = tmp001.set(voxel.r001(), voxel.g001(), voxel.b001(), voxel.s001());
-        final Vector4f c010 = tmp010.set(voxel.r010(), voxel.g010(), voxel.b010(), voxel.s010());
-        final Vector4f c011 = tmp011.set(voxel.r011(), voxel.g011(), voxel.b011(), voxel.s011());
-        final Vector4f c100 = tmp100.set(voxel.r100(), voxel.g100(), voxel.b100(), voxel.s100());
-        final Vector4f c101 = tmp101.set(voxel.r101(), voxel.g101(), voxel.b101(), voxel.s101());
-        final Vector4f c110 = tmp110.set(voxel.r110(), voxel.g110(), voxel.b110(), voxel.s110());
-        final Vector4f c111 = tmp111.set(voxel.r111(), voxel.g111(), voxel.b111(), voxel.s111());
-
-        final Vector4f c00 = tmp00.set(c000).lerp(c100, fx);
-        final Vector4f c01 = tmp01.set(c001).lerp(c101, fx);
-        final Vector4f c10 = tmp10.set(c010).lerp(c110, fx);
-        final Vector4f c11 = tmp11.set(c011).lerp(c111, fx);
-
-        final Vector4f c0 = tmp0.set(c00).lerp(c10, fy);
-        final Vector4f c1 = tmp1.set(c01).lerp(c11, fy);
-
-        return new Vector4f(c0).lerp(c1, fz);
-
-    }
 
     private Vector3f interpNormal(VoxelWithNormal voxel, float fx, float fy, float fz) {
 
@@ -113,15 +75,7 @@ public class GridDualContouring implements MeshGenerator {
                                 voxel.nz000(),
                                 voxel.nz100(),
                                 voxel.v000(),
-                                voxel.v100(),
-                                voxel.r000(),
-                                voxel.r100(),
-                                voxel.g000(),
-                                voxel.g100(),
-                                voxel.b000(),
-                                voxel.b100(),
-                                voxel.s000(),
-                                voxel.s100()
+                                voxel.v100()
                         ),
                         new Edge(
                                 voxel.x000(),
@@ -137,15 +91,7 @@ public class GridDualContouring implements MeshGenerator {
                                 voxel.nz000(),
                                 voxel.nz010(),
                                 voxel.v000(),
-                                voxel.v010(),
-                                voxel.r000(),
-                                voxel.r010(),
-                                voxel.g000(),
-                                voxel.g010(),
-                                voxel.b000(),
-                                voxel.b010(),
-                                voxel.s000(),
-                                voxel.s010()
+                                voxel.v010()
                         ),
                         new Edge(
                                 voxel.x000(),
@@ -161,15 +107,7 @@ public class GridDualContouring implements MeshGenerator {
                                 voxel.nz000(),
                                 voxel.nz001(),
                                 voxel.v000(),
-                                voxel.v001(),
-                                voxel.r000(),
-                                voxel.r001(),
-                                voxel.g000(),
-                                voxel.g001(),
-                                voxel.b000(),
-                                voxel.b001(),
-                                voxel.s000(),
-                                voxel.s001()
+                                voxel.v001()
                         ),
                         new Edge(
                                 voxel.x111(),
@@ -185,15 +123,7 @@ public class GridDualContouring implements MeshGenerator {
                                 voxel.nz111(),
                                 voxel.nz011(),
                                 voxel.v111(),
-                                voxel.v011(),
-                                voxel.r111(),
-                                voxel.r011(),
-                                voxel.g111(),
-                                voxel.g011(),
-                                voxel.b111(),
-                                voxel.b011(),
-                                voxel.s111(),
-                                voxel.s011()
+                                voxel.v011()
                         ),
                         new Edge(
                                 voxel.x111(),
@@ -209,15 +139,7 @@ public class GridDualContouring implements MeshGenerator {
                                 voxel.nz111(),
                                 voxel.nz101(),
                                 voxel.v111(),
-                                voxel.v101(),
-                                voxel.r111(),
-                                voxel.r101(),
-                                voxel.g111(),
-                                voxel.g101(),
-                                voxel.b111(),
-                                voxel.b101(),
-                                voxel.s111(),
-                                voxel.s101()
+                                voxel.v101()
                         ),
                         new Edge(
                                 voxel.x111(),
@@ -233,15 +155,7 @@ public class GridDualContouring implements MeshGenerator {
                                 voxel.nz111(),
                                 voxel.nz110(),
                                 voxel.v111(),
-                                voxel.v110(),
-                                voxel.r111(),
-                                voxel.r110(),
-                                voxel.g111(),
-                                voxel.g110(),
-                                voxel.b111(),
-                                voxel.b110(),
-                                voxel.s111(),
-                                voxel.s110()
+                                voxel.v110()
                         ),
                         new Edge(
                                 voxel.x110(),
@@ -257,15 +171,7 @@ public class GridDualContouring implements MeshGenerator {
                                 voxel.nz110(),
                                 voxel.nz010(),
                                 voxel.v110(),
-                                voxel.v010(),
-                                voxel.r110(),
-                                voxel.r010(),
-                                voxel.g110(),
-                                voxel.g010(),
-                                voxel.b110(),
-                                voxel.b010(),
-                                voxel.s110(),
-                                voxel.s010()
+                                voxel.v010()
                         ),
                         new Edge(
                                 voxel.x110(),
@@ -281,15 +187,7 @@ public class GridDualContouring implements MeshGenerator {
                                 voxel.nz110(),
                                 voxel.nz100(),
                                 voxel.v110(),
-                                voxel.v100(),
-                                voxel.r110(),
-                                voxel.r100(),
-                                voxel.g110(),
-                                voxel.g100(),
-                                voxel.b110(),
-                                voxel.b100(),
-                                voxel.s110(),
-                                voxel.s100()
+                                voxel.v100()
                         ),
                         new Edge(
                                 voxel.x100(),
@@ -305,15 +203,7 @@ public class GridDualContouring implements MeshGenerator {
                                 voxel.nz100(),
                                 voxel.nz101(),
                                 voxel.v100(),
-                                voxel.v101(),
-                                voxel.r100(),
-                                voxel.r101(),
-                                voxel.g100(),
-                                voxel.g101(),
-                                voxel.b100(),
-                                voxel.b101(),
-                                voxel.s100(),
-                                voxel.s101()
+                                voxel.v101()
                         ),
                         new Edge(
                                 voxel.x101(),
@@ -329,15 +219,7 @@ public class GridDualContouring implements MeshGenerator {
                                 voxel.nz101(),
                                 voxel.nz001(),
                                 voxel.v101(),
-                                voxel.v001(),
-                                voxel.r101(),
-                                voxel.r001(),
-                                voxel.g101(),
-                                voxel.g001(),
-                                voxel.b101(),
-                                voxel.b001(),
-                                voxel.s101(),
-                                voxel.s001()
+                                voxel.v001()
                         ),
                         new Edge(
                                 voxel.x001(),
@@ -353,15 +235,7 @@ public class GridDualContouring implements MeshGenerator {
                                 voxel.nz001(),
                                 voxel.nz011(),
                                 voxel.v001(),
-                                voxel.v011(),
-                                voxel.r001(),
-                                voxel.r011(),
-                                voxel.g001(),
-                                voxel.g011(),
-                                voxel.b001(),
-                                voxel.b011(),
-                                voxel.s001(),
-                                voxel.s011()
+                                voxel.v011()
                         ),
                         new Edge(
                                 voxel.x011(),
@@ -377,15 +251,7 @@ public class GridDualContouring implements MeshGenerator {
                                 voxel.nz011(),
                                 voxel.nz010(),
                                 voxel.v011(),
-                                voxel.v010(),
-                                voxel.r011(),
-                                voxel.r010(),
-                                voxel.g011(),
-                                voxel.g010(),
-                                voxel.b011(),
-                                voxel.b010(),
-                                voxel.s011(),
-                                voxel.s010()
+                                voxel.v010()
                         )
                 )
         );
@@ -408,11 +274,6 @@ public class GridDualContouring implements MeshGenerator {
                         * voxelStorage.zVoxelCount()
                 ];
         final Vector3f[] normals = new Vector3f[
-                voxelStorage.xVoxelCount()
-                        * voxelStorage.yVoxelCount()
-                        * voxelStorage.zVoxelCount()
-                ];
-        final Vector4f[] colors = new Vector4f[
                 voxelStorage.xVoxelCount()
                         * voxelStorage.yVoxelCount()
                         * voxelStorage.zVoxelCount()
@@ -484,10 +345,6 @@ public class GridDualContouring implements MeshGenerator {
                     normals[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage.xVoxelCount() + x]
                             = tmpN;
 
-                    colors[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage.xVoxelCount() + x]
-                            = interpMaterial(voxel, fractX, fractY, fractZ);
-
-
                 }
 
             }
@@ -522,13 +379,6 @@ public class GridDualContouring implements MeshGenerator {
                                         normals[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage
                                                 .xVoxelCount() + x + 1],
                                         normals[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + (y + 1) * voxelStorage
-                                                .xVoxelCount() + x + 1],
-
-                                        colors[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage
-                                                .xVoxelCount() + x],
-                                        colors[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage
-                                                .xVoxelCount() + x + 1],
-                                        colors[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + (y + 1) * voxelStorage
                                                 .xVoxelCount() + x + 1]
                                 )
                         );
@@ -547,13 +397,6 @@ public class GridDualContouring implements MeshGenerator {
                                         normals[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + (y + 1) * voxelStorage
                                                 .xVoxelCount() + x + 1],
                                         normals[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + (y + 1) * voxelStorage
-                                                .xVoxelCount() + x],
-
-                                        colors[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage
-                                                .xVoxelCount() + x],
-                                        colors[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + (y + 1) * voxelStorage
-                                                .xVoxelCount() + x + 1],
-                                        colors[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + (y + 1) * voxelStorage
                                                 .xVoxelCount() + x]
                                 )
                         );
@@ -576,13 +419,6 @@ public class GridDualContouring implements MeshGenerator {
                                         normals[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage
                                                 .xVoxelCount() + x + 1],
                                         normals[(z + 1) * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage
-                                                .xVoxelCount() + x + 1],
-
-                                        colors[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage
-                                                .xVoxelCount() + x],
-                                        colors[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage
-                                                .xVoxelCount() + x + 1],
-                                        colors[(z + 1) * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage
                                                 .xVoxelCount() + x + 1]
                                 )
                         );
@@ -600,13 +436,6 @@ public class GridDualContouring implements MeshGenerator {
                                         normals[(z + 1) * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage
                                                 .xVoxelCount() + x + 1],
                                         normals[(z + 1) * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage
-                                                .xVoxelCount() + x],
-
-                                        colors[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage
-                                                .xVoxelCount() + x],
-                                        colors[(z + 1) * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage
-                                                .xVoxelCount() + x + 1],
-                                        colors[(z + 1) * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage
                                                 .xVoxelCount() + x]
                                 )
                         );
@@ -629,13 +458,6 @@ public class GridDualContouring implements MeshGenerator {
                                         normals[(z + 1) * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage
                                                 .xVoxelCount() + x],
                                         normals[(z + 1) * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + (y + 1) * voxelStorage
-                                                .xVoxelCount() + x],
-
-                                        colors[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage
-                                                .xVoxelCount() + x],
-                                        colors[(z + 1) * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage
-                                                .xVoxelCount() + x],
-                                        colors[(z + 1) * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + (y + 1) * voxelStorage
                                                 .xVoxelCount() + x]
                                 )
                         );
@@ -654,13 +476,6 @@ public class GridDualContouring implements MeshGenerator {
                                         normals[(z + 1) * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + (y + 1) * voxelStorage
                                                 .xVoxelCount() + x],
                                         normals[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + (y + 1) * voxelStorage
-                                                .xVoxelCount() + x],
-
-                                        colors[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage
-                                                .xVoxelCount() + x],
-                                        colors[(z + 1) * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + (y + 1) * voxelStorage
-                                                .xVoxelCount() + x],
-                                        colors[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + (y + 1) * voxelStorage
                                                 .xVoxelCount() + x]
                                 )
                         );
@@ -701,7 +516,7 @@ public class GridDualContouring implements MeshGenerator {
 
     class Edge {
 
-        final float x1, x2, y1, y2, z1, z2, n1x, n2x, n1y, n2y, n1z, n2z, v1, v2, r1, r2, g1, g2, b1, b2, s1, s2;
+        final float x1, x2, y1, y2, z1, z2, n1x, n2x, n1y, n2y, n1z, n2z, v1, v2;
 
         Edge(
                 float x1,
@@ -717,15 +532,7 @@ public class GridDualContouring implements MeshGenerator {
                 float n1z,
                 float n2z,
                 float v1,
-                float v2,
-                float r1,
-                float r2,
-                float g1,
-                float g2,
-                float b1,
-                float b2,
-                float s1,
-                float s2
+                float v2
         ) {
             this.x1 = x1;
             this.x2 = x2;
@@ -741,14 +548,6 @@ public class GridDualContouring implements MeshGenerator {
             this.n2z = n2z;
             this.v1 = v1;
             this.v2 = v2;
-            this.r1 = r1;
-            this.r2 = r2;
-            this.g1 = g1;
-            this.g2 = g2;
-            this.b1 = b1;
-            this.b2 = b2;
-            this.s1 = s1;
-            this.s2 = s2;
         }
 
         boolean isIntersected() {

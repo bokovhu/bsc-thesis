@@ -2,6 +2,7 @@ package me.bokov.bsc.surfaceviewer.surfacelang;
 
 import me.bokov.bsc.surfaceviewer.scene.*;
 import me.bokov.bsc.surfaceviewer.scene.materializer.ConstantMaterial;
+import me.bokov.bsc.surfaceviewer.scene.materializer.TriplanarMaterial;
 import org.joml.*;
 
 import java.lang.Math;
@@ -267,6 +268,12 @@ public class SurfaceLangFormatter {
         append(v ? "true" : "false");
     }
 
+    private void appendString(String str) {
+        append("\"");
+        append(str);
+        append("\"");
+    }
+
     private void formatNodeTransform(SceneNode node) {
 
         final var T = node.localTransform();
@@ -351,6 +358,9 @@ public class SurfaceLangFormatter {
                     case "bool":
                         appendBool(Boolean.TRUE.equals(node.properties().getValue(prop)));
                         break;
+                    case "string":
+                        appendString((String) node.properties().getValue(prop));
+                        break;
                     default:
                         throw new UnsupportedOperationException("Property type not supported: " + prop.getType());
                 }
@@ -380,7 +390,7 @@ public class SurfaceLangFormatter {
 
             List<Map.Entry<String, SceneNode>> portEntries = new ArrayList<>(node.pluggedPorts().entrySet());
 
-            if (portEntries.size() == 1 && node.getTemplate().ports.size() == 1) {
+            if (portEntries.size() == 1 && node.getTemplate().getPorts().size() == 1) {
 
                 final var entry = portEntries.get(0);
                 formatNode(entry.getValue());
@@ -443,10 +453,10 @@ public class SurfaceLangFormatter {
 
     private void formatNode(SceneNode node) {
 
-        if(node.getPrefab() != null) {
+        if (node.getPrefab() != null) {
             append(node.getPrefab().getName());
         } else {
-            append(node.getTemplate().name());
+            append(node.getTemplate().getName());
         }
         space();
 
@@ -525,6 +535,47 @@ public class SurfaceLangFormatter {
 
             endBlock();
 
+        } else if (materializer instanceof TriplanarMaterial) {
+
+            TriplanarMaterial triplanarMaterial = (TriplanarMaterial) materializer;
+
+            append("material triplanar ");
+
+            startBlock("{");
+
+
+            append("boundary: ");
+            formatNode(materializer.getBoundary());
+            append(",");
+            lineBreak(0);
+
+            if (triplanarMaterial.diffuseMapName() != null) {
+                append("diffuseMap: ");
+                appendString(triplanarMaterial.diffuseMapName());
+                append(",");
+                lineBreak(0);
+
+                append("textureScale: ");
+                appendFloat(triplanarMaterial.scale());
+            } else {
+                append("diffuse: ");
+                appendVec3(triplanarMaterial.diffuseColor());
+            }
+            append(",");
+            lineBreak(0);
+
+            if (triplanarMaterial.shininessMapName() != null) {
+                append("shininessMap: ");
+                appendString(triplanarMaterial.shininessMapName());
+            } else {
+                append("shininess: ");
+                appendFloat(triplanarMaterial.shininess());
+            }
+
+
+
+            endBlock();
+
         } else {
             throw new UnsupportedOperationException("Unsupported material type: " + materializer.getClass().getName());
         }
@@ -541,12 +592,26 @@ public class SurfaceLangFormatter {
 
     }
 
+    private void formatResourceTexture(ResourceTexture resourceTexture) {
+
+        append("resource texture ");
+        append(resourceTexture.name());
+        append("(");
+        appendString(resourceTexture.location());
+        append(")");
+
+    }
+
     public String format() {
 
         reset();
 
         this.world.getLightSources().forEach(l -> {
             this.formatLight(l);
+            lineBreak(0);
+        });
+        this.world.getResourceTextures().forEach(rt -> {
+            this.formatResourceTexture(rt);
             lineBreak(0);
         });
         this.world.getMaterializers().forEach(m -> {

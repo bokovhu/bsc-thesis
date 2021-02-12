@@ -34,7 +34,7 @@ public class SceneTreeBuilderTask extends Task<TreeItem<Object>> {
     private TreeItem<Object> portedTreeItem(SceneNode node) {
 
         TreeItem<Object> item = new TreeItem<>(node);
-        for (NodeTemplate.Port port : node.getTemplate().ports) {
+        for (NodeTemplate.Port port : node.getTemplate().getPorts()) {
             if (node.pluggedPorts().containsKey(port.getName())) {
                 item.getChildren().add(
                         sceneNodeToTreeItem(node.pluggedPorts().get(port.getName()))
@@ -54,8 +54,8 @@ public class SceneTreeBuilderTask extends Task<TreeItem<Object>> {
 
     private TreeItem<Object> sceneNodeToTreeItem(SceneNode node) {
 
-        if (node.getTemplate().supportsChildren) {
-            if (node.getTemplate().ports.isEmpty()) {
+        if (node.getTemplate().isSupportsChildren()) {
+            if (node.getTemplate().getPorts().isEmpty()) {
                 return parentSceneNodeToTreeItem(node);
             } else {
                 return portedTreeItem(node);

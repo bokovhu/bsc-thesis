@@ -12,8 +12,6 @@ void main() {
 
     float calculatedDistance = csgExecute(pWorldSpace);
     vec3 calculatedNormal = csgNormal(pWorldSpace);
-    vec3 calculatedDiffuse = csgColor(pWorldSpace);
-    float calculatedShininess = csgShininess(pWorldSpace);
 
     imageStore(
     u_positionAndValueOutput,
@@ -25,12 +23,6 @@ void main() {
     u_normalOutput,
     pInvocationSpace,
     vec4(calculatedNormal, 1.0)
-    );
-
-    imageStore(
-    u_colorShininessOutput,
-    pInvocationSpace,
-    vec4(calculatedDiffuse, calculatedShininess / 200.0)
     );
 
     memoryBarrierImage();

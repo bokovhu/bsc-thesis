@@ -75,15 +75,15 @@ public class AddMeshMenu extends Menu implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        for (NodeTemplate nodeTemplate : NodeTemplate.values()) {
+        for (NodeTemplate nodeTemplate : NodeTemplate.getAll()) {
 
-            MenuItem nodeTemplateItem = new MenuItem(nodeTemplate.name());
+            MenuItem nodeTemplateItem = new MenuItem(nodeTemplate.getName());
 
             nodeTemplateItem.setOnAction(
                     event -> addNode(nodeTemplate)
             );
 
-            if (nodeTemplate.supportsChildren) {
+            if (nodeTemplate.isSupportsChildren()) {
                 operatorsMenu.getItems()
                         .add(nodeTemplateItem);
             } else {

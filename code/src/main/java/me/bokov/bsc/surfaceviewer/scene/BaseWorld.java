@@ -18,6 +18,7 @@ public class BaseWorld implements World {
     private List<LightSource> lightSources = new ArrayList<>();
     private List<Materializer> materializers = new ArrayList<>();
     private List<Prefab> prefabs = new ArrayList<>();
+    private List<ResourceTexture> resources = new ArrayList<>();
 
     @Override
     public List<SceneNode> roots() {
@@ -191,6 +192,35 @@ public class BaseWorld implements World {
     @Override
     public Optional<Prefab> findPrefabByName(String name) {
         return prefabs.stream().filter(p -> p.getName().equalsIgnoreCase(name)).findFirst();
+    }
+
+    @Override
+    public List<ResourceTexture> getResourceTextures() {
+        return resources;
+    }
+
+    @Override
+    public void add(ResourceTexture... args) {
+        for(ResourceTexture r : args) {
+            resources.add(r);
+        }
+    }
+
+    @Override
+    public void remove(ResourceTexture resource) {
+        resources.removeIf(r -> r.getId() == resource.getId());
+    }
+
+    @Override
+    public void removeResourceTexture(int id) {
+        resources.removeIf(r -> r.getId() == id);
+    }
+
+    @Override
+    public Optional<ResourceTexture> findResourceTextureByName(String name) {
+        return resources.stream()
+                .filter(r -> r.name().equals(name))
+                .findFirst();
     }
 
     @Override

@@ -17,6 +17,7 @@ public class NodeProperties implements Serializable {
     private Map<String, Matrix4f> mat4Properties = new HashMap<>();
     private Map<String, Integer> intProperties = new HashMap<>();
     private Map<String, Boolean> booleanProperties = new HashMap<>();
+    private Map<String, String> stringProperties = new HashMap<>();
 
     @Getter
     private Set<NodeTemplate.Property> includedProperties = new HashSet<>();
@@ -50,6 +51,9 @@ public class NodeProperties implements Serializable {
                 break;
             case "bool":
                 booleanProperties.remove(name);
+                break;
+            case "string":
+                stringProperties.remove(name);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown property type: " + type);
@@ -87,6 +91,9 @@ public class NodeProperties implements Serializable {
             case "bool":
                 booleanProperties.put(name, Boolean.TRUE.equals(value));
                 break;
+            case "string":
+                stringProperties.put(name, Objects.toString(value));
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown property type: " + type);
         }
@@ -119,7 +126,8 @@ public class NodeProperties implements Serializable {
                 .mat3Properties(new HashMap<>(mat3Properties))
                 .mat4Properties(new HashMap<>(mat4Properties))
                 .intProperties(new HashMap<>(intProperties))
-                .booleanProperties(new HashMap<>(booleanProperties));
+                .booleanProperties(new HashMap<>(booleanProperties))
+                .stringProperties(new HashMap<>(stringProperties));
     }
 
     public float getFloat(String name) {
@@ -201,6 +209,15 @@ public class NodeProperties implements Serializable {
         return mat4Properties.getOrDefault(name, defaultValue);
     }
 
+
+    public String getString(String name) {
+        return stringProperties.getOrDefault(name, "");
+    }
+
+    public String getString(String name, String defaultValue) {
+        return stringProperties.getOrDefault(name, defaultValue);
+    }
+
     public Object getValue(NodeTemplate.Property propertyTemplate) {
 
         switch (propertyTemplate.getType()) {
@@ -249,6 +266,11 @@ public class NodeProperties implements Serializable {
                         propertyTemplate.getName(),
                         Boolean.TRUE.equals(propertyTemplate.getDefaultValue())
                 );
+            case "string":
+                return stringProperties.getOrDefault(
+                        propertyTemplate.getName(),
+                        Objects.toString(propertyTemplate.getDefaultValue())
+                );
         }
 
         return null;
@@ -266,6 +288,7 @@ public class NodeProperties implements Serializable {
         mat4Properties.clear();
         intProperties.clear();
         booleanProperties.clear();
+        stringProperties.clear();
         includedProperties.clear();
 
 
@@ -278,6 +301,7 @@ public class NodeProperties implements Serializable {
         mat4Properties.putAll(other.mat4Properties);
         intProperties.putAll(other.intProperties);
         booleanProperties.putAll(other.booleanProperties);
+        stringProperties.putAll(other.stringProperties);
         includedProperties.addAll(other.includedProperties);
 
     }

@@ -16,7 +16,6 @@ import java.util.*;
 public class MarchingCubes implements MeshGenerator {
 
     private static final float EPSILON = 0.0001f;
-    private static final Vector4f COLOR = new Vector4f(1f, 1f, 1f, 1f);
     private final float isoLevel;
 
     private final Vector3f tmp1 = new Vector3f();
@@ -491,15 +490,10 @@ public class MarchingCubes implements MeshGenerator {
 
                 }
 
-                v1.col(COLOR.x, COLOR.y, COLOR.z, COLOR.w);
-                v2.col(COLOR.x, COLOR.y, COLOR.z, COLOR.w);
-                v3.col(COLOR.x, COLOR.y, COLOR.z, COLOR.w);
-
                 generatedTriangles.add(
                         new Face(
                                 v1.pos, v2.pos, v3.pos,
-                                v1.norm, v2.norm, v3.norm,
-                                v1.col, v2.col, v3.col
+                                v1.norm, v2.norm, v3.norm
                         )
                 );
 
@@ -530,7 +524,6 @@ public class MarchingCubes implements MeshGenerator {
 
         private final Vector3f pos = new Vector3f();
         private final Vector3f norm = new Vector3f();
-        private final Vector4f col = new Vector4f();
 
         public Vertex pos(float x, float y, float z) {
             this.pos.set(x, y, z);
@@ -539,11 +532,6 @@ public class MarchingCubes implements MeshGenerator {
 
         public Vertex norm(float x, float y, float z) {
             this.norm.set(x, y, z).normalize();
-            return this;
-        }
-
-        public Vertex col(float r, float g, float b, float a) {
-            this.col.set(r, g, b, a);
             return this;
         }
 

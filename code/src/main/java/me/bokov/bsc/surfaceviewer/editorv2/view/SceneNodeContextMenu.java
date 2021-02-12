@@ -79,7 +79,7 @@ public class SceneNodeContextMenu extends ContextMenu implements Initializable {
 
     private void onSceneNodeChanged(SceneNode node) {
 
-        if (!node.getTemplate().supportsChildren) {
+        if (!node.getTemplate().isSupportsChildren()) {
             addMeshMenu.setVisible(false);
         }
 

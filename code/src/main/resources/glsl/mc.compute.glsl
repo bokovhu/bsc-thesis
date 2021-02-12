@@ -7,7 +7,6 @@ layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 struct OutputVertex {
     float posx, posy, posz;
     float nx, ny, nz;
-    float r, g, b, a;
 };
 
 layout(std430, binding = 0) writeonly buffer out_output {
@@ -18,7 +17,6 @@ layout(std430, binding = 1) buffer out_vertexCountBuffer { int out_vertexCount; 
 
 uniform sampler3D in_positionAndValue;
 uniform sampler3D in_normal;
-uniform sampler3D in_colorShininess;
 
 layout(std430, binding = 2) readonly buffer in_triangleTable {
     int triangleTableData [];
@@ -72,11 +70,8 @@ void executeLattice() {
 
     vec3 vertices [12];
     vec3 normals [12];
-    vec3 colors[12];
-    float shininessValues[12];
     vec3 triPoints [5][3];
     vec3 triNormals [5][3];
-    vec4 triColors [5][3];
 
     ivec3 pInvocationSpace = ivec3(gl_GlobalInvocationID);
 
@@ -107,16 +102,6 @@ void executeLattice() {
     vec3 norm101 = texelFetch(in_normal, c101, 0).xyz;
     vec3 norm110 = texelFetch(in_normal, c110, 0).xyz;
     vec3 norm111 = texelFetch(in_normal, c111, 0).xyz;
-
-    vec4 rgbs000 = texelFetch(in_colorShininess, c000, 0);
-    vec4 rgbs001 = texelFetch(in_colorShininess, c001, 0);
-    vec4 rgbs010 = texelFetch(in_colorShininess, c010, 0);
-    vec4 rgbs011 = texelFetch(in_colorShininess, c011, 0);
-    vec4 rgbs100 = texelFetch(in_colorShininess, c100, 0);
-    vec4 rgbs101 = texelFetch(in_colorShininess, c101, 0);
-    vec4 rgbs110 = texelFetch(in_colorShininess, c110, 0);
-    vec4 rgbs111 = texelFetch(in_colorShininess, c111, 0);
-
 
     int cubeIndex = 0;
 
@@ -154,67 +139,43 @@ void executeLattice() {
 
         vertices[0] = interpolate(posval010.xyz, posval010.w, posval110.xyz, posval110.w);
         normals[0] = interpolate(norm010, posval010.w, norm110, posval110.w);
-        colors[0] = interpolate(rgbs010.xyz, posval010.w, rgbs110.xyz, posval110.w);
-        shininessValues[0] = interpolate(rgbs010.w, posval010.w, rgbs110.w, posval110.w);
 
         vertices[1] = interpolate(posval110.xyz, posval110.w, posval111.xyz, posval111.w);
         normals[1] = interpolate(norm110, posval110.w, norm111, posval111.w);
-        colors[1] = interpolate(rgbs110.xyz, posval110.w, rgbs111.xyz, posval111.w);
-        shininessValues[1] = interpolate(rgbs110.w, posval110.w, rgbs111.w, posval111.w);
 
         vertices[2] = interpolate(posval111.xyz, posval111.w, posval011.xyz, posval011.w);
         normals[2] = interpolate(norm111, posval111.w, norm011, posval011.w);
-        colors[2] = interpolate(rgbs111.xyz, posval111.w, rgbs011.xyz, posval011.w);
-        shininessValues[2] = interpolate(rgbs111.w, posval111.w, rgbs011.w, posval011.w);
 
         vertices[3] = interpolate(posval011.xyz, posval011.w, posval010.xyz, posval010.w);
         normals[3] = interpolate(norm011, posval011.w, norm010, posval010.w);
-        colors[3] = interpolate(rgbs011.xyz, posval011.w, rgbs010.xyz, posval010.w);
-        shininessValues[3] = interpolate(rgbs011.w, posval011.w, rgbs010.w, posval010.w);
 
 
 
         vertices[4] = interpolate(posval000.xyz, posval000.w, posval100.xyz, posval100.w);
         normals[4] = interpolate(norm000, posval000.w, norm100, posval100.w);
-        colors[4] = interpolate(rgbs000.xyz, posval000.w, rgbs100.xyz, posval100.w);
-        shininessValues[4] = interpolate(rgbs000.w, posval000.w, rgbs100.w, posval100.w);
 
         vertices[5] = interpolate(posval100.xyz, posval100.w, posval101.xyz, posval101.w);
         normals[5] = interpolate(norm100, posval100.w, norm101, posval101.w);
-        colors[5] = interpolate(rgbs100.xyz, posval100.w, rgbs101.xyz, posval101.w);
-        shininessValues[5] = interpolate(rgbs100.w, posval100.w, rgbs101.w, posval101.w);
 
         vertices[6] = interpolate(posval101.xyz, posval101.w, posval001.xyz, posval001.w);
         normals[6] = interpolate(norm101, posval101.w, norm001, posval001.w);
-        colors[6] = interpolate(rgbs101.xyz, posval101.w, rgbs001.xyz, posval001.w);
-        shininessValues[6] = interpolate(rgbs101.w, posval101.w, rgbs001.w, posval001.w);
 
         vertices[7] = interpolate(posval001.xyz, posval001.w, posval000.xyz, posval000.w);
         normals[7] = interpolate(norm001, posval001.w, norm000, posval000.w);
-        colors[7] = interpolate(rgbs001.xyz, posval001.w, rgbs000.xyz, posval000.w);
-        shininessValues[7] = interpolate(rgbs001.w, posval001.w, rgbs000.w, posval000.w);
 
 
 
         vertices[8] = interpolate(posval000.xyz, posval000.w, posval010.xyz, posval010.w);
         normals[8] = interpolate(norm000, posval000.w, norm010, posval010.w);
-        colors[8] = interpolate(rgbs000.xyz, posval000.w, rgbs010.xyz, posval010.w);
-        shininessValues[8] = interpolate(rgbs000.w, posval000.w, rgbs010.w, posval010.w);
 
         vertices[9] = interpolate(posval100.xyz, posval100.w, posval110.xyz, posval110.w);
         normals[9] = interpolate(norm100, posval100.w, norm110, posval110.w);
-        colors[9] = interpolate(rgbs100.xyz, posval100.w, rgbs110.xyz, posval110.w);
-        shininessValues[9] = interpolate(rgbs100.w, posval100.w, rgbs110.w, posval110.w);
 
         vertices[10] = interpolate(posval101.xyz, posval101.w, posval111.xyz, posval111.w);
         normals[10] = interpolate(norm101, posval101.w, norm111, posval111.w);
-        colors[10] = interpolate(rgbs101.xyz, posval101.w, rgbs111.xyz, posval111.w);
-        shininessValues[10] = interpolate(rgbs101.w, posval101.w, rgbs111.w, posval111.w);
 
         vertices[11] = interpolate(posval001.xyz, posval001.w, posval011.xyz, posval011.w);
         normals[11] = interpolate(norm001, posval001.w, norm011, posval011.w);
-        colors[11] = interpolate(rgbs001.xyz, posval001.w, rgbs011.xyz, posval011.w);
-        shininessValues[11] = interpolate(rgbs001.w, posval001.w, rgbs011.w, posval011.w);
 
         int triCount = 0;
 
@@ -229,15 +190,12 @@ void executeLattice() {
 
                 triPoints[triCount - 1][0] = vertices[v1i];
                 triNormals[triCount - 1][0] = normals[v1i];
-                triColors[triCount - 1][0] = vec4(colors[v1i], shininessValues[v1i]);
 
                 triPoints[triCount - 1][1] = vertices[v2i];
                 triNormals[triCount - 1][1] = normals[v2i];
-                triColors[triCount - 1][1] = vec4(colors[v2i], shininessValues[v2i]);
 
                 triPoints[triCount - 1][2] = vertices[v3i];
                 triNormals[triCount - 1][2] = normals[v3i];
-                triColors[triCount - 1][2] = vec4(colors[v3i], shininessValues[v3i]);
             }
 
         }
@@ -255,11 +213,6 @@ void executeLattice() {
             v1.ny = triNormals[i][0].y;
             v1.nz = triNormals[i][0].z;
 
-            v1.r = triColors[i][0].x;
-            v1.g = triColors[i][0].y;
-            v1.b = triColors[i][0].z;
-            v1.a = triColors[i][0].w;
-
 
             v2.posx = triPoints[i][1].x;
             v2.posy = triPoints[i][1].y;
@@ -269,11 +222,6 @@ void executeLattice() {
             v2.ny = triNormals[i][1].y;
             v2.nz = triNormals[i][1].z;
 
-            v2.r = triColors[i][1].x;
-            v2.g = triColors[i][1].y;
-            v2.b = triColors[i][1].z;
-            v2.a = triColors[i][1].w;
-
 
             v3.posx = triPoints[i][2].x;
             v3.posy = triPoints[i][2].y;
@@ -282,11 +230,6 @@ void executeLattice() {
             v3.nx = triNormals[i][2].x;
             v3.ny = triNormals[i][2].y;
             v3.nz = triNormals[i][2].z;
-
-            v3.r = triColors[i][2].x;
-            v3.g = triColors[i][2].y;
-            v3.b = triColors[i][2].z;
-            v3.a = triColors[i][2].w;
 
             out_vertices[baseIndex + 3 * i + 0] = v1;
             out_vertices[baseIndex + 3 * i + 1] = v2;

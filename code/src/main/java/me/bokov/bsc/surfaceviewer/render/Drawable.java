@@ -39,8 +39,7 @@ public class Drawable {
                         0, 3, GL46.GL_FLOAT,
                         false
                 ) // layout(location = 0) in vec3 a_vertexPosition;
-                .attrib(1, 3, GL46.GL_FLOAT, false) // layout(location = 1) in vec3 a_vertexNormal;
-                .attrib(2, 4, GL46.GL_FLOAT, false); // layout(location = 2) in vec4 a_vertexColor;
+                .attrib(1, 3, GL46.GL_FLOAT, false); // layout(location = 1) in vec3 a_vertexNormal;
     }
 
     public static Drawable direct() {

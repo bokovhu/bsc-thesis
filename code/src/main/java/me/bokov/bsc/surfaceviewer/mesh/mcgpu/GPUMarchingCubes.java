@@ -46,7 +46,7 @@ public class GPUMarchingCubes implements MeshGenerator {
                     .upload(vertexCountData.flip(), GL46.GL_DYNAMIC_DRAW);
             outputDataBuffer = new GPUBuffer().init().bind(GL46.GL_SHADER_STORAGE_BUFFER)
                     .storage(
-                            (3 + 3 + 4) * (5 * 3 * gpuGrid.xVoxelCount() * gpuGrid.yVoxelCount() * gpuGrid.zVoxelCount()) * Float.BYTES,
+                            (3 + 3) * (5 * 3 * gpuGrid.xVoxelCount() * gpuGrid.yVoxelCount() * gpuGrid.zVoxelCount()) * Float.BYTES,
                             GL46.GL_MAP_READ_BIT | GL46.GL_MAP_WRITE_BIT
                     );
 
@@ -97,17 +97,8 @@ public class GPUMarchingCubes implements MeshGenerator {
                         GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE,
                         GL46.GL_LINEAR, GL46.GL_LINEAR
                 );
-        // gpuGrid.getPositionAndValueTexture().bindImage(2, true, false);
 
         gpuGrid.getNormalTexture().bind(1)
-                .setupSampling(
-                        GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE,
-                        GL46.GL_LINEAR, GL46.GL_LINEAR
-                );
-        // gpuGrid.getNormalTexture().bindImage(3, true, false);
-
-        gpuGrid.getColorShininessTexture()
-                .bind(2)
                 .setupSampling(
                         GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE,
                         GL46.GL_LINEAR, GL46.GL_LINEAR
@@ -122,8 +113,6 @@ public class GPUMarchingCubes implements MeshGenerator {
                 .i1(0);
         marchingCubesProgram.uniform("in_normal")
                 .i1(1);
-        marchingCubesProgram.uniform("in_colorShininess")
-                .i1(2);
 
         GL46.glDispatchCompute(
                 gpuGrid.xVoxelCount(),
@@ -132,11 +121,9 @@ public class GPUMarchingCubes implements MeshGenerator {
         );
 
         GL46.glMemoryBarrier(GL46.GL_ALL_BARRIER_BITS);
-        // long fence = GL46.glFenceSync(GL46.GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 
         GL46.glFlush();
         GL46.glFinish();
-        // GL46.glClientWaitSync(fence, 0, 100_000L);
 
         long computeEnd = System.currentTimeMillis();
 
@@ -144,11 +131,8 @@ public class GPUMarchingCubes implements MeshGenerator {
         IntBuffer vertexCountContent = BufferUtils.createIntBuffer(1);
         GL46.glGetBufferSubData(GL46.GL_SHADER_STORAGE_BUFFER, 0L, vertexCountContent);
 
-        // fence = GL46.glFenceSync(GL46.GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-
         GL46.glFlush();
         GL46.glFinish();
-        // GL46.glClientWaitSync(fence, 0, 100_000L);
 
         final int vertexCount = vertexCountContent.get(0);
 
@@ -160,7 +144,7 @@ public class GPUMarchingCubes implements MeshGenerator {
         GL46.glBindBuffer(GL46.GL_COPY_WRITE_BUFFER, drawable.getVboHandle());
         GL46.glBufferStorage(
                 GL46.GL_COPY_WRITE_BUFFER,
-                Float.BYTES * (3 + 3 + 4) * vertexCount,
+                Float.BYTES * (3 + 3) * vertexCount,
                 GL46.GL_MAP_READ_BIT | GL46.GL_MAP_WRITE_BIT
         );
         GL46.glCopyBufferSubData(
@@ -168,13 +152,11 @@ public class GPUMarchingCubes implements MeshGenerator {
                 GL46.GL_COPY_WRITE_BUFFER,
                 0L,
                 0L,
-                Float.BYTES * (3 + 3 + 4) * vertexCount
+                Float.BYTES * (3 + 3) * vertexCount
         );
 
-        // fence = GL46.glFenceSync(GL46.GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
         GL46.glFlush();
         GL46.glFinish();
-        // GL46.glClientWaitSync(fence, 0, 100_000L);
 
         drawable.configure(GL46.GL_TRIANGLES, vertexCount);
 

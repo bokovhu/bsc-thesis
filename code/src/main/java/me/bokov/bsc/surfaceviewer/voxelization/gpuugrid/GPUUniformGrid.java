@@ -17,8 +17,8 @@ public class GPUUniformGrid implements GridVoxelStorage {
 
     private final int width, height, depth;
     private final int vWidth, vHeight, vDepth;
-    private final FloatBuffer positionAndValueBuffer, normalBuffer, colorBuffer;
-    private Texture positionAndValueTexture, normalTexture, colorShininessTexture;
+    private final FloatBuffer positionAndValueBuffer, normalBuffer;
+    private Texture positionAndValueTexture, normalTexture;
     private UniformGrid tmpUniformGrid = null;
     private boolean preparedTextures = false;
 
@@ -33,7 +33,6 @@ public class GPUUniformGrid implements GridVoxelStorage {
 
         positionAndValueBuffer = BufferUtils.createFloatBuffer(width * height * depth * 4);
         normalBuffer = BufferUtils.createFloatBuffer(width * height * depth * 3);
-        colorBuffer = BufferUtils.createFloatBuffer(width * height * depth * 4);
     }
 
     @Override
@@ -70,11 +69,6 @@ public class GPUUniformGrid implements GridVoxelStorage {
         GL46.glBindTexture(GL46.GL_TEXTURE_3D, 0);
 
 
-        colorShininessTexture.bind(2);
-        colorBuffer.clear();
-        GL46.glGetTexImage(GL46.GL_TEXTURE_3D, 0, GL46.GL_RGBA, GL46.GL_FLOAT, colorBuffer);
-        GL46.glBindTexture(GL46.GL_TEXTURE_3D, 0);
-
         System.out.println("downloadToRamImage() before flush-finish");
 
         GL46.glFlush();
@@ -90,8 +84,7 @@ public class GPUUniformGrid implements GridVoxelStorage {
         tmpUniformGrid = new UniformGrid(
                 width, height, depth,
                 positionAndValueBuffer,
-                normalBuffer,
-                colorBuffer
+                normalBuffer
         );
 
         System.out.println("downloadToCPUGrid() done");
@@ -115,16 +108,6 @@ public class GPUUniformGrid implements GridVoxelStorage {
                 .makeStorage();
 
         this.normalTexture = new Texture()
-                .init()
-                .configure(GL46.GL_TEXTURE_3D, GL46.GL_RGBA, GL46.GL_FLOAT)
-                .resize(width, height, depth)
-                .setupSampling(
-                        GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE, GL46.GL_CLAMP_TO_EDGE,
-                        GL46.GL_LINEAR, GL46.GL_LINEAR
-                )
-                .makeStorage();
-
-        this.colorShininessTexture = new Texture()
                 .init()
                 .configure(GL46.GL_TEXTURE_3D, GL46.GL_RGBA, GL46.GL_FLOAT)
                 .resize(width, height, depth)
@@ -163,10 +146,6 @@ public class GPUUniformGrid implements GridVoxelStorage {
         return normalTexture;
     }
 
-    public Texture getColorShininessTexture() {
-        return colorShininessTexture;
-    }
-
     @Override
     public GridVoxel at(int index) {
         // downloadToCPUGrid();
@@ -202,9 +181,6 @@ public class GPUUniformGrid implements GridVoxelStorage {
         }
         if (normalTexture != null) {
             normalTexture.tearDown();
-        }
-        if (colorShininessTexture != null) {
-            colorShininessTexture.tearDown();
         }
 
         if (tmpUniformGrid != null) {

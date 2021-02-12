@@ -5,35 +5,24 @@ import lombok.EqualsAndHashCode;
 import java.nio.FloatBuffer;
 
 @EqualsAndHashCode
-public class BaseVoxel implements Voxel, VoxelWithNormal, VoxelWithColor, IndexedVoxel {
+public class BaseVoxel implements Voxel, VoxelWithNormal, IndexedVoxel {
 
     @EqualsAndHashCode.Exclude
     protected final FloatBuffer buffer;
     @EqualsAndHashCode.Exclude
     protected final FloatBuffer normalBuffer;
-    @EqualsAndHashCode.Exclude
-    protected final FloatBuffer colorBuffer;
     private final int index;
 
     public BaseVoxel(int index, FloatBuffer buffer) {
         this.index = index;
         this.buffer = buffer;
         this.normalBuffer = null;
-        this.colorBuffer = null;
     }
 
     public BaseVoxel(int index, FloatBuffer buffer, FloatBuffer normalBuffer) {
         this.index = index;
         this.buffer = buffer;
         this.normalBuffer = normalBuffer;
-        this.colorBuffer = null;
-    }
-
-    public BaseVoxel(int index, FloatBuffer buffer, FloatBuffer normalBuffer, FloatBuffer colorBuffer) {
-        this.index = index;
-        this.buffer = buffer;
-        this.normalBuffer = normalBuffer;
-        this.colorBuffer = colorBuffer;
     }
 
     @Override
@@ -351,198 +340,6 @@ public class BaseVoxel implements Voxel, VoxelWithNormal, VoxelWithColor, Indexe
     @Override
     public float v111() {
         return buffer.get(4 * (index + 7) + 3);
-    }
-
-    @Override
-    public float r000() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 0) + 0);
-    }
-
-    @Override
-    public float g000() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 0) + 1);
-    }
-
-    @Override
-    public float b000() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 0) + 2);
-    }
-
-    @Override
-    public float s000() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 0) + 3);
-    }
-
-    @Override
-    public float r001() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 1) + 0);
-    }
-
-    @Override
-    public float g001() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 1) + 1);
-    }
-
-    @Override
-    public float b001() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 1) + 2);
-    }
-
-    @Override
-    public float s001() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 1) + 3);
-    }
-
-    @Override
-    public float r010() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 2) + 0);
-    }
-
-    @Override
-    public float g010() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 2) + 1);
-    }
-
-    @Override
-    public float b010() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 2) + 2);
-    }
-
-    @Override
-    public float s010() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 2) + 3);
-    }
-
-    @Override
-    public float r011() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 3) + 0);
-    }
-
-    @Override
-    public float g011() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 3) + 1);
-    }
-
-    @Override
-    public float b011() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 3) + 2);
-    }
-
-    @Override
-    public float s011() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 3) + 3);
-    }
-
-    @Override
-    public float r100() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 4) + 0);
-    }
-
-    @Override
-    public float g100() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 4) + 1);
-    }
-
-    @Override
-    public float b100() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 4) + 2);
-    }
-
-    @Override
-    public float s100() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 4) + 3);
-    }
-
-    @Override
-    public float r101() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 5) + 0);
-    }
-
-    @Override
-    public float g101() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 5) + 1);
-    }
-
-    @Override
-    public float b101() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 5) + 2);
-    }
-
-    @Override
-    public float s101() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 5) + 3);
-    }
-
-    @Override
-    public float r110() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 6) + 0);
-    }
-
-    @Override
-    public float g110() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 6) + 1);
-    }
-
-    @Override
-    public float b110() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 6) + 2);
-    }
-
-    @Override
-    public float s110() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 6) + 3);
-    }
-
-    @Override
-    public float r111() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 7) + 0);
-    }
-
-    @Override
-    public float g111() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 7) + 1);
-    }
-
-    @Override
-    public float b111() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 7) + 2);
-    }
-
-    @Override
-    public float s111() {
-        if (colorBuffer == null) { return 0.0f; }
-        return colorBuffer.get(4 * (index + 7) + 3);
     }
 
 }

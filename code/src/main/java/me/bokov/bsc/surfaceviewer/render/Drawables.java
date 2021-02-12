@@ -162,15 +162,12 @@ public interface Drawables {
                     new float[]{
                             f.pos1.x, f.pos1.y, f.pos1.z,
                             f.normal1.x, f.normal1.y, f.normal1.z,
-                            f.color1.x, f.color1.y, f.color1.z, f.color1.w,
 
                             f.pos2.x, f.pos2.y, f.pos2.z,
                             f.normal2.x, f.normal2.y, f.normal2.z,
-                            f.color2.x, f.color2.y, f.color2.z, f.color2.w,
 
                             f.pos3.x, f.pos3.y, f.pos3.z,
-                            f.normal3.x, f.normal3.y, f.normal3.z,
-                            f.color3.x, f.color3.y, f.color3.z, f.color3.w,
+                            f.normal3.x, f.normal3.y, f.normal3.z
                     }
             );
         }
@@ -195,19 +192,15 @@ public interface Drawables {
                     new float[]{
                             f.pos1.x, f.pos1.y, f.pos1.z,
                             f.normal1.x, f.normal1.y, f.normal1.z,
-                            f.color1.x, f.color1.y, f.color1.z, f.color1.w,
 
                             f.pos2.x, f.pos2.y, f.pos2.z,
                             f.normal2.x, f.normal2.y, f.normal2.z,
-                            f.color2.x, f.color2.y, f.color2.z, f.color2.w,
 
                             f.pos3.x, f.pos3.y, f.pos3.z,
                             f.normal3.x, f.normal3.y, f.normal3.z,
-                            f.color3.x, f.color3.y, f.color3.z, f.color3.w,
 
                             f.pos4.x, f.pos4.y, f.pos4.z,
-                            f.normal4.x, f.normal4.y, f.normal4.z,
-                            f.color4.x, f.color4.y, f.color4.z, f.color4.w,
+                            f.normal4.x, f.normal4.y, f.normal4.z
                     }
             );
         }
@@ -225,15 +218,11 @@ public interface Drawables {
 
         public final Vector3f pos1, pos2, pos3;
         public final Vector3f normal1, normal2, normal3;
-        public final Vector4f color1, color2, color3;
 
         public Face(
                 Vector3f pos1, Vector3f pos2, Vector3f pos3, Vector3f normal1,
                 Vector3f normal2,
-                Vector3f normal3,
-                Vector4f color1,
-                Vector4f color2,
-                Vector4f color3
+                Vector3f normal3
         ) {
             this.pos1 = new Vector3f(pos1);
             this.pos2 = new Vector3f(pos2);
@@ -241,9 +230,6 @@ public interface Drawables {
             this.normal1 = new Vector3f(normal1);
             this.normal2 = new Vector3f(normal2);
             this.normal3 = new Vector3f(normal3);
-            this.color1 = new Vector4f(color1);
-            this.color2 = new Vector4f(color2);
-            this.color3 = new Vector4f(color3);
         }
     }
 
@@ -251,7 +237,6 @@ public interface Drawables {
 
         public final Vector3f pos1, pos2, pos3, pos4;
         public final Vector3f normal1, normal2, normal3, normal4;
-        public final Vector4f color1, color2, color3, color4;
 
         public QuadFace(
                 Vector3f pos1,
@@ -261,11 +246,7 @@ public interface Drawables {
                 Vector3f normal1,
                 Vector3f normal2,
                 Vector3f normal3,
-                Vector3f normal4,
-                Vector4f color1,
-                Vector4f color2,
-                Vector4f color3,
-                Vector4f color4
+                Vector3f normal4
         ) {
             this.pos1 = new Vector3f(pos1);
             this.pos2 = new Vector3f(pos2);
@@ -275,10 +256,6 @@ public interface Drawables {
             this.normal2 = new Vector3f(normal2);
             this.normal3 = new Vector3f(normal3);
             this.normal4 = new Vector3f(normal4);
-            this.color1 = new Vector4f(color1);
-            this.color2 = new Vector4f(color2);
-            this.color3 = new Vector4f(color3);
-            this.color4 = new Vector4f(color4);
         }
     }
 

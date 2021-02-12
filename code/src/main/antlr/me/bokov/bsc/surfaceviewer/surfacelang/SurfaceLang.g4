@@ -5,7 +5,7 @@ grammar SurfaceLang;
 }
 
 world :
-    (expression | material | light | prefab)+
+    (expression | material | light | prefab | resourceTexture)+
     ;
 
 light :
@@ -38,6 +38,7 @@ lightParam :
         | mat3Value
         | mat4Value
         | boolValue
+        | stringValue
         | expression
     )
     ;
@@ -76,6 +77,7 @@ materialParam :
         | mat3Value
         | mat4Value
         | boolValue
+        | stringValue
         | expression
     )
     ;
@@ -157,6 +159,18 @@ defaultPortSpec :
     expression
     ;
 
+resourceTexture
+    : KW_RESOURCE KW_TEXTURE resourceTextureName LPAREN resourceTextureLocation RPAREN
+    ;
+
+resourceTextureName
+    : IDENTIFIER
+    ;
+
+resourceTextureLocation
+    : stringValue
+    ;
+
 propertyValue :
     numberValue
     | vec2Value
@@ -166,6 +180,7 @@ propertyValue :
     | mat3Value
     | mat4Value
     | boolValue
+    | stringValue
     ;
 
 numberValue :
@@ -201,6 +216,10 @@ mat4Value :
     LPAREN col0=vec4Value COMMA col1=vec4Value COMMA col2=vec4Value COMMA col3=vec4Value RPAREN
     ;
 
+stringValue :
+    STRING
+    ;
+
 KW_AT : 'AT' | 'at';
 KW_POSITION : 'POSITION' | 'position';
 KW_SCALE : 'SCALE' | 'scale';
@@ -216,6 +235,8 @@ KW_LIGHT : 'LIGHT' | 'light';
 KW_OBJECT : 'OBJECT' | 'object';
 KW_NORM : 'NORM' | 'norm';
 KW_PREFAB : 'PREFAB' | 'prefab';
+KW_RESOURCE : 'RESOURCE' | 'resource';
+KW_TEXTURE : 'TEXTURE' | 'texture';
 
 NUMBER : SUB? [0-9]+(('.')?[0-9]+)?;
 IDENTIFIER : [a-zA-Z]([a-zA-Z0-9_]*);
@@ -240,6 +261,12 @@ MUL : '*';
 POW : '^';
 MOD : '%';
 
+STRING
+    : '"' ~'"'* '"'
+    ;
 WS
    : [ \r\n\t] + -> skip
    ;
+
+
+QUOTE : '"';

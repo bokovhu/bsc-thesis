@@ -36,7 +36,7 @@ public class ExportGLTFTask extends Task<File> {
         File outputIboBinFile = new File(outputPathProperty.get() + ".ibin");
         List<Drawables.Face> faces = triangleListProperty.get();
 
-        int byteLength = faces.size() * 3 * (3 + 3 + 4) * Float.BYTES;
+        int byteLength = faces.size() * 3 * (4 + 3) * Float.BYTES;
         int indexByteLength = faces.size() * 3 * Integer.BYTES;
         ByteBuffer vboDataBuffer = BufferUtils.createByteBuffer(byteLength);
         ByteBuffer iboDataBuffer = BufferUtils.createByteBuffer(indexByteLength);
@@ -50,15 +50,12 @@ public class ExportGLTFTask extends Task<File> {
             float[] faceData = new float[]{
                     f.pos1.x, f.pos1.y, f.pos1.z,
                     (fn ? -1.0f : 1.0f) * f.normal1.x, (fn ? -1.0f : 1.0f) * f.normal1.y, (fn ? -1.0f : 1.0f) * f.normal1.z,
-                    f.color1.x, f.color1.y, f.color1.z, f.color1.w,
 
                     f.pos2.x, f.pos2.y, f.pos2.z,
                     (fn ? -1.0f : 1.0f) * f.normal2.x, (fn ? -1.0f : 1.0f) * f.normal2.y, (fn ? -1.0f : 1.0f) * f.normal2.z,
-                    f.color2.x, f.color2.y, f.color2.z, f.color2.w,
 
                     f.pos3.x, f.pos3.y, f.pos3.z,
                     (fn ? -1.0f : 1.0f) * f.normal3.x, (fn ? -1.0f : 1.0f) * f.normal3.y, (fn ? -1.0f : 1.0f) * f.normal3.z,
-                    f.color3.x, f.color3.y, f.color3.z, f.color3.w,
             };
 
             for (float fl : faceData) { vboDataBuffer.putFloat(fl); }
@@ -100,22 +97,15 @@ public class ExportGLTFTask extends Task<File> {
         positionView.setBuffer(0);
         positionView.setByteLength(byteLength);
         positionView.setByteOffset(0);
-        positionView.setByteStride((3 + 3 + 4) * Float.BYTES);
+        positionView.setByteStride((3 + 3) * Float.BYTES);
         positionView.setTarget(GL46.GL_ARRAY_BUFFER);
 
         final var normalView = new GLTFBufferView();
         normalView.setBuffer(0);
         normalView.setByteLength(byteLength - 3 * Float.BYTES);
         normalView.setByteOffset(3 * Float.BYTES);
-        normalView.setByteStride((3 + 3 + 4) * Float.BYTES);
+        normalView.setByteStride((3 + 3) * Float.BYTES);
         normalView.setTarget(GL46.GL_ARRAY_BUFFER);
-
-        final var colorView = new GLTFBufferView();
-        colorView.setBuffer(0);
-        colorView.setByteLength(byteLength - (3 + 3) * Float.BYTES);
-        colorView.setByteOffset((3 + 3) * Float.BYTES);
-        colorView.setByteStride((3 + 3 + 4) * Float.BYTES);
-        colorView.setTarget(GL46.GL_ARRAY_BUFFER);
 
 
         final var indexView = new GLTFBufferView();
@@ -128,7 +118,6 @@ public class ExportGLTFTask extends Task<File> {
 
         gltf.getBufferViews().add(positionView);
         gltf.getBufferViews().add(normalView);
-        gltf.getBufferViews().add(colorView);
         gltf.getBufferViews().add(indexView);
 
 
@@ -160,22 +149,6 @@ public class ExportGLTFTask extends Task<File> {
         normalAccessor.getMax().add(1.0f);
 
 
-        final var colorAccessor = new GLTFAccessor();
-        colorAccessor.setBufferView(2);
-        colorAccessor.setByteOffset(0);
-        colorAccessor.setComponentType(GL46.GL_FLOAT);
-        colorAccessor.setCount(3 * faces.size());
-        colorAccessor.setType("VEC4");
-        colorAccessor.getMin().add(0.0f);
-        colorAccessor.getMin().add(0.0f);
-        colorAccessor.getMin().add(0.0f);
-        colorAccessor.getMin().add(0.0f);
-        colorAccessor.getMax().add(1.0f);
-        colorAccessor.getMax().add(1.0f);
-        colorAccessor.getMax().add(1.0f);
-        colorAccessor.getMax().add(1.0f);
-
-
         final var indexAccessor = new GLTFAccessor();
         indexAccessor.setBufferView(3);
         indexAccessor.setByteOffset(0);
@@ -187,7 +160,6 @@ public class ExportGLTFTask extends Task<File> {
 
         gltf.getAccessors().add(positionAccessor);
         gltf.getAccessors().add(normalAccessor);
-        gltf.getAccessors().add(colorAccessor);
         gltf.getAccessors().add(indexAccessor);
 
 
@@ -207,7 +179,6 @@ public class ExportGLTFTask extends Task<File> {
         final var primitive = new GLTFPrimitive();
         primitive.getAttributes().put("POSITION", 0);
         primitive.getAttributes().put("NORMAL", 1);
-        primitive.getAttributes().put("COLOR_0", 2);
         primitive.setIndices(3);
         primitive.setMode(GL46.GL_TRIANGLES);
 

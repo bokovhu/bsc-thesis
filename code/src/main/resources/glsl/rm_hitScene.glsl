@@ -13,8 +13,8 @@ Hit hitScene(Ray ray) {
         if (dScene <= RM_HIT_DISTANCE) {
             result.c = 1;
             result.N = csgNormal(result.P);
-            result.C = csgColor(result.P);
-            result.S = csgShininess(result.P);
+            result.C = csgColor(result.P, result.N);
+            result.S = csgShininess(result.P, result.N);
             break;
         }
 

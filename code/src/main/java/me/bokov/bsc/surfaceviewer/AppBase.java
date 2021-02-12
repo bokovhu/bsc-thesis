@@ -41,9 +41,7 @@ public abstract class AppBase implements App, Runnable {
         @Override
         public synchronized void changeConfig(ViewConfiguration configuration) {
 
-            final var detached = IOUtil.serialize(configuration);
-
-            view.changeConfig(detached);
+            view.changeConfig(configuration);
 
         }
 

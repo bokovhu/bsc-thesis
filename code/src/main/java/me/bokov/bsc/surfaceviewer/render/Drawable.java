@@ -176,6 +176,24 @@ public class Drawable {
         return vaoHandle;
     }
 
+    public Drawable replaceVboWith(int newHandle) {
+        if(this.vboHandle == newHandle) return this;
+        if(GL46.glIsBuffer(this.vboHandle)) {
+            GL46.glDeleteBuffers(this.vboHandle);
+        }
+        this.vboHandle = newHandle;
+
+        GL46.glBindVertexArray(this.vaoHandle);
+        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, this.vboHandle);
+
+        setupVAO();
+
+        GL46.glBindVertexArray(0);
+        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);
+
+        return this;
+    }
+
     private static final class Attribute {
 
         private final int location;

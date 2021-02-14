@@ -1,6 +1,8 @@
 package me.bokov.bsc.surfaceviewer.mesh.mcgpu;
 
 import me.bokov.bsc.surfaceviewer.compute.ComputeProgram;
+import me.bokov.bsc.surfaceviewer.glsl.generator.GeneratorOptions;
+import me.bokov.bsc.surfaceviewer.glsl.generator.MarchingCubesShaderGenerator;
 import me.bokov.bsc.surfaceviewer.mesh.MeshGenerator;
 import me.bokov.bsc.surfaceviewer.mesh.mccpu.EdgeTable;
 import me.bokov.bsc.surfaceviewer.mesh.mccpu.TriangleTable;
@@ -26,16 +28,18 @@ public class GPUMarchingCubes implements MeshGenerator {
     private GPUBuffer triangleTableBuffer;
     private GPUBuffer edgeTableBuffer;
 
-    private Drawable doGenerate(GPUUniformGrid gpuGrid) {
+    private Drawable doGenerate(World world, GPUUniformGrid gpuGrid) {
 
         long start = System.currentTimeMillis();
 
         if (marchingCubesProgram == null) {
 
+            final var codeGenerator = new MarchingCubesShaderGenerator(world);
+
             marchingCubesProgram = new ComputeProgram();
             marchingCubesProgram.init();
             marchingCubesProgram.attachSource(
-                    ResourceUtil.readResource("glsl/mc.compute.glsl")
+                    codeGenerator.generateShaderSource(new GeneratorOptions())
             );
 
             marchingCubesProgram.linkAndValidate();
@@ -132,33 +136,11 @@ public class GPUMarchingCubes implements MeshGenerator {
         IntBuffer vertexCountContent = BufferUtils.createIntBuffer(1);
         GL46.glGetBufferSubData(GL46.GL_SHADER_STORAGE_BUFFER, 0L, vertexCountContent);
 
-        GL46.glFlush();
-        GL46.glFinish();
-
         final int vertexCount = vertexCountContent.get(0);
 
         Drawable drawable = Drawable.standard3D();
         drawable.init();
-        GL46.glBindVertexArray(0);
-        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);
-        outputDataBuffer.bind(GL46.GL_COPY_READ_BUFFER);
-        GL46.glBindBuffer(GL46.GL_COPY_WRITE_BUFFER, drawable.getVboHandle());
-        GL46.glBufferStorage(
-                GL46.GL_COPY_WRITE_BUFFER,
-                Float.BYTES * (3 + 3) * vertexCount,
-                GL46.GL_MAP_READ_BIT | GL46.GL_MAP_WRITE_BIT
-        );
-        GL46.glCopyBufferSubData(
-                GL46.GL_COPY_READ_BUFFER,
-                GL46.GL_COPY_WRITE_BUFFER,
-                0L,
-                0L,
-                Float.BYTES * (3 + 3) * vertexCount
-        );
-
-        GL46.glFlush();
-        GL46.glFinish();
-
+        drawable.replaceVboWith(outputDataBuffer.getHandle());
         drawable.configure(GL46.GL_TRIANGLES, vertexCount);
 
         long resultEnd = System.currentTimeMillis();
@@ -176,8 +158,6 @@ public class GPUMarchingCubes implements MeshGenerator {
         );
 
         GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, 0);
-        GL46.glBindBuffer(GL46.GL_COPY_WRITE_BUFFER, 0);
-        GL46.glBindBuffer(GL46.GL_COPY_READ_BUFFER, 0);
         GL46.glActiveTexture(0);
         GL46.glBindTexture(GL46.GL_TEXTURE_2D, 0);
         GL46.glBindTexture(GL46.GL_TEXTURE_3D, 0);
@@ -190,7 +170,7 @@ public class GPUMarchingCubes implements MeshGenerator {
     public Drawable generate(World world, VoxelStorage voxelStorage) {
 
         if (voxelStorage instanceof GPUUniformGrid) {
-            return doGenerate((GPUUniformGrid) voxelStorage);
+            return doGenerate(world, (GPUUniformGrid) voxelStorage);
         }
 
         throw new UnsupportedOperationException("Only GPUUniformGrid is supported at the moment!");
@@ -204,13 +184,11 @@ public class GPUMarchingCubes implements MeshGenerator {
         if (triangleTableBuffer != null) { triangleTableBuffer.tearDown(); }
         if (marchingCubesProgram != null) { marchingCubesProgram.tearDown(); }
         if (vertexCountBuffer != null) { vertexCountBuffer.tearDown(); }
-        if (outputDataBuffer != null) { outputDataBuffer.tearDown(); }
 
         edgeTableBuffer = null;
         triangleTableBuffer = null;
         marchingCubesProgram = null;
         vertexCountBuffer = null;
-        outputDataBuffer = null;
 
     }
 }

@@ -1,7 +1,8 @@
 package me.bokov.bsc.surfaceviewer.voxelization.gpuugrid;
 
 import me.bokov.bsc.surfaceviewer.compute.ComputeProgram;
-import me.bokov.bsc.surfaceviewer.compute.VoxelizerComputeShaderGenerator;
+import me.bokov.bsc.surfaceviewer.glsl.generator.GeneratorOptions;
+import me.bokov.bsc.surfaceviewer.glsl.generator.VoxelizerComputeShaderGenerator;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
 import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.util.MetricsLogger;
@@ -46,7 +47,7 @@ public class GPUUniformGridVoxelizer implements Voxelizer3D<GPUUniformGrid> {
             voxelizerProgram.init();
 
             final var programGenerator = new VoxelizerComputeShaderGenerator(world);
-            voxelizerProgram.attachSource(programGenerator.generateVoxelizerComputeShaderSource());
+            voxelizerProgram.attachSource(programGenerator.generateShaderSource(new GeneratorOptions()));
 
             voxelizerProgram.linkAndValidate();
         }
@@ -126,7 +127,7 @@ public class GPUUniformGridVoxelizer implements Voxelizer3D<GPUUniformGrid> {
             voxelizerProgram.init();
 
             final var programGenerator = new VoxelizerComputeShaderGenerator(world);
-            voxelizerProgram.attachSource(programGenerator.generateVoxelizerComputeShaderSource());
+            voxelizerProgram.attachSource(programGenerator.generateShaderSource(new GeneratorOptions()));
 
             voxelizerProgram.linkAndValidate();
         }

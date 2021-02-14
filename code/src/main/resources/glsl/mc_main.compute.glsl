@@ -1,39 +1,3 @@
-#version 460
-
-precision highp float;
-
-layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
-
-struct OutputVertex {
-    float posx, posy, posz;
-    float nx, ny, nz;
-};
-
-layout(std430, binding = 0) writeonly buffer out_output {
-    OutputVertex[] out_vertices;
-};
-
-layout(std430, binding = 1) buffer out_vertexCountBuffer { int out_vertexCount; };
-
-uniform sampler3D in_positionAndValue;
-uniform sampler3D in_normal;
-
-layout(std430, binding = 2) readonly buffer in_triangleTable {
-    int triangleTableData [];
-};
-
-layout(std430, binding = 3) readonly buffer in_edgeTable {
-    uint edgeTableData [];
-};
-
-const int STORAGE_TYPE_LATTICE = 0;
-const int STORAGE_TYPE_VOXELS = 1;
-const float EPSILON = 0.0001;
-
-uniform float u_isoLevel = 0.0;
-uniform int u_storageType = 0;
-uniform int u_voxelCount = 0;
-
 vec3 interpolate(vec3 a, float av, vec3 b, float bv) {
     if (abs(u_isoLevel - av) < EPSILON) {
         return a;
@@ -94,6 +58,7 @@ void executeLattice() {
     vec4 posval110 = texelFetch(in_positionAndValue, c110, 0);
     vec4 posval111 = texelFetch(in_positionAndValue, c111, 0);
 
+    #ifndef RESAMPLE_NORMALS
     vec3 norm000 = texelFetch(in_normal, c000, 0).xyz;
     vec3 norm001 = texelFetch(in_normal, c001, 0).xyz;
     vec3 norm010 = texelFetch(in_normal, c010, 0).xyz;
@@ -102,6 +67,7 @@ void executeLattice() {
     vec3 norm101 = texelFetch(in_normal, c101, 0).xyz;
     vec3 norm110 = texelFetch(in_normal, c110, 0).xyz;
     vec3 norm111 = texelFetch(in_normal, c111, 0).xyz;
+    #endif
 
     int cubeIndex = 0;
 
@@ -138,44 +104,54 @@ void executeLattice() {
         if (edge == 0) return;
 
         vertices[0] = interpolate(posval010.xyz, posval010.w, posval110.xyz, posval110.w);
-        normals[0] = interpolate(norm010, posval010.w, norm110, posval110.w);
-
         vertices[1] = interpolate(posval110.xyz, posval110.w, posval111.xyz, posval111.w);
-        normals[1] = interpolate(norm110, posval110.w, norm111, posval111.w);
-
         vertices[2] = interpolate(posval111.xyz, posval111.w, posval011.xyz, posval011.w);
-        normals[2] = interpolate(norm111, posval111.w, norm011, posval011.w);
-
         vertices[3] = interpolate(posval011.xyz, posval011.w, posval010.xyz, posval010.w);
-        normals[3] = interpolate(norm011, posval011.w, norm010, posval010.w);
+
 
 
 
         vertices[4] = interpolate(posval000.xyz, posval000.w, posval100.xyz, posval100.w);
-        normals[4] = interpolate(norm000, posval000.w, norm100, posval100.w);
-
         vertices[5] = interpolate(posval100.xyz, posval100.w, posval101.xyz, posval101.w);
-        normals[5] = interpolate(norm100, posval100.w, norm101, posval101.w);
-
         vertices[6] = interpolate(posval101.xyz, posval101.w, posval001.xyz, posval001.w);
-        normals[6] = interpolate(norm101, posval101.w, norm001, posval001.w);
-
         vertices[7] = interpolate(posval001.xyz, posval001.w, posval000.xyz, posval000.w);
-        normals[7] = interpolate(norm001, posval001.w, norm000, posval000.w);
+
 
 
 
         vertices[8] = interpolate(posval000.xyz, posval000.w, posval010.xyz, posval010.w);
-        normals[8] = interpolate(norm000, posval000.w, norm010, posval010.w);
-
         vertices[9] = interpolate(posval100.xyz, posval100.w, posval110.xyz, posval110.w);
-        normals[9] = interpolate(norm100, posval100.w, norm110, posval110.w);
-
         vertices[10] = interpolate(posval101.xyz, posval101.w, posval111.xyz, posval111.w);
-        normals[10] = interpolate(norm101, posval101.w, norm111, posval111.w);
-
         vertices[11] = interpolate(posval001.xyz, posval001.w, posval011.xyz, posval011.w);
+
+
+        #ifdef RESAMPLE_NORMALS
+        normals[0] = csgNormal(vertices[0]);
+        normals[1] = csgNormal(vertices[1]);
+        normals[2] = csgNormal(vertices[2]);
+        normals[3] = csgNormal(vertices[3]);
+        normals[4] = csgNormal(vertices[4]);
+        normals[5] = csgNormal(vertices[5]);
+        normals[6] = csgNormal(vertices[6]);
+        normals[7] = csgNormal(vertices[7]);
+        normals[8] = csgNormal(vertices[8]);
+        normals[9] = csgNormal(vertices[9]);
+        normals[10] = csgNormal(vertices[10]);
+        normals[11] = csgNormal(vertices[11]);
+        #else
+        normals[0] = interpolate(norm010, posval010.w, norm110, posval110.w);
+        normals[1] = interpolate(norm110, posval110.w, norm111, posval111.w);
+        normals[2] = interpolate(norm111, posval111.w, norm011, posval011.w);
+        normals[3] = interpolate(norm011, posval011.w, norm010, posval010.w);
+        normals[4] = interpolate(norm000, posval000.w, norm100, posval100.w);
+        normals[5] = interpolate(norm100, posval100.w, norm101, posval101.w);
+        normals[6] = interpolate(norm101, posval101.w, norm001, posval001.w);
+        normals[7] = interpolate(norm001, posval001.w, norm000, posval000.w);
+        normals[8] = interpolate(norm000, posval000.w, norm010, posval010.w);
+        normals[9] = interpolate(norm100, posval100.w, norm110, posval110.w);
+        normals[10] = interpolate(norm101, posval101.w, norm111, posval111.w);
         normals[11] = interpolate(norm001, posval001.w, norm011, posval011.w);
+        #endif
 
         int triCount = 0;
 
@@ -241,7 +217,6 @@ void executeLattice() {
 }
 
 void main() {
-
 
     if (u_storageType == STORAGE_TYPE_LATTICE) {
         executeLattice();

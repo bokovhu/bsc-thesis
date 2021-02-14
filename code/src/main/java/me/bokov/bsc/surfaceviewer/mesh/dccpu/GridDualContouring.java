@@ -334,12 +334,6 @@ public class GridDualContouring implements MeshGenerator {
 
                     }
 
-                    /* tmp.set(
-                            clamp(tmp.x, voxel.x000(), voxel.x100()),
-                            clamp(tmp.y, voxel.y000(), voxel.y010()),
-                            clamp(tmp.z, voxel.z000(), voxel.z001())
-                    ); */
-
                     points[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage.xVoxelCount() + x]
                             = new Vector3f(tmp);
 

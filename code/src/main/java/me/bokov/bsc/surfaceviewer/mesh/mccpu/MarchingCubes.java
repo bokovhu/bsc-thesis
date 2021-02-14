@@ -4,6 +4,8 @@ import me.bokov.bsc.surfaceviewer.mesh.MeshGenerator;
 import me.bokov.bsc.surfaceviewer.render.Drawable;
 import me.bokov.bsc.surfaceviewer.render.Drawables;
 import me.bokov.bsc.surfaceviewer.render.Drawables.Face;
+import me.bokov.bsc.surfaceviewer.scene.World;
+import me.bokov.bsc.surfaceviewer.sdf.threed.CPUEvaluationContext;
 import me.bokov.bsc.surfaceviewer.util.MetricsLogger;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
 import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorage;
@@ -13,7 +15,11 @@ import org.joml.Vector4f;
 
 import java.util.*;
 
+import static me.bokov.bsc.surfaceviewer.util.MathUtil.*;
+
 public class MarchingCubes implements MeshGenerator {
+
+    public static boolean RESAMPLE_NORMALS = true;
 
     private static final float EPSILON = 0.0001f;
     private final float isoLevel;
@@ -48,7 +54,9 @@ public class MarchingCubes implements MeshGenerator {
 
     }
 
-    public List<Face> generateTriangles(VoxelStorage voxelStorage) {
+    public List<Face> generateTriangles(World world, VoxelStorage voxelStorage) {
+
+        final var cpuEvaluator = world.toEvaluable().cpu();
 
         List<Face> generatedTriangles = new ArrayList<>();
         final long startTime = System.currentTimeMillis();
@@ -122,17 +130,21 @@ public class MarchingCubes implements MeshGenerator {
                 vertices[0].pos(tmp1.x, tmp1.y, tmp1.z);
                 if (hasNormal) {
                     final var voxelN = (VoxelWithNormal) voxel;
-                    interpolatePos(
-                            voxelN.nx010(),
-                            voxelN.ny010(),
-                            voxelN.nz010(),
-                            voxelN.v010(),
-                            voxelN.nx110(),
-                            voxelN.ny110(),
-                            voxelN.nz110(),
-                            voxelN.v110(),
-                            isoLevel
-                    );
+                    if(RESAMPLE_NORMALS) {
+                        sdfNormal(cpuEvaluator, new CPUEvaluationContext().setPoint(vertices[0].pos), tmp1);
+                    } else {
+                        interpolatePos(
+                                voxelN.nx010(),
+                                voxelN.ny010(),
+                                voxelN.nz010(),
+                                voxelN.v010(),
+                                voxelN.nx110(),
+                                voxelN.ny110(),
+                                voxelN.nz110(),
+                                voxelN.v110(),
+                                isoLevel
+                        );
+                    }
                     vertices[0].norm(tmp1.x, tmp1.y, tmp1.z);
                 }
             }
@@ -152,17 +164,21 @@ public class MarchingCubes implements MeshGenerator {
                 vertices[1].pos(tmp1.x, tmp1.y, tmp1.z);
                 if (hasNormal) {
                     final var voxelN = (VoxelWithNormal) voxel;
-                    interpolatePos(
-                            voxelN.nx110(),
-                            voxelN.ny110(),
-                            voxelN.nz110(),
-                            voxelN.v110(),
-                            voxelN.nx111(),
-                            voxelN.ny111(),
-                            voxelN.nz111(),
-                            voxelN.v111(),
-                            isoLevel
-                    );
+                    if(RESAMPLE_NORMALS) {
+                        sdfNormal(cpuEvaluator, new CPUEvaluationContext().setPoint(vertices[1].pos), tmp1);
+                    } else {
+                        interpolatePos(
+                                voxelN.nx110(),
+                                voxelN.ny110(),
+                                voxelN.nz110(),
+                                voxelN.v110(),
+                                voxelN.nx111(),
+                                voxelN.ny111(),
+                                voxelN.nz111(),
+                                voxelN.v111(),
+                                isoLevel
+                        );
+                    }
                     vertices[1].norm(tmp1.x, tmp1.y, tmp1.z);
                 }
             }
@@ -182,17 +198,21 @@ public class MarchingCubes implements MeshGenerator {
                 vertices[2].pos(tmp1.x, tmp1.y, tmp1.z);
                 if (hasNormal) {
                     final var voxelN = (VoxelWithNormal) voxel;
-                    interpolatePos(
-                            voxelN.nx111(),
-                            voxelN.ny111(),
-                            voxelN.nz111(),
-                            voxelN.v111(),
-                            voxelN.nx011(),
-                            voxelN.ny011(),
-                            voxelN.nz011(),
-                            voxelN.v011(),
-                            isoLevel
-                    );
+                    if(RESAMPLE_NORMALS) {
+                        sdfNormal(cpuEvaluator, new CPUEvaluationContext().setPoint(vertices[2].pos), tmp1);
+                    } else {
+                        interpolatePos(
+                                voxelN.nx111(),
+                                voxelN.ny111(),
+                                voxelN.nz111(),
+                                voxelN.v111(),
+                                voxelN.nx011(),
+                                voxelN.ny011(),
+                                voxelN.nz011(),
+                                voxelN.v011(),
+                                isoLevel
+                        );
+                    }
                     vertices[2].norm(tmp1.x, tmp1.y, tmp1.z);
                 }
             }
@@ -212,17 +232,21 @@ public class MarchingCubes implements MeshGenerator {
                 vertices[3].pos(tmp1.x, tmp1.y, tmp1.z);
                 if (hasNormal) {
                     final var voxelN = (VoxelWithNormal) voxel;
-                    interpolatePos(
-                            voxelN.nx011(),
-                            voxelN.ny011(),
-                            voxelN.nz011(),
-                            voxelN.v011(),
-                            voxelN.nx010(),
-                            voxelN.ny010(),
-                            voxelN.nz010(),
-                            voxelN.v010(),
-                            isoLevel
-                    );
+                    if(RESAMPLE_NORMALS) {
+                        sdfNormal(cpuEvaluator, new CPUEvaluationContext().setPoint(vertices[3].pos), tmp1);
+                    } else {
+                        interpolatePos(
+                                voxelN.nx011(),
+                                voxelN.ny011(),
+                                voxelN.nz011(),
+                                voxelN.v011(),
+                                voxelN.nx010(),
+                                voxelN.ny010(),
+                                voxelN.nz010(),
+                                voxelN.v010(),
+                                isoLevel
+                        );
+                    }
                     vertices[3].norm(tmp1.x, tmp1.y, tmp1.z);
                 }
             }
@@ -242,17 +266,21 @@ public class MarchingCubes implements MeshGenerator {
                 vertices[4].pos(tmp1.x, tmp1.y, tmp1.z);
                 if (hasNormal) {
                     final var voxelN = (VoxelWithNormal) voxel;
-                    interpolatePos(
-                            voxelN.nx000(),
-                            voxelN.ny000(),
-                            voxelN.nz000(),
-                            voxelN.v000(),
-                            voxelN.nx100(),
-                            voxelN.ny100(),
-                            voxelN.nz100(),
-                            voxelN.v100(),
-                            isoLevel
-                    );
+                    if(RESAMPLE_NORMALS) {
+                        sdfNormal(cpuEvaluator, new CPUEvaluationContext().setPoint(vertices[4].pos), tmp1);
+                    } else {
+                        interpolatePos(
+                                voxelN.nx000(),
+                                voxelN.ny000(),
+                                voxelN.nz000(),
+                                voxelN.v000(),
+                                voxelN.nx100(),
+                                voxelN.ny100(),
+                                voxelN.nz100(),
+                                voxelN.v100(),
+                                isoLevel
+                        );
+                    }
                     vertices[4].norm(tmp1.x, tmp1.y, tmp1.z);
                 }
             }
@@ -272,17 +300,21 @@ public class MarchingCubes implements MeshGenerator {
                 vertices[5].pos(tmp1.x, tmp1.y, tmp1.z);
                 if (hasNormal) {
                     final var voxelN = (VoxelWithNormal) voxel;
-                    interpolatePos(
-                            voxelN.nx100(),
-                            voxelN.ny100(),
-                            voxelN.nz100(),
-                            voxelN.v100(),
-                            voxelN.nx101(),
-                            voxelN.ny101(),
-                            voxelN.nz101(),
-                            voxelN.v101(),
-                            isoLevel
-                    );
+                    if(RESAMPLE_NORMALS) {
+                        sdfNormal(cpuEvaluator, new CPUEvaluationContext().setPoint(vertices[5].pos), tmp1);
+                    } else {
+                        interpolatePos(
+                                voxelN.nx100(),
+                                voxelN.ny100(),
+                                voxelN.nz100(),
+                                voxelN.v100(),
+                                voxelN.nx101(),
+                                voxelN.ny101(),
+                                voxelN.nz101(),
+                                voxelN.v101(),
+                                isoLevel
+                        );
+                    }
                     vertices[5].norm(tmp1.x, tmp1.y, tmp1.z);
                 }
             }
@@ -302,17 +334,21 @@ public class MarchingCubes implements MeshGenerator {
                 vertices[6].pos(tmp1.x, tmp1.y, tmp1.z);
                 if (hasNormal) {
                     final var voxelN = (VoxelWithNormal) voxel;
-                    interpolatePos(
-                            voxelN.nx101(),
-                            voxelN.ny101(),
-                            voxelN.nz101(),
-                            voxelN.v101(),
-                            voxelN.nx001(),
-                            voxelN.ny001(),
-                            voxelN.nz001(),
-                            voxelN.v001(),
-                            isoLevel
-                    );
+                    if(RESAMPLE_NORMALS) {
+                        sdfNormal(cpuEvaluator, new CPUEvaluationContext().setPoint(vertices[6].pos), tmp1);
+                    } else {
+                        interpolatePos(
+                                voxelN.nx101(),
+                                voxelN.ny101(),
+                                voxelN.nz101(),
+                                voxelN.v101(),
+                                voxelN.nx001(),
+                                voxelN.ny001(),
+                                voxelN.nz001(),
+                                voxelN.v001(),
+                                isoLevel
+                        );
+                    }
                     vertices[6].norm(tmp1.x, tmp1.y, tmp1.z);
                 }
             }
@@ -332,17 +368,21 @@ public class MarchingCubes implements MeshGenerator {
                 vertices[7].pos(tmp1.x, tmp1.y, tmp1.z);
                 if (hasNormal) {
                     final var voxelN = (VoxelWithNormal) voxel;
-                    interpolatePos(
-                            voxelN.nx001(),
-                            voxelN.ny001(),
-                            voxelN.nz001(),
-                            voxelN.v001(),
-                            voxelN.nx000(),
-                            voxelN.ny000(),
-                            voxelN.nz000(),
-                            voxelN.v000(),
-                            isoLevel
-                    );
+                    if(RESAMPLE_NORMALS) {
+                        sdfNormal(cpuEvaluator, new CPUEvaluationContext().setPoint(vertices[7].pos), tmp1);
+                    } else {
+                        interpolatePos(
+                                voxelN.nx001(),
+                                voxelN.ny001(),
+                                voxelN.nz001(),
+                                voxelN.v001(),
+                                voxelN.nx000(),
+                                voxelN.ny000(),
+                                voxelN.nz000(),
+                                voxelN.v000(),
+                                isoLevel
+                        );
+                    }
                     vertices[7].norm(tmp1.x, tmp1.y, tmp1.z);
                 }
             }
@@ -362,17 +402,21 @@ public class MarchingCubes implements MeshGenerator {
                 vertices[8].pos(tmp1.x, tmp1.y, tmp1.z);
                 if (hasNormal) {
                     final var voxelN = (VoxelWithNormal) voxel;
-                    interpolatePos(
-                            voxelN.nx010(),
-                            voxelN.ny010(),
-                            voxelN.nz010(),
-                            voxelN.v010(),
-                            voxelN.nx000(),
-                            voxelN.ny000(),
-                            voxelN.nz000(),
-                            voxelN.v000(),
-                            isoLevel
-                    );
+                    if(RESAMPLE_NORMALS) {
+                        sdfNormal(cpuEvaluator, new CPUEvaluationContext().setPoint(vertices[8].pos), tmp1);
+                    } else {
+                        interpolatePos(
+                                voxelN.nx010(),
+                                voxelN.ny010(),
+                                voxelN.nz010(),
+                                voxelN.v010(),
+                                voxelN.nx000(),
+                                voxelN.ny000(),
+                                voxelN.nz000(),
+                                voxelN.v000(),
+                                isoLevel
+                        );
+                    }
                     vertices[8].norm(tmp1.x, tmp1.y, tmp1.z);
                 }
             }
@@ -392,17 +436,21 @@ public class MarchingCubes implements MeshGenerator {
                 vertices[9].pos(tmp1.x, tmp1.y, tmp1.z);
                 if (hasNormal) {
                     final var voxelN = (VoxelWithNormal) voxel;
-                    interpolatePos(
-                            voxelN.nx110(),
-                            voxelN.ny110(),
-                            voxelN.nz110(),
-                            voxelN.v110(),
-                            voxelN.nx100(),
-                            voxelN.ny100(),
-                            voxelN.nz100(),
-                            voxelN.v100(),
-                            isoLevel
-                    );
+                    if(RESAMPLE_NORMALS) {
+                        sdfNormal(cpuEvaluator, new CPUEvaluationContext().setPoint(vertices[9].pos), tmp1);
+                    } else {
+                        interpolatePos(
+                                voxelN.nx110(),
+                                voxelN.ny110(),
+                                voxelN.nz110(),
+                                voxelN.v110(),
+                                voxelN.nx100(),
+                                voxelN.ny100(),
+                                voxelN.nz100(),
+                                voxelN.v100(),
+                                isoLevel
+                        );
+                    }
                     vertices[9].norm(tmp1.x, tmp1.y, tmp1.z);
                 }
             }
@@ -422,17 +470,21 @@ public class MarchingCubes implements MeshGenerator {
                 vertices[10].pos(tmp1.x, tmp1.y, tmp1.z);
                 if (hasNormal) {
                     final var voxelN = (VoxelWithNormal) voxel;
-                    interpolatePos(
-                            voxelN.nx111(),
-                            voxelN.ny111(),
-                            voxelN.nz111(),
-                            voxelN.v111(),
-                            voxelN.nx101(),
-                            voxelN.ny101(),
-                            voxelN.nz101(),
-                            voxelN.v101(),
-                            isoLevel
-                    );
+                    if(RESAMPLE_NORMALS) {
+                        sdfNormal(cpuEvaluator, new CPUEvaluationContext().setPoint(vertices[10].pos), tmp1);
+                    } else {
+                        interpolatePos(
+                                voxelN.nx111(),
+                                voxelN.ny111(),
+                                voxelN.nz111(),
+                                voxelN.v111(),
+                                voxelN.nx101(),
+                                voxelN.ny101(),
+                                voxelN.nz101(),
+                                voxelN.v101(),
+                                isoLevel
+                        );
+                    }
                     vertices[10].norm(tmp1.x, tmp1.y, tmp1.z);
                 }
             }
@@ -452,17 +504,21 @@ public class MarchingCubes implements MeshGenerator {
                 vertices[11].pos(tmp1.x, tmp1.y, tmp1.z);
                 if (hasNormal) {
                     final var voxelN = (VoxelWithNormal) voxel;
-                    interpolatePos(
-                            voxelN.nx011(),
-                            voxelN.ny011(),
-                            voxelN.nz011(),
-                            voxelN.v011(),
-                            voxelN.nx001(),
-                            voxelN.ny001(),
-                            voxelN.nz001(),
-                            voxelN.v001(),
-                            isoLevel
-                    );
+                    if(RESAMPLE_NORMALS) {
+                        sdfNormal(cpuEvaluator, new CPUEvaluationContext().setPoint(vertices[11].pos), tmp1);
+                    } else {
+                        interpolatePos(
+                                voxelN.nx011(),
+                                voxelN.ny011(),
+                                voxelN.nz011(),
+                                voxelN.v011(),
+                                voxelN.nx001(),
+                                voxelN.ny001(),
+                                voxelN.nz001(),
+                                voxelN.v001(),
+                                isoLevel
+                        );
+                    }
                     vertices[11].norm(tmp1.x, tmp1.y, tmp1.z);
                 }
             }
@@ -516,8 +572,8 @@ public class MarchingCubes implements MeshGenerator {
     }
 
     @Override
-    public Drawable generate(VoxelStorage voxelStorage) {
-        return Drawables.createTriangle(generateTriangles(voxelStorage));
+    public Drawable generate(World world, VoxelStorage voxelStorage) {
+        return Drawables.createTriangle(generateTriangles(world, voxelStorage));
     }
 
     private final class Vertex {

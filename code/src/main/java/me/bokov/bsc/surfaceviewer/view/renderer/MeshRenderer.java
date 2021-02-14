@@ -3,23 +3,21 @@ package me.bokov.bsc.surfaceviewer.view.renderer;
 import lombok.Data;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import me.bokov.bsc.surfaceviewer.View;
+import me.bokov.bsc.surfaceviewer.glsl.generator.BlinnPhongShaderGenerator;
+import me.bokov.bsc.surfaceviewer.glsl.generator.GeneratorOptions;
 import me.bokov.bsc.surfaceviewer.mesh.MeshTransform;
 import me.bokov.bsc.surfaceviewer.mesh.dccpu.GridDualContouring;
 import me.bokov.bsc.surfaceviewer.mesh.mccpu.MarchingCubes;
 import me.bokov.bsc.surfaceviewer.mesh.mcgpu.GPUMarchingCubes;
 import me.bokov.bsc.surfaceviewer.render.Drawable;
 import me.bokov.bsc.surfaceviewer.render.ShaderProgram;
-import me.bokov.bsc.surfaceviewer.render.blinnphong.BlinnPhongShaderGenerator;
 import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.util.IOUtil;
 import me.bokov.bsc.surfaceviewer.util.ResourceUtil;
 import me.bokov.bsc.surfaceviewer.util.Resources;
 import me.bokov.bsc.surfaceviewer.view.BaseRenderer;
-import me.bokov.bsc.surfaceviewer.view.Renderer;
 import me.bokov.bsc.surfaceviewer.view.RendererConfig;
 import me.bokov.bsc.surfaceviewer.voxelization.CPUVoxelizationContext;
-import me.bokov.bsc.surfaceviewer.voxelization.Voxel;
 import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorage;
 import me.bokov.bsc.surfaceviewer.voxelization.Voxelizer3D;
 import me.bokov.bsc.surfaceviewer.voxelization.gpuugrid.GPUUniformGrid;
@@ -70,7 +68,7 @@ public class MeshRenderer extends BaseRenderer {
                     ResourceUtil.readResource(Resources.GLSL_VERTEX_STANDARD_3D_TRANSFORMED)
             );
             this.shaderProgram
-                    .attachFragmentShaderFromSource(generator.generateFragmentSource());
+                    .attachFragmentShaderFromSource(generator.generateShaderSource(new GeneratorOptions()));
             this.shaderProgram.linkAndValidate();
 
         }
@@ -170,7 +168,7 @@ public class MeshRenderer extends BaseRenderer {
 
             this.marchingCubes = new MarchingCubes(config.getIsoLevel());
             this.mesh = this.marchingCubes
-                    .generate(marchingCubesInputStorage);
+                    .generate(view.getWorld(), marchingCubesInputStorage);
 
         }
 
@@ -194,7 +192,7 @@ public class MeshRenderer extends BaseRenderer {
             this.gpuMarchingCubes = new GPUMarchingCubes();
 
             this.mesh = this.gpuMarchingCubes
-                    .generate(storage);
+                    .generate(view.getWorld(), storage);
 
         }
 
@@ -211,7 +209,7 @@ public class MeshRenderer extends BaseRenderer {
 
             this.gridDualContouring = new GridDualContouring();
             this.mesh = this.gridDualContouring
-                    .generate(marchingCubesInputStorage);
+                    .generate(view.getWorld(), marchingCubesInputStorage);
 
         }
 

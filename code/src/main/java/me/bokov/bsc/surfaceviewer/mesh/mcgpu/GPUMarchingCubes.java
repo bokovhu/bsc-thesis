@@ -6,6 +6,7 @@ import me.bokov.bsc.surfaceviewer.mesh.mccpu.EdgeTable;
 import me.bokov.bsc.surfaceviewer.mesh.mccpu.TriangleTable;
 import me.bokov.bsc.surfaceviewer.render.Drawable;
 import me.bokov.bsc.surfaceviewer.render.GPUBuffer;
+import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.util.MetricsLogger;
 import me.bokov.bsc.surfaceviewer.util.ResourceUtil;
 import me.bokov.bsc.surfaceviewer.voxelization.VoxelStorage;
@@ -186,7 +187,7 @@ public class GPUMarchingCubes implements MeshGenerator {
     }
 
     @Override
-    public Drawable generate(VoxelStorage voxelStorage) {
+    public Drawable generate(World world, VoxelStorage voxelStorage) {
 
         if (voxelStorage instanceof GPUUniformGrid) {
             return doGenerate((GPUUniformGrid) voxelStorage);

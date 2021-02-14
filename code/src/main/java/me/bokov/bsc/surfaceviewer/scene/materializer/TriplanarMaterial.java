@@ -1,5 +1,6 @@
 package me.bokov.bsc.surfaceviewer.scene.materializer;
 
+import me.bokov.bsc.surfaceviewer.glsl.GLSLIfStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
 import me.bokov.bsc.surfaceviewer.scene.Materializer;
 import me.bokov.bsc.surfaceviewer.scene.SceneNode;
@@ -118,6 +119,17 @@ public class TriplanarMaterial implements Materializer {
                                         )
                                 )
                         )
+                ),
+
+                new GLSLIfStatement(
+                        cmpLe(length(ref(resultName + "_W")), literal(0.001f)),
+                        List.of(
+                                opAssign(
+                                        ref(resultName + "_W"),
+                                        vec3(0, 1, 0)
+                                )
+                        ),
+                        null
                 ),
 
                 var(

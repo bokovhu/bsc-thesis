@@ -15,6 +15,8 @@ import org.lwjgl.BufferUtils;
 import java.nio.FloatBuffer;
 import java.util.*;
 
+import static me.bokov.bsc.surfaceviewer.util.MathUtil.*;
+
 public class UniformGridVoxelizer implements Voxelizer3D<UniformGrid> {
 
     private static final float EPSILON = 0.002f;
@@ -26,7 +28,7 @@ public class UniformGridVoxelizer implements Voxelizer3D<UniformGrid> {
     private final Vector3f dyMinus = new Vector3f();
     private final Vector3f dzPlus = new Vector3f();
     private final Vector3f dzMinus = new Vector3f();
-    private final Vector3f tmpNormal = new Vector3f();
+    private Vector3f tmpNormal = new Vector3f();
 
     public UniformGridVoxelizer(int width, int height, int depth) {
         this.width = width;
@@ -40,18 +42,6 @@ public class UniformGridVoxelizer implements Voxelizer3D<UniformGrid> {
         this.height = height;
         this.depth = depth;
         this.smoothNormals = smoothNormals;
-    }
-
-    private void normal(CPUEvaluator<Float, CPUContext> generator, CPUContext context, Vector3f p) {
-
-        tmpNormal.set(
-                generator.evaluate(context.transform(dxPlus.set(p).add(EPSILON, 0f, 0f))) - generator
-                        .evaluate(context.transform(dxMinus.set(p).add(-EPSILON, 0f, 0f))),
-                generator.evaluate(context.transform(dyPlus.set(p).add(0f, EPSILON, 0f))) - generator
-                        .evaluate(context.transform(dyMinus.set(p).add(0f, -EPSILON, 0f))),
-                generator.evaluate(context.transform(dzPlus.set(p).add(0f, 0f, EPSILON))) - generator
-                        .evaluate(context.transform(dzMinus.set(p).add(0f, 0f, -EPSILON)))
-        ).normalize();
     }
 
     @Override
@@ -86,7 +76,7 @@ public class UniformGridVoxelizer implements Voxelizer3D<UniformGrid> {
                             .put(cpu.evaluate(rootContext));
 
                     if (smoothNormals) {
-                        normal(cpu, rootContext, p);
+                        tmpNormal = sdfNormal(cpu, rootContext, tmpNormal);
 
                         normalBuffer.put(tmpNormal.x).put(tmpNormal.y).put(tmpNormal.z);
                     }

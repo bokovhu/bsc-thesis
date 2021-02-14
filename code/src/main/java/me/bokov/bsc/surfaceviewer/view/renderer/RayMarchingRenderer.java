@@ -4,10 +4,11 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import me.bokov.bsc.surfaceviewer.View;
+import me.bokov.bsc.surfaceviewer.glsl.generator.GeneratorOptions;
 import me.bokov.bsc.surfaceviewer.render.Drawable;
 import me.bokov.bsc.surfaceviewer.render.Drawables;
 import me.bokov.bsc.surfaceviewer.render.ShaderProgram;
-import me.bokov.bsc.surfaceviewer.render.raymarcher.RaymarcherShaderGenerator;
+import me.bokov.bsc.surfaceviewer.glsl.generator.RaymarcherShaderGenerator;
 import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
@@ -15,9 +16,7 @@ import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
 import me.bokov.bsc.surfaceviewer.util.IOUtil;
 import me.bokov.bsc.surfaceviewer.util.ResourceUtil;
 import me.bokov.bsc.surfaceviewer.view.BaseRenderer;
-import me.bokov.bsc.surfaceviewer.view.Renderer;
 import me.bokov.bsc.surfaceviewer.view.RendererConfig;
-import org.joml.Vector3f;
 
 import java.util.*;
 
@@ -71,7 +70,7 @@ public class RayMarchingRenderer extends BaseRenderer {
                         ResourceUtil.readResource("glsl/directPassthrough.vertex.glsl")
                 );
                 this.rayMarchingProgram.attachFragmentShaderFromSource(
-                        this.shaderGenerator.generateFragmentSource()
+                        this.shaderGenerator.generateShaderSource(new GeneratorOptions())
                 );
 
                 try {

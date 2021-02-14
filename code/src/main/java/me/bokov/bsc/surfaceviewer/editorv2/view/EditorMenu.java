@@ -60,7 +60,7 @@ public class EditorMenu extends MenuBar implements Initializable {
 
                     SaveSceneTask task = new SaveSceneTask();
                     task.getSavePathProperty().setValue(outputFile.getAbsolutePath());
-                    task.getWorldProperty().setValue(IOUtil.serialize(worldProperty.get()));
+                    task.getWorldProperty().setValue(worldProperty.get());
 
                     task.run();
 

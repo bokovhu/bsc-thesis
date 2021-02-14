@@ -3,6 +3,8 @@ package me.bokov.bsc.surfaceviewer.mesh.dccpu;
 import me.bokov.bsc.surfaceviewer.mesh.MeshGenerator;
 import me.bokov.bsc.surfaceviewer.render.Drawable;
 import me.bokov.bsc.surfaceviewer.render.Drawables;
+import me.bokov.bsc.surfaceviewer.scene.World;
+import me.bokov.bsc.surfaceviewer.sdf.threed.CPUEvaluationContext;
 import me.bokov.bsc.surfaceviewer.util.MetricsLogger;
 import me.bokov.bsc.surfaceviewer.voxelization.GridVoxel;
 import me.bokov.bsc.surfaceviewer.voxelization.GridVoxelStorage;
@@ -16,6 +18,7 @@ import static me.bokov.bsc.surfaceviewer.util.MathUtil.*;
 
 public class GridDualContouring implements MeshGenerator {
 
+    public static boolean RESAMPLE_NORMALS = true;
 
     private final Vector3f ntmp000 = new Vector3f();
     private final Vector3f ntmp001 = new Vector3f();
@@ -258,9 +261,11 @@ public class GridDualContouring implements MeshGenerator {
 
     }
 
-    public List<Drawables.Face> generateTriangles(GridVoxelStorage voxelStorage) {
+    public List<Drawables.Face> generateTriangles(World world, GridVoxelStorage voxelStorage) {
 
         long start = System.currentTimeMillis();
+
+        final var cpuEvaluator = world.toEvaluable().cpu();
 
         final List<Drawables.Face> generatedTriangles = new ArrayList<>();
 
@@ -335,15 +340,21 @@ public class GridDualContouring implements MeshGenerator {
                             clamp(tmp.z, voxel.z000(), voxel.z001())
                     ); */
 
-                    float fractX = clamp((1.0f / cellSize) * (tmp.x - voxel.x000()), 0, 1);
-                    float fractY = clamp((1.0f / cellSize) * (tmp.y - voxel.y000()), 0, 1);
-                    float fractZ = clamp((1.0f / cellSize) * (tmp.z - voxel.z000()), 0, 1);
-                    final Vector3f tmpN = interpNormal(voxel, fractX, fractY, fractZ).normalize();
-
                     points[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage.xVoxelCount() + x]
                             = new Vector3f(tmp);
-                    normals[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage.xVoxelCount() + x]
-                            = tmpN;
+
+                    if (RESAMPLE_NORMALS) {
+                        normals[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage.xVoxelCount() + x]
+                                = sdfNormal(cpuEvaluator, new CPUEvaluationContext().setPoint(tmp), null);
+                    } else {
+                        float fractX = clamp((1.0f / cellSize) * (tmp.x - voxel.x000()), 0, 1);
+                        float fractY = clamp((1.0f / cellSize) * (tmp.y - voxel.y000()), 0, 1);
+                        float fractZ = clamp((1.0f / cellSize) * (tmp.z - voxel.z000()), 0, 1);
+                        final Vector3f tmpN = interpNormal(voxel, fractX, fractY, fractZ).normalize();
+
+                        normals[z * voxelStorage.yVoxelCount() * voxelStorage.xVoxelCount() + y * voxelStorage.xVoxelCount() + x]
+                                = tmpN;
+                    }
 
                 }
 
@@ -504,10 +515,10 @@ public class GridDualContouring implements MeshGenerator {
     }
 
     @Override
-    public Drawable generate(VoxelStorage voxelStorage) {
+    public Drawable generate(World world, VoxelStorage voxelStorage) {
 
         if (voxelStorage instanceof GridVoxelStorage) {
-            return Drawables.createTriangle(generateTriangles((GridVoxelStorage) voxelStorage));
+            return Drawables.createTriangle(generateTriangles(world, (GridVoxelStorage) voxelStorage));
         }
 
         throw new UnsupportedOperationException();

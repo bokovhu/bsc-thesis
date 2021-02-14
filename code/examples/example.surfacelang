@@ -1,0 +1,24 @@
+light ambient {
+    energy: (0.2, 0.2, 0.2)
+}
+
+light directional {
+    energy: (0.6, 0.4, 0.15),
+    direction: (0.7071, 0.5, -0.5)
+}
+
+light directional {
+    energy: (0.2, 0.35, 0.4),
+    direction: (0.6325, 0.4472, 0.6325)
+}
+
+material constant {
+    boundary: EVERYWHERE ,
+    diffuse: (0.5, 0.5, 0.5),
+    shininess: 40
+}
+
+SUBTRACT {
+    A: SPHERE  AT  POSITION (-0.5, 0, 0),
+    B: SPHERE  AT  POSITION (0.5, 0, 0)
+}

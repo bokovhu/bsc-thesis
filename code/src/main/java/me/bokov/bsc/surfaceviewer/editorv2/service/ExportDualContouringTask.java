@@ -56,6 +56,6 @@ public class ExportDualContouringTask extends Task<List<Drawables.Face>> {
         );
         final var dc = new GridDualContouring();
 
-        return dc.generateTriangles(voxelStorage);
+        return dc.generateTriangles(world, voxelStorage);
     }
 }

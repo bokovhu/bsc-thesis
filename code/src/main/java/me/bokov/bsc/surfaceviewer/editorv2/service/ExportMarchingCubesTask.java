@@ -60,6 +60,6 @@ public class ExportMarchingCubesTask extends Task<List<Drawables.Face>> {
         );
         final var marchingCubes = new MarchingCubes(0.0f);
 
-        return marchingCubes.generateTriangles(voxelStorage);
+        return marchingCubes.generateTriangles(world, voxelStorage);
     }
 }

@@ -33,7 +33,7 @@ float shadowScene(vec3 P, vec3 D) {
         );
         ph = dScene;
 
-        t += max(RM_MIN_STEP_DISTANCE, abs(dScene));
+        t += abs(dScene);
 
         if (t >= RM_MAX_DISTANCE) {
             return result;

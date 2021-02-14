@@ -2,6 +2,7 @@ function Node(parent) {
 
     this.pos = [0, 0, 0];
     this.parent = parent;
+    this.children = [];
     this.depth = parent ? parent.depth + 1 : 1;
 
 }
@@ -62,6 +63,7 @@ SpaceColonizer.prototype.solve = function () {
         pullDir = mul(pullDir, Math.max(0.01, Math.min(this.opts.maxBranchLength, length(sub(bestNode.pos, closestAttractor)))));
 
         let newNode = new Node(bestNode);
+        bestNode.children.push(newNode);
         newNode.pos = add(bestNode.pos, pullDir);
 
         this.nodes.push(newNode);
@@ -121,16 +123,16 @@ function normalize(a) {
     return [a[0] / l, a[1] / l, a[2] / l];
 }
 
-const NUM_ATTRACTORS = 100;
+const NUM_ATTRACTORS = 20;
 const ATTR_MINX = -3;
 const ATTR_MAXX = 3;
 const ATTR_MINY = 3;
-const ATTR_MAXY = 15;
+const ATTR_MAXY = 25;
 const ATTR_MINZ = -3;
 const ATTR_MAXZ = 3;
 
-const MIN_WIDTH = 0.025;
-const MAX_WIDTH = 1;
+const MIN_WIDTH = 0.25;
+const MAX_WIDTH = 2;
 
 var root = new Node(null);
 var points = [];
@@ -146,7 +148,10 @@ for (let i = 0; i < NUM_ATTRACTORS; i++) {
 
 }
 
-let solver = new SpaceColonizer(root, points);
+let solver = new SpaceColonizer(root, points, {
+    maxAttractionDistance: 1,
+    maxBranchLength: 4
+});
 solver.solve();
 
 let maxDepth = solver.nodes[0].depth;
@@ -156,12 +161,8 @@ for (let n of solver.nodes) {
 
 for (let node of solver.nodes.filter(n => !!n.parent)) {
 
-    let nodeDAlpha = Math.pow((maxDepth - node.depth) / maxDepth, 2.0);
+    let nodeDAlpha = Math.pow((maxDepth - node.depth) / maxDepth, 4.0);
     let radius = MIN_WIDTH + (MAX_WIDTH - MIN_WIDTH) * nodeDAlpha;
-    if (node.depth >= maxDepth - 4) {
-        let sphereRadius = 0.4;
-        console.log(`sphere at position(${node.pos[0]}, ${node.pos[1]}, ${node.pos[2]}) (radius: ${sphereRadius})`)
-    }
 
     console.log(`capsule_line (a: (${node.pos[0]}, ${node.pos[1]}, ${node.pos[2]}), b: (${node.parent.pos[0]}, ${node.parent.pos[1]}, ${node.parent.pos[2]}), radius: ${radius})`)
 

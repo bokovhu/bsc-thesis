@@ -159,15 +159,11 @@ public class GPUUniformGridVoxelizer implements Voxelizer3D<GPUUniformGrid> {
 
             GL46.glDispatchCompute(invoc[3], invoc[4], invoc[5]);
             GL46.glMemoryBarrier(GL46.GL_ALL_BARRIER_BITS);
-            GL46.glFlush();
-            GL46.glFinish();
 
             long invocEnd = System.currentTimeMillis();
             System.out.println("Voxelization invocation " + Arrays.toString(invoc) + " took " + (invocEnd - invocStart) + " ms");
 
         }
-
-        GL46.glUseProgram(0);
 
         GL46.glFlush();
         GL46.glFinish();

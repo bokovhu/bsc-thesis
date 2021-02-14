@@ -1,0 +1,157 @@
+light ambient {
+    energy: (0.2, 0.2, 0.2)
+}
+
+light directional {
+    energy: (1, 1, 1),
+    direction: (0.4575, 0.7625, -0.4575)
+}
+
+material constant {
+    boundary: EVERYWHERE ,
+    diffuse: (1, 1, 1),
+    shininess: 80
+}
+
+prefab room_0000{
+    BOX (bounds: (2, 0.2, 2))
+}
+
+prefab room_0001{
+    UNION [
+        BOX  AT  POSITION (0, 1, -0.9)(bounds: (2, 2, 0.2)),
+        BOX (bounds: (2, 0.2, 2))
+    ]
+}
+
+prefab room_0010{
+    UNION [
+        BOX  AT  POSITION (-0.9, 1, 0)(bounds: (0.2, 2, 2)),
+        BOX (bounds: (2, 0.2, 2))
+    ]
+}
+
+prefab room_0011{
+    UNION [
+        BOX  AT  POSITION (-0.9, 1, 0)(bounds: (0.2, 2, 2)),
+        BOX  AT  POSITION (0, 1, -0.9)(bounds: (2, 2, 0.2)),
+        BOX (bounds: (2, 0.2, 2))
+    ]
+}
+
+prefab room_0100{
+    UNION [
+        BOX  AT  POSITION (0, 1, 0.9)(bounds: (2, 2, 0.2)),
+        BOX (bounds: (2, 0.2, 2))
+    ]
+}
+
+prefab room_0101{
+    UNION [
+        BOX  AT  POSITION (0, 1, 0.9)(bounds: (2, 2, 0.2)),
+        BOX  AT  POSITION (0, 1, -0.9)(bounds: (2, 2, 0.2)),
+        BOX (bounds: (2, 0.2, 2))
+    ]
+}
+
+prefab room_0110{
+    UNION [
+        BOX  AT  POSITION (0, 1, 0.9)(bounds: (2, 2, 0.2)),
+        BOX  AT  POSITION (-0.9, 1, 0)(bounds: (0.2, 2, 2)),
+        BOX (bounds: (2, 0.2, 2))
+    ]
+}
+
+prefab room_0111{
+    UNION [
+        BOX  AT  POSITION (0, 1, 0.9)(bounds: (2, 2, 0.2)),
+        BOX  AT  POSITION (-0.9, 1, 0)(bounds: (0.2, 2, 2)),
+        BOX  AT  POSITION (0, 1, -0.9)(bounds: (2, 2, 0.2)),
+        BOX (bounds: (2, 0.2, 2))
+    ]
+}
+
+prefab room_1000{
+    UNION [
+        BOX  AT  POSITION (0.9, 1, 0)(bounds: (0.2, 2, 2)),
+        BOX (bounds: (2, 0.2, 2))
+    ]
+}
+
+prefab room_1001{
+    UNION [
+        BOX  AT  POSITION (0, 1, -0.9)(bounds: (2, 2, 0.2)),
+        BOX  AT  POSITION (0.9, 1, 0)(bounds: (0.2, 2, 2)),
+        BOX (bounds: (2, 0.2, 2))
+    ]
+}
+
+prefab room_1010{
+    UNION [
+        BOX  AT  POSITION (0.9, 1, 0)(bounds: (0.2, 2, 2)),
+        BOX  AT  POSITION (-0.9, 1, 0)(bounds: (0.2, 2, 2)),
+        BOX (bounds: (2, 0.2, 2))
+    ]
+}
+
+prefab room_1011{
+    UNION [
+        BOX  AT  POSITION (0.9, 1, 0)(bounds: (0.2, 2, 2)),
+        BOX  AT  POSITION (-0.9, 1, 0)(bounds: (0.2, 2, 2)),
+        BOX  AT  POSITION (0, 1, -0.9)(bounds: (2, 2, 0.2)),
+        BOX (bounds: (2, 0.2, 2))
+    ]
+}
+
+prefab room_1100{
+    UNION [
+        BOX  AT  POSITION (0.9, 1, 0)(bounds: (0.2, 2, 2)),
+        BOX  AT  POSITION (0, 1, 0.9)(bounds: (2, 2, 0.2)),
+        BOX (bounds: (2, 0.2, 2))
+    ]
+}
+
+prefab room_1101{
+    UNION [
+        BOX  AT  POSITION (0.9, 1, 0)(bounds: (0.2, 2, 2)),
+        BOX  AT  POSITION (0, 1, 0.9)(bounds: (2, 2, 0.2)),
+        BOX  AT  POSITION (0, 1, -0.9)(bounds: (2, 2, 0.2)),
+        BOX (bounds: (2, 0.2, 2))
+    ]
+}
+
+prefab room_1110{
+    UNION [
+        BOX  AT  POSITION (0.9, 1, 0)(bounds: (0.2, 2, 2)),
+        BOX  AT  POSITION (0, 1, 0.9)(bounds: (2, 2, 0.2)),
+        BOX  AT  POSITION (-0.9, 1, 0)(bounds: (0.2, 2, 2)),
+        BOX (bounds: (2, 0.2, 2))
+    ]
+}
+
+prefab room_1111{
+    UNION [
+        BOX  AT  POSITION (0.9, 1, 0)(bounds: (0.2, 2, 2)),
+        BOX  AT  POSITION (0, 1, 0.9)(bounds: (2, 2, 0.2)),
+        BOX  AT  POSITION (-0.9, 1, 0)(bounds: (0.2, 2, 2)),
+        BOX  AT  POSITION (0, 1, -0.9)(bounds: (2, 2, 0.2)),
+        BOX (bounds: (2, 0.2, 2))
+    ]
+}
+
+room_0000
+room_0001  AT  POSITION (0, 0, 2)
+room_0010  AT  POSITION (0, 0, 4)
+room_0011  AT  POSITION (0, 0, 6)
+room_0100  AT  POSITION (0, 0, 8)
+room_0101  AT  POSITION (0, 0, 10)
+room_0110  AT  POSITION (0, 0, 12)
+room_0111  AT  POSITION (0, 0, 14)
+room_1000  AT  POSITION (0, 0, 16)
+room_1001  AT  POSITION (0, 0, 18)
+room_1010  AT  POSITION (0, 0, 20)
+room_1011  AT  POSITION (0, 0, 22)
+room_1100  AT  POSITION (0, 0, 24)
+room_1101  AT  POSITION (0, 0, 26)
+room_1110  AT  POSITION (0, 0, 28)
+room_1111  AT  POSITION (0, 0, 30)

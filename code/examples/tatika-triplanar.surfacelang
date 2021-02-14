@@ -1,0 +1,69 @@
+light ambient {
+    energy: (0.2, 0.2, 0.2)
+}
+
+light directional {
+    energy: (0.6, 0.3, 0.2),
+    direction: (0.4575, 0.7625, -0.4575)
+}
+
+light directional {
+    energy: (0.2, 0.4, 0.7),
+    direction: (-0.4082, 0.4082, -0.8165)
+}
+
+light directional {
+    energy: (0.2, 0.5, 0.55),
+    direction: (0.4082, 0.4082, 0.8165)
+}
+
+resource texture chinese("assets/chinese-diffuse.jpg")
+resource texture metal("assets/metal-diffuse.jpg")
+resource texture stone("assets/stone-diffuse.jpg")
+resource texture dirt("assets/dirt-diffuse.png")
+material triplanar {
+    boundary: BOX  AT  POSITION (-2, 0, -2)(bounds: (4, 5, 4)),
+    diffuseMap: "chinese",
+    textureScale: 0.25,
+    shininess: 30
+}
+
+material triplanar {
+    boundary: BOX  AT  POSITION (2, 0, -2)(bounds: (4, 5, 4)),
+    diffuseMap: "metal",
+    textureScale: 0.25,
+    shininess: 86
+}
+
+material triplanar {
+    boundary: BOX  AT  POSITION (2, 0, 2)(bounds: (4, 5, 4)),
+    diffuseMap: "dirt",
+    textureScale: 0.25,
+    shininess: 8
+}
+
+material triplanar {
+    boundary: BOX  AT  POSITION (-2, 0, 2)(bounds: (4, 5, 4)),
+    diffuseMap: "stone",
+    textureScale: 0.25,
+    shininess: 10
+}
+
+material constant {
+    boundary: EVERYWHERE ,
+    diffuse: (0.4, 0.4, 0.4),
+    shininess: 40
+}
+
+SYMY {
+    SYMZ {
+        SYMX {
+            INTERSECT [
+                BOX  AT  POSITION (1, 1, 1)(bounds: (2, 2, 2)),
+                BOX  AT  POSITION (1, 1, 1) ROTATE AROUND (1, 1, 1) BY 45 DEGREES(bounds: (2, 2, 2))
+            ]
+        }
+    }
+}
+
+PLANE (h: 3.5)

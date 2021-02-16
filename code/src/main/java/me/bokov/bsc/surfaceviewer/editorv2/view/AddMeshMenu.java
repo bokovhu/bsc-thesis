@@ -63,7 +63,7 @@ public class AddMeshMenu extends Menu implements Initializable {
 
     private void addNode(NodeTemplate template) {
         final var world = IOUtil.serialize(worldProperty.get());
-        final var newNode = new BaseSceneNode(world.nextId(), template);
+        final var newNode = new BaseSceneNode(world.nextId(), template.getName());
         final var parentNode = fromNodeProperty.getValue();
         if (parentNode != null) {
             addToNode(parentNode, newNode);

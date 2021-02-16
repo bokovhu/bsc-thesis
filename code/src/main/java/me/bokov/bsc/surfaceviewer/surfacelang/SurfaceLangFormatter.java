@@ -390,7 +390,8 @@ public class SurfaceLangFormatter {
 
             List<Map.Entry<String, SceneNode>> portEntries = new ArrayList<>(node.pluggedPorts().entrySet());
 
-            if (portEntries.size() == 1 && node.getTemplate().getPorts().size() == 1) {
+            final var template = NodeTemplate.forName(node.getTemplateName());
+            if (portEntries.size() == 1 && template.getPorts().size() == 1) {
 
                 final var entry = portEntries.get(0);
                 formatNode(entry.getValue());
@@ -456,7 +457,7 @@ public class SurfaceLangFormatter {
         if (node.getPrefab() != null) {
             append(node.getPrefab().getName());
         } else {
-            append(node.getTemplate().getName());
+            append(node.getTemplateName());
         }
         space();
 
@@ -549,27 +550,27 @@ public class SurfaceLangFormatter {
             append(",");
             lineBreak(0);
 
-            if (triplanarMaterial.diffuseMapName() != null) {
+            if (triplanarMaterial.getDiffuseMapName() != null) {
                 append("diffuseMap: ");
-                appendString(triplanarMaterial.diffuseMapName());
+                appendString(triplanarMaterial.getDiffuseMapName());
                 append(",");
                 lineBreak(0);
 
                 append("textureScale: ");
-                appendFloat(triplanarMaterial.scale());
+                appendFloat(triplanarMaterial.getScale());
             } else {
                 append("diffuse: ");
-                appendVec3(triplanarMaterial.diffuseColor());
+                appendVec3(triplanarMaterial.getDiffuse());
             }
             append(",");
             lineBreak(0);
 
-            if (triplanarMaterial.shininessMapName() != null) {
+            if (triplanarMaterial.getShininessMapName() != null) {
                 append("shininessMap: ");
-                appendString(triplanarMaterial.shininessMapName());
+                appendString(triplanarMaterial.getShininessMapName());
             } else {
                 append("shininess: ");
-                appendFloat(triplanarMaterial.shininess());
+                appendFloat(triplanarMaterial.getDefaultShininess());
             }
 
 

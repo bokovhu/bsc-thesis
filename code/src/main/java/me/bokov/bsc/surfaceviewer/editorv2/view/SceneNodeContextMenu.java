@@ -9,6 +9,7 @@ import javafx.scene.control.ContextMenu;
 import lombok.Getter;
 import me.bokov.bsc.surfaceviewer.editorv2.event.EditSceneNodeNameEvent;
 import me.bokov.bsc.surfaceviewer.editorv2.event.OpenEditorTabEvent;
+import me.bokov.bsc.surfaceviewer.scene.NodeTemplate;
 import me.bokov.bsc.surfaceviewer.scene.SceneNode;
 import me.bokov.bsc.surfaceviewer.scene.World;
 import me.bokov.bsc.surfaceviewer.util.FXMLUtil;
@@ -79,7 +80,8 @@ public class SceneNodeContextMenu extends ContextMenu implements Initializable {
 
     private void onSceneNodeChanged(SceneNode node) {
 
-        if (!node.getTemplate().isSupportsChildren()) {
+        final var template = NodeTemplate.forName(node.getTemplateName());
+        if (!template.isSupportsChildren()) {
             addMeshMenu.setVisible(false);
         }
 

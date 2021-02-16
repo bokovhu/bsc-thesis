@@ -5,6 +5,7 @@ import me.bokov.bsc.surfaceviewer.sdf.CPUContext;
 import me.bokov.bsc.surfaceviewer.sdf.Evaluable;
 import me.bokov.bsc.surfaceviewer.sdf.GPUContext;
 import org.joml.Matrix4f;
+import org.lwjgl.system.CallbackI;
 
 import java.util.*;
 import java.util.stream.*;
@@ -26,18 +27,18 @@ public class BaseSceneNode implements SceneNode {
     private SceneNode parentNode = null;
     private Prefab prefab = null;
 
-    private NodeTemplate template;
+    private String templateName;
     private NodeDisplay display = new NodeDisplay().setName("Unnamed node");
 
-    public BaseSceneNode(int id, NodeTemplate template) {
+    public BaseSceneNode(int id, String template) {
         this.id = id;
-        this.template = template;
+        this.templateName = template;
     }
 
-    public BaseSceneNode(SceneNode parent, int id, NodeTemplate template) {
+    public BaseSceneNode(SceneNode parent, int id, String template) {
         this.id = id;
         this.parentNode = parent;
-        this.template = template;
+        this.templateName = template;
     }
 
     @Override
@@ -148,9 +149,11 @@ public class BaseSceneNode implements SceneNode {
             return transform(localTransform, prefab.getNode().toEvaluable());
         }
 
-        if (template == null) {
+        if (templateName == null) {
             throw new IllegalStateException("Cannot create evaluable");
         }
+
+        final var template = NodeTemplate.forName(templateName);
 
         final var requestBuilder = SurfaceFactoryRequest.builder()
                 .children(this.children)
@@ -193,8 +196,8 @@ public class BaseSceneNode implements SceneNode {
     }
 
     @Override
-    public NodeTemplate getTemplate() {
-        return template;
+    public String getTemplateName() {
+        return templateName;
     }
 
     @Override

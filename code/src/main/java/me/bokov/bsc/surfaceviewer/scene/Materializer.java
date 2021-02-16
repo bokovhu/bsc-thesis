@@ -5,9 +5,7 @@ import org.joml.Vector3f;
 
 import java.io.Serializable;
 
-public interface Materializer extends Serializable {
-
-    int getId();
+public interface Materializer extends SceneComponent {
 
     SceneNode getBoundary();
     Evaluable<Vector3f, ColorCPUContext, ColorGPUContext> getDiffuseColor();

@@ -9,9 +9,7 @@ import org.joml.Matrix4f;
 import java.io.Serializable;
 import java.util.*;
 
-public interface SceneNode extends Serializable {
-
-    int getId();
+public interface SceneNode extends SceneComponent {
 
     void add(SceneNode... args);
     void addAll(Collection<SceneNode> nodes);
@@ -36,7 +34,7 @@ public interface SceneNode extends Serializable {
     Evaluable<Float, CPUContext, GPUContext> toEvaluable();
     void update();
 
-    NodeTemplate getTemplate();
+    String getTemplateName();
 
     Prefab getPrefab();
     void setPrefab(Prefab prefab);

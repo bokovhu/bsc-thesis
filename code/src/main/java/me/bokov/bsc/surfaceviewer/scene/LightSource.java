@@ -8,9 +8,7 @@ import org.joml.Vector3f;
 import java.io.Serializable;
 import java.util.*;
 
-public interface LightSource extends Serializable {
-
-    int getId();
+public interface LightSource extends SceneComponent {
 
     Vector3f getEnergy();
     LightSource setEnergy(float r, float g, float b);

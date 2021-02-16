@@ -84,7 +84,8 @@ public class SceneTreeCell extends TextFieldTreeCell<Object> {
 
         var node = sceneNodeProperty.get();
 
-        if (!node.getTemplate().isSupportsChildren()) {
+        final var template = NodeTemplate.forName(node.getTemplateName());
+        if (!template.isSupportsChildren()) {
             styleProperty().setValue("");
         } else {
             styleProperty().setValue("background: #efefef");
@@ -95,7 +96,8 @@ public class SceneTreeCell extends TextFieldTreeCell<Object> {
     private void onSceneNodeDropped(DragEvent event) {
         var node = sceneNodeProperty.get();
 
-        if (node.getTemplate().isSupportsChildren() && node.getTemplate().getPorts().isEmpty()) {
+        final var template = NodeTemplate.forName(node.getTemplateName());
+        if (template.isSupportsChildren() && template.getPorts().isEmpty()) {
             event.setDropCompleted(true);
 
             final int childId = ((Number) event.getDragboard()
@@ -148,7 +150,7 @@ public class SceneTreeCell extends TextFieldTreeCell<Object> {
 
         sceneNodeProperty.setValue(node);
 
-        setText(node.getId() + ": " + node.getTemplate().getName() + " - " + node.getDisplay().getName());
+        setText(node.getId() + ": " + node.getTemplateName() + " - " + node.getDisplay().getName());
 
         final var contextMenu = new SceneNodeContextMenu();
         contextMenu.getSceneNodeProperty()

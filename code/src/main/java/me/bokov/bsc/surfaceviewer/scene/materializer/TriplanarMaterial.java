@@ -1,5 +1,7 @@
 package me.bokov.bsc.surfaceviewer.scene.materializer;
 
+import lombok.Builder;
+import lombok.Getter;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLIfStatement;
 import me.bokov.bsc.surfaceviewer.glsl.GLSLStatement;
 import me.bokov.bsc.surfaceviewer.scene.Materializer;
@@ -12,6 +14,8 @@ import java.util.*;
 
 import static me.bokov.bsc.surfaceviewer.glsl.GLSLPoet.*;
 
+@Builder
+@Getter
 public class TriplanarMaterial implements Materializer {
 
     private final int id;
@@ -19,40 +23,25 @@ public class TriplanarMaterial implements Materializer {
     private SceneNode boundary;
 
     private String diffuseMapName;
-    private Vector3f diffuseColor;
+
+    @Builder.Default
+    private Vector3f diffuse = new Vector3f(1f);
 
     private String shininessMapName;
-    private Float shininess;
 
+    @Builder.Default
+    private float defaultShininess = 32.0f;
+
+    private String normalMapName;
+
+    @Builder.Default
     private float scale = 1.0f;
+    @Builder.Default
     private float sharpness = 2.0f;
 
-    private Evaluable<Vector3f, ColorCPUContext, ColorGPUContext> diffuseEval = Evaluable.of(new ColorEvaluator());
-    private Evaluable<Float, ColorCPUContext, ColorGPUContext> shininessEval = Evaluable.of(new ShininessEvaluator());
 
-
-    public TriplanarMaterial(
-            int id,
-            SceneNode boundary,
-            String diffuseMapName,
-            Vector3f diffuseColor,
-            String shininessMapName,
-            Float shininess
-    ) {
-        this.id = id;
-        this.boundary = boundary;
-        this.diffuseMapName = diffuseMapName;
-        this.diffuseColor = diffuseColor;
-        this.shininessMapName = shininessMapName;
-        this.shininess = shininess;
-
-        if (this.diffuseColor == null) {
-            this.diffuseColor = new Vector3f(1f);
-        }
-        if (this.shininess == null) {
-            this.shininess = 32.0f;
-        }
-    }
+    private final Evaluable<Vector3f, ColorCPUContext, ColorGPUContext> diffuseEval = Evaluable.of(new ColorEvaluator());
+    private final Evaluable<Float, ColorCPUContext, ColorGPUContext> shininessEval = Evaluable.of(new ShininessEvaluator());
 
     @Override
     public int getId() {
@@ -69,23 +58,8 @@ public class TriplanarMaterial implements Materializer {
         return diffuseEval;
     }
 
-    @Override
     public Evaluable<Float, ColorCPUContext, ColorGPUContext> getShininess() {
         return shininessEval;
-    }
-
-    public String diffuseMapName() { return diffuseMapName; }
-
-    public Vector3f diffuseColor() {return diffuseColor;}
-
-    public String shininessMapName() {return shininessMapName;}
-
-    public Float shininess() {return shininess;}
-
-    public float scale() {return scale;}
-
-    public void scale(float s) {
-        this.scale = s;
     }
 
     private List<GLSLStatement> triplanarSampling(
@@ -153,7 +127,7 @@ public class TriplanarMaterial implements Materializer {
 
         @Override
         public Vector3f evaluate(ColorCPUContext context) {
-            return diffuseColor;
+            return diffuse;
         }
 
         @Override
@@ -179,7 +153,7 @@ public class TriplanarMaterial implements Materializer {
                         var(
                                 "vec3",
                                 context.getResult(),
-                                vec3(diffuseColor)
+                                vec3(diffuse)
                         )
                 );
             }
@@ -193,7 +167,7 @@ public class TriplanarMaterial implements Materializer {
 
         @Override
         public Float evaluate(ColorCPUContext context) {
-            return shininess;
+            return defaultShininess;
         }
 
         @Override
@@ -221,7 +195,7 @@ public class TriplanarMaterial implements Materializer {
                 return List.of(
                         resultVar(
                                 context,
-                                literal(shininess)
+                                literal(defaultShininess)
                         )
                 );
             }

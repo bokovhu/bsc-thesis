@@ -2,9 +2,8 @@ package me.bokov.bsc.surfaceviewer.scene;
 
 import java.io.Serializable;
 
-public interface ResourceTexture extends Serializable {
+public interface ResourceTexture extends SceneComponent {
 
-    int getId();
     String name();
     String location();
     
